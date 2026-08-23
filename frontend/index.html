@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>AgriMitra AI</title>
+    <title>Anndata AI | Smart Farming</title>
 
     <link rel="stylesheet" href="style.css">
 </head>
@@ -24,15 +23,26 @@
             </div>
 
             <div>
-                <h1>AgriMitra AI</h1>
+                <h1>Anndata AI</h1>
                 <p>Smart Polyhouse & Farmer Advisory System</p>
             </div>
 
         </div>
 
         <div class="connection">
-            <span class="status-dot"></span>
-            <span>System Online</span>
+
+            <span class="status-dot" id="statusDot"></span>
+
+            <div>
+                <strong id="connectionText">
+                    Connecting...
+                </strong>
+
+                <small id="connectionSubtext">
+                    Backend connection
+                </small>
+            </div>
+
         </div>
 
     </header>
@@ -47,11 +57,11 @@
 
         <section class="welcome">
 
-            <div>
+            <div class="welcome-content">
 
-                <p class="small-title">
-                    WELCOME TO AGRIMITRA
-                </p>
+                <div class="small-title">
+                    WELCOME TO ANNDATA AI
+                </div>
 
                 <h2>
                     Smart Farming with
@@ -59,21 +69,91 @@
                 </h2>
 
                 <p class="welcome-text">
-                    Monitor your polyhouse, detect crop health
-                    problems and get intelligent farming advice.
+                    Monitor your polyhouse, understand crop conditions
+                    and get intelligent farming advice with Anndata AI.
                 </p>
 
             </div>
 
             <div class="welcome-icon">
-                🌾
+                🌱
             </div>
 
         </section>
 
 
+        <!-- ================= AI CHAT ================= -->
 
-        <!-- ================= SENSOR SECTION ================= -->
+        <section>
+
+            <div class="section-title">
+
+                <div>
+                    <h2>🤖 Anndata AI</h2>
+                    <p>Your intelligent farmer assistant</p>
+                </div>
+
+                <span class="ai-badge">
+                    Gemini AI
+                </span>
+
+            </div>
+
+
+            <div class="chat-box">
+
+                <div
+                    class="chat-messages"
+                    id="chatMessages"
+                >
+
+                    <div class="message ai-message">
+
+                        <div class="avatar">
+                            🌱
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Anndata AI
+                            </strong>
+
+                            <p>
+                                Namaste! 👋 Main Anndata AI hoon.
+                                Aap apni crop, soil, weather ya farming
+                                problem ke baare mein mujhse pooch sakte hain.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="chat-input">
+
+                    <input
+                        type="text"
+                        id="chatInput"
+                        placeholder="Ask Anndata AI about your crop..."
+                        autocomplete="off"
+                        onkeydown="handleChatKey(event)"
+                    >
+
+                    <button onclick="sendMessage()">
+                        Send ➤
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= SENSOR DATA ================= -->
 
         <section>
 
@@ -81,7 +161,9 @@
 
                 <div>
                     <h2>🌡️ Live Sensor Data</h2>
-                    <p>Real-time polyhouse environmental conditions</p>
+                    <p>
+                        Real-time polyhouse environmental conditions
+                    </p>
                 </div>
 
                 <span class="live-badge">
@@ -115,20 +197,17 @@
                     </h3>
 
                     <div class="progress">
-
                         <div
-                            id="temperatureBar"
-                            class="progress-fill">
-                        </div>
-
+                            class="progress-fill"
+                            id="temperatureProgress"
+                        ></div>
                     </div>
 
-                    <p>
-                        Comfortable
+                    <p id="temperatureStatus">
+                        Normal
                     </p>
 
                 </div>
-
 
 
                 <!-- Humidity -->
@@ -152,20 +231,17 @@
                     </h3>
 
                     <div class="progress">
-
                         <div
-                            id="humidityBar"
-                            class="progress-fill">
-                        </div>
-
+                            class="progress-fill"
+                            id="humidityProgress"
+                        ></div>
                     </div>
 
-                    <p>
+                    <p id="humidityStatus">
                         Normal
                     </p>
 
                 </div>
-
 
 
                 <!-- Soil -->
@@ -189,12 +265,10 @@
                     </h3>
 
                     <div class="progress">
-
                         <div
-                            id="soilBar"
-                            class="progress-fill">
-                        </div>
-
+                            class="progress-fill"
+                            id="soilProgress"
+                        ></div>
                     </div>
 
                     <p id="soilStatus">
@@ -204,8 +278,7 @@
                 </div>
 
 
-
-                <!-- Rain -->
+                <!-- Weather -->
 
                 <div class="sensor-card weather">
 
@@ -226,8 +299,7 @@
                     </h3>
 
                     <div class="weather-info">
-                        🌤️
-                        <span>Weather monitored</span>
+                        ☀️ Weather monitored
                     </div>
 
                     <p>
@@ -241,16 +313,110 @@
         </section>
 
 
+        <!-- ================= SMART ADVISORY ================= -->
+
+        <section>
+
+            <div class="section-title">
+
+                <div>
+                    <h2>💡 Smart Advisory</h2>
+
+                    <p>
+                        AI-generated recommendations
+                    </p>
+                </div>
+
+                <span class="ai-badge">
+                    AI ADVICE
+                </span>
+
+            </div>
+
+
+            <div class="advisory-grid">
+
+
+                <div class="advisory-card blue">
+
+                    <div class="advisory-icon">
+                        💧
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Irrigation
+                        </h3>
+
+                        <p id="irrigationAdvice">
+                            Soil moisture is normal.
+                            No immediate irrigation required.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="advisory-card yellow">
+
+                    <div class="advisory-icon">
+                        🌡️
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Temperature
+                        </h3>
+
+                        <p id="temperatureAdvice">
+                            Temperature is within comfortable range.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="advisory-card green">
+
+                    <div class="advisory-icon">
+                        🌿
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Crop Health
+                        </h3>
+
+                        <p id="cropAdvice">
+                            Crop appears healthy.
+                            Continue monitoring.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
 
         <!-- ================= AUTOMATIC ACTIONS ================= -->
 
-        <section class="actions-section">
+        <section>
 
             <div class="section-title">
 
                 <div>
 
-                    <h2>⚙️ Automatic Actions</h2>
+                    <h2>
+                        ⚙️ Automatic Actions
+                    </h2>
 
                     <p>
                         Smart control based on sensor conditions
@@ -261,20 +427,18 @@
                 <button
                     class="auto-button"
                     id="autoModeBtn"
-                    onclick="toggleAutoMode()">
-
+                    onclick="toggleAutoMode()"
+                >
                     🤖 AUTO MODE: ON
-
                 </button>
 
             </div>
 
 
-
             <div class="actions-grid">
 
 
-                <!-- Water Pump -->
+                <!-- Pump -->
 
                 <div class="action-card">
 
@@ -302,26 +466,24 @@
                     <div class="action-right">
 
                         <span
+                            class="device-status off"
                             id="pumpStatus"
-                            class="device-status off">
-
+                        >
                             OFF
-
                         </span>
 
                         <button
                             class="toggle"
                             id="pumpToggle"
-                            onclick="togglePump()">
-
+                            onclick="togglePump()"
+                            aria-label="Toggle water pump"
+                        >
                             <span></span>
-
                         </button>
 
                     </div>
 
                 </div>
-
 
 
                 <!-- Fan -->
@@ -331,7 +493,7 @@
                     <div class="action-left">
 
                         <div class="action-icon fan">
-                            🌬️
+                            🌀
                         </div>
 
                         <div>
@@ -352,20 +514,19 @@
                     <div class="action-right">
 
                         <span
+                            class="device-status off"
                             id="fanStatus"
-                            class="device-status off">
-
+                        >
                             OFF
-
                         </span>
 
                         <button
                             class="toggle"
                             id="fanToggle"
-                            onclick="toggleFan()">
-
+                            onclick="toggleFan()"
+                            aria-label="Toggle ventilation fan"
+                        >
                             <span></span>
-
                         </button>
 
                     </div>
@@ -377,16 +538,17 @@
         </section>
 
 
-
         <!-- ================= CROP VISION ================= -->
 
-        <section class="vision-section">
+        <section>
 
             <div class="section-title">
 
                 <div>
 
-                    <h2>📷 Crop Vision AI</h2>
+                    <h2>
+                        📷 Crop Vision AI
+                    </h2>
 
                     <p>
                         Upload a crop image for health analysis
@@ -394,8 +556,14 @@
 
                 </div>
 
-            </div>
+                <span
+                    class="ai-badge"
+                    id="visionStatus"
+                >
+                    READY
+                </span>
 
+            </div>
 
 
             <div class="vision-container">
@@ -406,7 +574,7 @@
                 <div class="upload-box">
 
                     <div class="upload-icon">
-                        📸
+                        🌿
                     </div>
 
                     <h3>
@@ -417,32 +585,28 @@
                         JPG, PNG up to 10MB
                     </p>
 
+                    <label
+                        class="upload-button"
+                        for="cropImage"
+                    >
+                        Choose Image
+                    </label>
 
                     <input
                         type="file"
                         id="cropImage"
-                        accept="image/*"
-                        hidden
+                        accept="image/png,image/jpeg,image/jpg"
                         onchange="previewImage(event)"
+                        hidden
                     >
-
-
-                    <label
-                        for="cropImage"
-                        class="upload-button">
-
-                        Choose Image
-
-                    </label>
-
 
                     <img
                         id="imagePreview"
                         class="image-preview"
-                        alt="Crop Preview">
+                        alt="Crop preview"
+                    >
 
                 </div>
-
 
 
                 <!-- Result -->
@@ -452,15 +616,11 @@
                     <div class="result-header">
 
                         <h3>
-                            🧠 AI Analysis
+                            🌱 AI Analysis
                         </h3>
 
-                        <span
-                            id="visionStatus"
-                            class="result-badge">
-
+                        <span class="result-badge">
                             Ready
-
                         </span>
 
                     </div>
@@ -493,11 +653,10 @@
                             <p>
                                 Health
                                 <strong
+                                    class="healthy"
                                     id="cropHealth"
-                                    class="healthy">
-
+                                >
                                     Healthy
-
                                 </strong>
                             </p>
 
@@ -515,91 +674,9 @@
 
                     <button
                         class="analyze-button"
-                        onclick="analyzeCrop()">
-
-                        🔍 Analyze Crop
-
-                    </button>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- ================= ANNDATA AI ================= -->
-
-        <section class="chat-section">
-
-            <div class="section-title">
-
-                <div>
-
-                    <h2>🤖 Anndata AI</h2>
-
-                    <p>
-                        Your intelligent farmer assistant
-                    </p>
-
-                </div>
-
-                <span class="ai-badge">
-                    Gemini AI
-                </span>
-
-            </div>
-
-
-            <div class="chat-box">
-
-                <div
-                    class="chat-messages"
-                    id="chatMessages">
-
-                    <div class="message ai-message">
-
-                        <div class="avatar">
-                            🌱
-                        </div>
-
-                        <div>
-
-                            <strong>
-                                Anndata AI
-                            </strong>
-
-                            <p>
-                                Namaste! 👋
-                                Main Anndata AI hoon.
-                                Aap apni crop, soil,
-                                weather ya farming problem
-                                ke baare mein mujhse pooch
-                                sakte hain.
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <div class="chat-input">
-
-                    <input
-                        type="text"
-                        id="chatInput"
-                        placeholder="Ask Anndata AI about your crop..."
-                        onkeydown="handleChatKey(event)"
+                        onclick="analyzeCrop()"
                     >
-
-                    <button
-                        onclick="sendMessage()">
-
-                        Send ➤
-
+                        🔍 Analyze Crop
                     </button>
 
                 </div>
@@ -607,131 +684,41 @@
             </div>
 
         </section>
-
-
-
-        <!-- ================= ADVISORY ================= -->
-
-        <section class="advisory-section">
-
-            <div class="section-title">
-
-                <div>
-
-                    <h2>💡 Smart Advisory</h2>
-
-                    <p>
-                        AI-generated recommendations
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <div class="advisory-grid">
-
-
-                <div class="advisory-card green">
-
-                    <div class="advisory-icon">
-                        💧
-                    </div>
-
-                    <div>
-
-                        <h3>
-                            Irrigation
-                        </h3>
-
-                        <p id="irrigationAdvice">
-                            Soil moisture is normal.
-                            No immediate irrigation required.
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-
-                <div class="advisory-card yellow">
-
-                    <div class="advisory-icon">
-                        🌡️
-                    </div>
-
-                    <div>
-
-                        <h3>
-                            Temperature
-                        </h3>
-
-                        <p id="temperatureAdvice">
-                            Temperature is within
-                            comfortable range.
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-
-                <div class="advisory-card blue">
-
-                    <div class="advisory-icon">
-                        🌱
-                    </div>
-
-                    <div>
-
-                        <h3>
-                            Crop Health
-                        </h3>
-
-                        <p id="cropAdvice">
-                            Crop appears healthy.
-                            Continue monitoring.
-                        </p>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- ================= FOOTER ================= -->
-
-        <footer>
-
-            <div>
-
-                <strong>
-                    🌱 AgriMitra AI
-                </strong>
-
-                <p>
-                    Smart technology for smarter farming.
-                </p>
-
-            </div>
-
-            <div>
-                <p>
-                    Anndata AI • AI + IoT • Smart Polyhouse
-                </p>
-            </div>
-
-        </footer>
 
 
     </main>
 
+
+    <!-- ================= FOOTER ================= -->
+
+    <footer>
+
+        <div>
+
+            <strong>
+                🌱 Anndata AI
+            </strong>
+
+            <p>
+                Smart technology for smarter farming.
+            </p>
+
+        </div>
+
+        <div>
+
+            Anndata AI • AI + IoT • Smart Polyhouse
+
+            <br>
+
+            © 2026 All rights reserved.
+
+        </div>
+
+    </footer>
+
+
+    <!-- JAVASCRIPT -->
 
     <script src="app.js"></script>
 
