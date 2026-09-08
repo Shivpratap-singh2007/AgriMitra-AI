@@ -86,7 +86,7 @@ function updateDeviceUI(device, state) {
 
 async function togglePump() {
     if (autoMode) {
-        alert("Auto mode is ON. Isse OFF karo pehle manually control karne ke liye.");
+        alert("Auto mode is ON. Turn it OFF first to control this device manually.");
         return;
     }
 
@@ -110,7 +110,7 @@ async function togglePump() {
 
 async function toggleFan() {
     if (autoMode) {
-        alert("Auto mode is ON. Isse OFF karo pehle manually control karne ke liye.");
+        alert("Auto mode is ON. Turn it OFF first to control this device manually.");
         return;
     }
 
@@ -162,20 +162,20 @@ async function runAutoControl() {
 function updateAdvisory(sensors) {
     const irrigationEl = getElement("irrigationAdvice");
     if (sensors.soilMoisture < 30) {
-        irrigationEl.textContent = "Soil moisture kam hai. Turant irrigation ki zaroorat hai.";
+        irrigationEl.textContent = "Soil moisture is low. Immediate irrigation is needed.";
     } else if (sensors.soilMoisture > 45) {
-        irrigationEl.textContent = "Soil moisture zyada hai. Abhi irrigation ki zaroorat nahi.";
+        irrigationEl.textContent = "Soil moisture is high. No irrigation is needed right now.";
     } else {
-        irrigationEl.textContent = "Soil moisture normal hai. Abhi irrigation ki zaroorat nahi.";
+        irrigationEl.textContent = "Soil moisture is normal. No irrigation is needed right now.";
     }
 
     const tempEl = getElement("temperatureAdvice");
     if (sensors.temperature > 30) {
-        tempEl.textContent = "Temperature zyada hai. Ventilation fan chalane ki salah di jaati hai.";
+        tempEl.textContent = "Temperature is high. Running the ventilation fan is recommended.";
     } else if (sensors.temperature < 28) {
-        tempEl.textContent = "Temperature thoda kam hai. Cold stress pe dhyan do.";
+        tempEl.textContent = "Temperature is slightly low. Watch for cold stress.";
     } else {
-        tempEl.textContent = "Temperature comfortable range me hai.";
+        tempEl.textContent = "Temperature is within the comfortable range.";
     }
 }
 
@@ -212,7 +212,7 @@ async function sendMessage() {
     appendMessage("user", message);
     input.value = "";
 
-    const typingMsg = appendMessage("ai", "Soch raha hoon...");
+    const typingMsg = appendMessage("ai", "Thinking...");
 
     try {
         const res = await fetch(`${API_URL}/api/ai/chat`, {
@@ -220,7 +220,7 @@ async function sendMessage() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 message: message,
-                language: "Hindi"
+                language: "English"
             })
         });
 
@@ -231,11 +231,11 @@ async function sendMessage() {
         if (data.success) {
             appendMessage("ai", data.reply);
         } else {
-            appendMessage("ai", "Sorry, kuch problem ho gayi. Backend server chalu hai check karo.");
+            appendMessage("ai", "Sorry, something went wrong. Please check that the backend server is running.");
         }
     } catch (err) {
         typingMsg.remove();
-        appendMessage("ai", "Backend se connect nahi ho pa raha. Server (node server.js) chalu hai check karo.");
+        appendMessage("ai", "Unable to connect to the backend. Please start the server with node server.js.");
         console.error("Chat error:", err);
     }
 }
@@ -254,12 +254,12 @@ function startVoiceInput() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
-        alert("Voice input is browser me support nahi hai. Chrome try karo.");
+        alert("Voice input is not supported in this browser. Please try Chrome.");
         return;
     }
 
     const recognition = new SpeechRecognition();
-    recognition.lang = "hi-IN";
+    recognition.lang = "en-IN";
     recognition.interimResults = false;
 
     const micButton = getElement("micButton");
@@ -306,7 +306,7 @@ function previewImage(event) {
 
 async function analyzeCrop() {
     if (!selectedImageFile) {
-        alert("Pehle ek crop image select karo.");
+        alert("Please select a crop image first.");
         return;
     }
 
@@ -340,7 +340,7 @@ async function analyzeCrop() {
         }
     } catch (err) {
         statusEl.textContent = "Error";
-        alert("Crop analysis backend abhi available nahi hai. Server aur Ollama chalu hai check karo.");
+        alert("Crop analysis is currently unavailable. Please check that the server and Ollama are running.");
         console.error("Crop analysis error:", err);
     }
 }

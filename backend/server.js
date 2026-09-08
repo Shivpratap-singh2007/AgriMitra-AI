@@ -246,7 +246,7 @@ IMPORTANT RULES:
 7. Keep the answer short and practical (max 5-6 lines).
 
 FARMER INFORMATION
-Language: ${language || "Hindi"}
+Language: ${language || "English"}
 Location: ${location || "Not provided"}
 Crop: ${crop || "Not provided"}
 
