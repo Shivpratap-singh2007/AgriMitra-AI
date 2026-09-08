@@ -1,56 +1,80 @@
 # 🌱 AgriMitra AI
 
-Smart Polyhouse & Farmer Advisory System
+<div align="center">
+  <img src="https://img.shields.io/badge/AI-Agriculture%20Assistant-green" alt="AI Agriculture Assistant" />
+  <img src="https://img.shields.io/badge/Tech-Node.js%20%2B%20AI-blue" alt="Node.js + AI" />
+  <img src="https://img.shields.io/badge/Status-Prototype-orange" alt="Prototype" />
+</div>
 
-AgriMitra AI is an AI-powered agricultural assistant built to help farmers make better decisions using crop image analysis, weather and sensor monitoring, and smart farming guidance.
+### Smart Polyhouse & Farmer Advisory System
 
-## Overview
+AgriMitra AI is an AI-powered agricultural assistant designed to help farmers monitor crops, understand environmental conditions, and receive simple, practical recommendations for better farming decisions.
 
-This project combines:
+It combines crop image analysis, smart advisory logic, and farmer-friendly AI support into one web application.
 
-- Crop image analysis
-- Smart agricultural advisory
-- Farmer-friendly AI assistant
-- Sensor-based irrigation and climate monitoring
-- Polyhouse automation suggestions
+---
 
-It is designed to make farming decisions easier, faster, and more understandable for farmers in India.
+## 🚀 Why This Project Matters
 
-## Features
+Indian farmers often face difficulty in:
 
-### 1. Crop Vision AI
-- Upload a crop image
-- Detect crop health condition
+- identifying crop diseases early
+- understanding soil and weather conditions
+- deciding irrigation needs
+- getting timely farming advice
+- accessing clear guidance in simple language
+
+AgriMitra AI solves this by turning complex agricultural information into easy, actionable recommendations for farmers.
+
+---
+
+## ✨ Key Features
+
+### Crop Vision
+- Upload crop images
+- Detect crop health
 - Identify possible disease
-- Show confidence score
+- Display confidence score
 
-### 2. Farmer Assistant
-- Ask farming-related questions in natural language
-- Get simple, practical recommendations
-- Use farmer-friendly explanations
+### Farmer AI Assistant
+- Ask agriculture-related questions in natural language
+- Get practical, simple answers
+- Understand recommendations without technical complexity
 
-### 3. Smart Advisory
-- Irrigation suggestions
-- Temperature and humidity guidance
-- Crop monitoring advice
-- Actionable polyhouse recommendations
+### Smart Advisory
+- Irrigation guidance
+- Temperature and humidity monitoring
+- Health and crop recommendation engine
+- Polyhouse-based action suggestions
 
-### 4. Live Sensor Dashboard
+### Live Monitoring Dashboard
 - Temperature
 - Humidity
 - Soil moisture
-- Rain status
-- Device status for pump and fan
+- Rain prediction status
+- Pump and fan state
 
-### 5. Automation Support
+### Automation Support
 - Auto mode for smart control
-- Manual override for pump and fan
+- Manual override for devices
 
-## Tech Stack
+---
+
+## 🧠 AI Integration
+
+This project uses:
+
+- Google Gemini API for text and analysis features
+- Ollama for local AI support
+- Vision-based crop assessment
+
+---
+
+## 🏗️ Tech Stack
 
 ### Frontend
-- HTML
-- CSS
+- HTML5
+- CSS3
 - JavaScript
 
 ### Backend
@@ -60,11 +84,14 @@ It is designed to make farming decisions easier, faster, and more understandable
 - CORS
 - dotenv
 
-### AI Tools
-- Google Gemini API
-- Ollama (local AI support)
+### AI / ML
+- Gemini AI
+- Ollama
+- Vision-based crop analysis
 
-## Project Structure
+---
+
+## 📁 Project Structure
 
 ```text
 AgriMitra-AI/
@@ -82,18 +109,9 @@ AgriMitra-AI/
 └── package.json
 ```
 
-## Prerequisites
+---
 
-Before running the app, install:
-
-- Node.js LTS
-- npm
-- Git
-- VS Code (recommended)
-- Gemini API key
-- Optional: Ollama for local AI
-
-## Setup Instructions
+## ⚙️ Setup Instructions
 
 ### 1. Clone the repository
 
@@ -109,22 +127,22 @@ cd backend
 npm install
 ```
 
-### 3. Add environment variables
+### 3. Create environment file
 
-Create a `.env` file inside the `backend` folder:
+Inside `backend`, create a `.env` file:
 
 ```env
 GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
-### 4. Start the backend server
+### 4. Start the backend
 
 ```bash
 cd backend
 node server.js
 ```
 
-The backend will run on:
+Backend runs at:
 
 ```text
 http://localhost:5000
@@ -132,49 +150,73 @@ http://localhost:5000
 
 ### 5. Run the frontend
 
-Open the frontend file in a browser, or use Live Server in VS Code.
+Open the file below in the browser or use Live Server in VS Code:
 
 ```text
 frontend/index.html
 ```
 
-The frontend will connect to the backend on:
+The frontend connects to:
 
 ```text
 http://localhost:5000
 ```
 
-## Optional: Local AI with Ollama
+---
 
-If you want to use local AI models:
+## 🧪 Optional: Local AI with Ollama
+
+If you want local AI models:
 
 ```bash
 ollama pull llama3.2
 ollama pull llava
 ```
 
-Then the backend is configured to call Ollama locally on:
+The backend is designed to talk to Ollama at:
 
 ```text
 http://localhost:11434
 ```
 
-## Usage
+---
 
-1. Open the web app.
-2. View live sensor readings.
-3. Upload a crop image for crop analysis.
-4. Ask the AI assistant farming questions.
-5. Review smart advisory suggestions.
+## 📲 How to Use
 
-## Team
+1. Open the app in the browser.
+2. Check live sensor data.
+3. Upload a crop image for AI-based crop analysis.
+4. Ask a farming question to the assistant.
+5. Review smart recommendations for crop health and irrigation.
 
-Team STPR
+---
 
-## License
+## 👥 Team
 
-This project is for educational and prototype purposes.
+**Team STPR**
 
-## Notes
+---
 
-This app is intended as a smart agriculture prototype and can be extended with real IoT sensor integration, weather APIs, database storage, and deployment to cloud hosting.
+## 📝 License
+
+This project is currently a prototype for agricultural AI and smart polyhouse solutions.
+
+---
+
+## 🌾 Future Scope
+
+This project can be extended with:
+
+- real IoT sensor integration
+- weather API integration
+- database-backed user data
+- farmer login system
+- multilingual support
+- deployment on cloud platforms
+- mobile app version
+
+---
+
+## 🔗 Repository
+
+https://github.com/Shivpratap-singh2007/AgriMitra-AI
