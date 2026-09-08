@@ -13,6 +13,54 @@
 
 <body>
 
+    <div class="app-loader" id="appLoader" aria-label="Loading AgriMitra AI">
+        <div class="loader-orbit orbit-one"></div>
+        <div class="loader-orbit orbit-two"></div>
+        <div class="loader-core">🌱</div>
+        <div class="loader-copy">
+            <strong>AgriMitra AI</strong>
+            <span>Growing smarter farms...</span>
+        </div>
+        <div class="loader-progress"><span></span></div>
+    </div>
+
+    <div class="onboarding-backdrop" id="onboardingModal" role="dialog" aria-modal="true" aria-labelledby="onboardingTitle">
+        <div class="onboarding-card">
+            <div class="onboarding-brand">🌱 <span>AgriMitra AI</span></div>
+            <p class="eyebrow">WELCOME TO AGRIMITRA</p>
+            <h2 id="onboardingTitle">Apni smart farming journey shuru karein</h2>
+            <p class="onboarding-copy">Pehle apni bhasha aur basic farmer profile set karein. Yeh information sirf is device par save hoti hai.</p>
+            <div class="onboarding-grid">
+                <label>🌐 App language
+                    <select id="welcomeLanguage">
+                        <option value="Hindi">हिन्दी</option>
+                        <option value="English">English</option>
+                        <option value="Punjabi">ਪੰਜਾਬੀ</option>
+                        <option value="Tamil">தமிழ்</option>
+                        <option value="Marathi">मराठी</option>
+                    </select>
+                </label>
+                <label>👨‍🌾 Your name
+                    <input id="farmerName" type="text" placeholder="Enter your name" autocomplete="name">
+                </label>
+                <label>📱 Mobile number
+                    <input id="farmerPhone" type="tel" placeholder="10 digit mobile number" autocomplete="tel">
+                </label>
+                <label>📍 Village / district
+                    <input id="farmerLocation" type="text" placeholder="Where is your farm?" autocomplete="address-level2">
+                </label>
+                <label>🌾 Main crop
+                    <input id="farmerCrop" type="text" placeholder="Wheat, rice, tomato..." autocomplete="off">
+                </label>
+                <label>📐 Farm size (optional)
+                    <input id="farmerFarmSize" type="text" placeholder="e.g. 2 acres" autocomplete="off">
+                </label>
+            </div>
+            <button class="primary-button onboarding-submit" type="button" onclick="completeOnboarding()">Enter AgriMitra <span>→</span></button>
+            <p class="form-hint" id="onboardingHint">Aap baad me profile settings se details badal sakte hain.</p>
+        </div>
+    </div>
+
     <!-- ================= HEADER ================= -->
 
     <header class="header">
@@ -31,12 +79,24 @@
         </div>
 
         <div class="connection">
-            <span class="status-dot"></span>
-            <span>System Online</span>
+            <span class="status-dot" id="connectionDot"></span>
+            <span id="connectionText">System Online</span>
         </div>
 
+        <div class="header-actions">
+            <button class="icon-button" id="themeToggle" type="button" onclick="toggleTheme()" aria-label="Toggle theme">☀️</button>
+            <button class="profile-chip" type="button" onclick="openProfileModal()"><span id="profileAvatar">👨‍🌾</span><span id="profileName">Farmer</span></button>
+        </div>
     </header>
 
+    <nav class="app-nav" aria-label="AgriMitra pages">
+        <button class="nav-item is-active" data-page="home" onclick="navigateTo('home')">🏠 <span>Welcome</span></button>
+        <button class="nav-item" data-page="sensors" onclick="navigateTo('sensors')">📡 <span>Live Sensors</span></button>
+        <button class="nav-item" data-page="actions" onclick="navigateTo('actions')">⚙️ <span>Actions</span></button>
+        <button class="nav-item" data-page="vision" onclick="navigateTo('vision')">📷 <span>Crop Vision</span></button>
+        <button class="nav-item" data-page="ai" onclick="navigateTo('ai')">🤖 <span>Anndata AI</span></button>
+        <button class="nav-item" data-page="advisory" onclick="navigateTo('advisory')">💡 <span>Advisory</span></button>
+    </nav>
 
     <!-- ================= MAIN ================= -->
 
@@ -45,7 +105,7 @@
 
         <!-- ================= WELCOME ================= -->
 
-        <section class="welcome">
+        <section class="welcome page-section is-active" data-page-section="home">
 
             <div>
 
@@ -65,8 +125,25 @@
 
             </div>
 
-            <div class="welcome-icon">
-                🌾
+            <div class="hero-3d" id="hero3d" aria-label="3D smart polyhouse illustration">
+                <div class="hero-glow"></div>
+                <div class="scene-grid"></div>
+                <div class="scene-orb orb-a"></div>
+                <div class="scene-orb orb-b"></div>
+                <div class="polyhouse">
+                    <div class="roof roof-left"></div>
+                    <div class="roof roof-right"></div>
+                    <div class="house-wall wall-left"></div>
+                    <div class="house-wall wall-right"></div>
+                    <div class="house-floor"></div>
+                    <div class="house-door"></div>
+                    <div class="plant plant-one">🌿</div>
+                    <div class="plant plant-two">🌱</div>
+                    <div class="house-sensor">●</div>
+                </div>
+                <span class="scene-label label-temp">28°</span>
+                <span class="scene-label label-humidity">65%</span>
+                <span class="scene-label label-ai">AI ACTIVE</span>
             </div>
 
         </section>
@@ -75,7 +152,7 @@
 
         <!-- ================= SENSOR SECTION ================= -->
 
-        <section>
+        <section class="page-section" data-page-section="sensors">
 
             <div class="section-title">
 
@@ -244,7 +321,7 @@
 
         <!-- ================= AUTOMATIC ACTIONS ================= -->
 
-        <section class="actions-section">
+        <section class="actions-section page-section" data-page-section="actions">
 
             <div class="section-title">
 
@@ -263,11 +340,12 @@
                     id="autoModeBtn"
                     onclick="toggleAutoMode()">
 
-                    🤖 AUTO MODE: ON
-
+                    🖐️ MANUAL MODE: ON
                 </button>
-
             </div>
+            <p class="control-hint" id="controlHint">
+                Manual control active: pump aur fan toggles ready hain.
+            </p>
 
 
 
@@ -380,7 +458,7 @@
 
         <!-- ================= CROP VISION ================= -->
 
-        <section class="vision-section">
+        <section class="vision-section page-section" data-page-section="vision">
 
             <div class="section-title">
 
@@ -531,7 +609,7 @@
 
         <!-- ================= ANNDATA AI ================= -->
 
-        <section class="chat-section">
+        <section class="chat-section page-section" data-page-section="ai">
 
             <div class="section-title">
 
@@ -546,11 +624,23 @@
                 </div>
 
                 <span class="ai-badge">
-                    Annadata-AI  
+                    Annadata-AI
                 </span>
-
             </div>
 
+            <div class="assistant-tools">
+                <label class="language-picker" for="languageSelect">
+                    <span>🌐 Language</span>
+                    <select id="languageSelect" onchange="changeAssistantLanguage()">
+                        <option value="Hindi">हिन्दी</option>
+                        <option value="English">English</option>
+                        <option value="Punjabi">ਪੰਜਾਬੀ</option>
+                        <option value="Tamil">தமிழ்</option>
+                        <option value="Marathi">मराठी</option>
+                    </select>
+                </label>
+                <span class="language-status" id="languageStatus">AI will reply in Hindi</span>
+            </div>
 
             <div class="chat-box">
 
@@ -585,6 +675,12 @@
 
                 </div>
 
+                <div class="quick-prompts" aria-label="Quick prompts">
+                    <button type="button" onclick="useQuickPrompt('Meri fasal ke liye aaj kya karna chahiye?')">🌱 Crop care</button>
+                    <button type="button" onclick="useQuickPrompt('Kya abhi irrigation ki zaroorat hai?')">💧 Irrigation</button>
+                    <button type="button" onclick="useQuickPrompt('Meri crop ki health check karo')">🩺 Crop health</button>
+                </div>
+
 
                 <div class="chat-input">
 
@@ -612,7 +708,7 @@
 
         <!-- ================= ADVISORY ================= -->
 
-        <section class="advisory-section">
+        <section class="advisory-section page-section" data-page-section="advisory">
 
             <div class="section-title">
 
@@ -731,6 +827,16 @@
 
 
     </main>
+
+    <div class="profile-backdrop" id="profileModal" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
+        <div class="profile-modal">
+            <button class="modal-close" type="button" onclick="closeProfileModal()" aria-label="Close">×</button>
+            <p class="eyebrow">KISAN PROFILE</p>
+            <h2 id="profileTitle">Aapki farming profile</h2>
+            <div class="profile-summary" id="profileSummary"></div>
+            <button class="primary-button" type="button" onclick="closeProfileModal()">Done</button>
+        </div>
+    </div>
 
 
     <script src="app.js"></script>
