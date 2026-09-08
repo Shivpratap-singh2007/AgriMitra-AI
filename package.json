@@ -1,0 +1,36 @@
+{
+  "name": "agrimitra-ai",
+  "version": "1.0.0",
+  "description": "3D smart polyhouse desktop assistant",
+  "main": "electron-main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win portable",
+    "check": "node --check electron-main.js && node --check frontend/app.js && node --check backend/server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "multer": "^1.4.5-lts.1",
+    "@google/genai": "^1.5.0"
+  },
+  "devDependencies": {
+    "electron": "^36.3.2",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.agrimitra.ai",
+    "productName": "AgriMitra AI",
+    "files": [
+      "frontend/**/*",
+      "backend/**/*",
+      "electron-main.js",
+      "package.json"
+    ],
+    "win": {
+      "target": "portable"
+    }
+  }
+}

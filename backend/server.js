@@ -6,12 +6,12 @@ const { GoogleGenAI } = require("@google/genai");
 
 const app = express();
 const PORT = 5000;
-const gemini = new GoogleGenAI({
-    apiKey: process.env.GEMINI_API_KEY
-});
+const gemini = process.env.GEMINI_API_KEY
+    ? new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
+    : null;
 
-const GEMINI_VISION_MODEL = "gemini-3.6-flash";
-const GEMINI_TEXT_MODEL = "gemini-3.6-flash";
+const GEMINI_VISION_MODEL = process.env.GEMINI_VISION_MODEL || "gemini-2.0-flash";
+const GEMINI_TEXT_MODEL = process.env.GEMINI_TEXT_MODEL || "gemini-2.0-flash";
 
 // =====================================================
 // MIDDLEWARE
@@ -20,7 +20,10 @@ const GEMINI_TEXT_MODEL = "gemini-3.6-flash";
 app.use(cors());
 app.use(express.json());
 
-const upload = multer({ storage: multer.memoryStorage() });
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 10 * 1024 * 1024 }
+});
 
 // =====================================================
 // OLLAMA CONFIG (Local AI - No API key, No internet needed)
@@ -184,6 +187,10 @@ async function callOllamaText(prompt) {
 // =====================================================
 
 async function callGeminiVision(prompt, base64Image, mimeType) {
+    if (!gemini) {
+        throw new Error("GEMINI_API_KEY is not configured");
+    }
+
     const response = await gemini.models.generateContent({
         model: GEMINI_VISION_MODEL,
         contents: [
@@ -210,6 +217,10 @@ async function callGeminiVision(prompt, base64Image, mimeType) {
 // =====================================================
 
 async function callGeminiText(prompt) {
+    if (!gemini) {
+        throw new Error("GEMINI_API_KEY is not configured");
+    }
+
     const response = await gemini.models.generateContent({
         model: GEMINI_TEXT_MODEL,
         contents: prompt
@@ -233,11 +244,13 @@ app.post("/api/ai/chat", async (req, res) => {
             });
         }
 
+        const supportedLanguages = ["Hindi", "English", "Punjabi", "Tamil", "Marathi"];
+        const selectedLanguage = supportedLanguages.includes(language) ? language : "Hindi";
         const prompt = `
 You are Anndata AI, an intelligent agricultural assistant for Indian farmers.
 
 IMPORTANT RULES:
-1. Reply in the same language selected by the farmer.
+1. Reply ONLY in ${selectedLanguage}. Do not mix languages unless the farmer explicitly asks.
 2. Use simple farmer-friendly language.
 3. Avoid unnecessary technical words.
 4. Consider the farmer's location, crop, and sensor conditions.
@@ -246,7 +259,7 @@ IMPORTANT RULES:
 7. Keep the answer short and practical (max 5-6 lines).
 
 FARMER INFORMATION
-Language: ${language || "Hindi"}
+Language: ${selectedLanguage}
 Location: ${location || "Not provided"}
 Crop: ${crop || "Not provided"}
 
@@ -335,6 +348,20 @@ app.post("/api/analyze", upload.single("image"), async (req, res) => {
             return res.status(400).json({
                 success: false,
                 message: "Image file is required"
+            });
+        }
+
+        if (!req.file.mimetype.startsWith("image/")) {
+            return res.status(400).json({
+                success: false,
+                message: "Only image files are supported"
+            });
+        }
+
+        if (req.file.size > 10 * 1024 * 1024) {
+            return res.status(413).json({
+                success: false,
+                message: "Image must be smaller than 10MB"
             });
         }
 
