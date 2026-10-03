@@ -1,888 +1,847 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>AgriMitra AI</title>
-
-    <link rel="stylesheet" href="style.css">
-</head>
-
-<body>
-
-    <div class="app-loader" id="appLoader" aria-label="Loading AgriMitra AI">
-        <div class="loader-orbit orbit-one"></div>
-        <div class="loader-orbit orbit-two"></div>
-        <div class="loader-core">🌱</div>
-        <div class="loader-copy">
-            <strong>AgriMitra AI</strong>
-            <span>Growing smarter farms...</span>
-        </div>
-        <div class="loader-progress"><span></span></div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#06120f" />
+    <meta name="description" content="AgriMitra AI - Simple smart farming, polyhouse automation, voice AI advisor, and leaf disease diagnosis for every phone user." />
+    <title>AgriMitra AI | Smart Farming + Voice AI + IoT</title>
+    
+    <!-- Modern typography for crisp English and Hindi text on any phone -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- App Loading Screen -->
+    <div class="app-loader" id="appLoader" aria-hidden="true">
+      <div class="loader-orbit"></div>
+      <div class="loader-orbit orbit-two"></div>
+      <div class="loader-core">🌱</div>
+      <div class="loader-copy">
+        <strong id="loaderTitle">AgriMitra AI</strong>
+        <span id="loaderSubtitle">स्मार्ट खेती • Live Farm Dashboard</span>
+      </div>
     </div>
 
-    <div class="onboarding-backdrop" id="onboardingModal" role="dialog" aria-modal="true" aria-labelledby="onboardingTitle">
-        <div class="onboarding-card">
-            <div class="onboarding-brand">🌱 <span>AgriMitra AI</span></div>
-            <p class="eyebrow">WELCOME TO AGRIMITRA</p>
-            <h2 id="onboardingTitle">Apni smart farming journey shuru karein</h2>
-            <p class="onboarding-copy">Pehle apni bhasha aur basic farmer profile set karein. Yeh information sirf is device par save hoti hai.</p>
-            <div class="onboarding-grid">
-                <label>🌐 App language
-                    <select id="welcomeLanguage">
-                        <option value="Hindi">हिन्दी</option>
-                        <option value="English">English</option>
-                        <option value="Punjabi">ਪੰਜਾਬੀ</option>
-                        <option value="Tamil">தமிழ்</option>
-                        <option value="Marathi">मराठी</option>
-                    </select>
-                </label>
-                <label>👨‍🌾 Your name
-                    <input id="farmerName" type="text" placeholder="Enter your name" autocomplete="name">
-                </label>
-                <label>📱 Mobile number
-                    <input id="farmerPhone" type="tel" placeholder="10 digit mobile number" autocomplete="tel">
-                </label>
-                <label>📍 Village / district
-                    <input id="farmerLocation" type="text" placeholder="Where is your farm?" autocomplete="address-level2">
-                </label>
-                <label>🌾 Main crop
-                    <input id="farmerCrop" type="text" placeholder="Wheat, rice, tomato..." autocomplete="off">
-                </label>
-                <label>📐 Farm size (optional)
-                    <input id="farmerFarmSize" type="text" placeholder="e.g. 2 acres" autocomplete="off">
-                </label>
-            </div>
-            <button class="primary-button onboarding-submit" type="button" onclick="completeOnboarding()">Enter AgriMitra <span>→</span></button>
-            <p class="form-hint" id="onboardingHint">Aap baad me profile settings se details badal sakte hain.</p>
+    <!-- Top Navigation Header -->
+    <header class="topbar">
+      <div class="brand-block">
+        <div class="brand-mark" aria-hidden="true">🌱</div>
+        <div class="brand-info">
+          <h1>AGRIMITRA <span class="badge-ai">AI</span></h1>
+          <span class="brand-sub" id="brandSub">Smart Polyhouse • किसान साथी</span>
         </div>
-    </div>
+      </div>
 
-    <div class="onboarding-backdrop is-hidden" id="sensorSetupModal" role="dialog" aria-modal="true" aria-labelledby="sensorSetupTitle">
-        <div class="onboarding-card setup-card">
-            <div class="onboarding-brand">📡 <span>Polyhouse Connect</span></div>
-            <p class="eyebrow">STEP 2 • SENSOR SETUP</p>
-            <h2 id="sensorSetupTitle">Apne sensors ko AgriMitra se connect karein</h2>
-            <p class="onboarding-copy">Live data dekhne se pehle yeh simple setup complete karein. Real hardware ke liye same Wi-Fi par gateway/ESP32 rakhein.</p>
-            <div class="setup-steps">
-                <div><span>1</span><strong>Gateway power on</strong><small>ESP32/Arduino gateway ko power dein.</small></div>
-                <div><span>2</span><strong>Same Wi-Fi</strong><small>Phone/PC aur gateway ko ek network par jodein.</small></div>
-                <div><span>3</span><strong>Sensor test</strong><small>Temperature, humidity aur soil probe check karein.</small></div>
-            </div>
-            <label class="setup-check"><input type="checkbox" id="sensorHardwareReady"> Maine gateway aur sensors connect kar diye hain</label>
-            <p class="form-hint" id="sensorSetupHint">Demo mode me bhi aap live dashboard dekh sakte hain.</p>
-            <div class="setup-actions">
-                <button class="secondary-button" type="button" onclick="closeSensorSetup()">Baad me</button>
-                <button class="primary-button" type="button" onclick="completeSensorSetup()">Open Live Sensors →</button>
-            </div>
-        </div>
-    </div>
+      <!-- Desktop Navigation Links -->
+      <nav class="main-nav" aria-label="Main navigation">
+        <a href="#home" class="nav-link active" data-nav="home">HOME</a>
+        <a href="#controls" class="nav-link" data-nav="controls">CONTROLS</a>
+        <a href="#sensors" class="nav-link" data-nav="sensors">SENSORS</a>
+        <a href="#ai" class="nav-link" data-nav="ai">AI MITRA</a>
+        <a href="#scanner" class="nav-link" data-nav="scanner">LEAF SCAN</a>
+        <a href="#mandi" class="nav-link" data-nav="mandi">MANDI</a>
+        <a href="#weather" class="nav-link" data-nav="weather">WEATHER</a>
+        <a href="#schemes" class="nav-link" data-nav="schemes">SCHEMES</a>
+        <a href="#system" class="nav-link" data-nav="system">SYSTEM</a>
+      </nav>
 
-    <!-- ================= HEADER ================= -->
+      <!-- Topbar Actions: Language Switcher + Auth -->
+      <div class="nav-actions">
+        <!-- Language Switcher Button -->
+        <button id="langToggle" class="lang-toggle-btn" type="button" aria-label="Toggle Language / भाषा बदलें">
+          <span class="lang-flag">🇮🇳</span>
+          <span id="langLabel">हिंदी</span>
+        </button>
 
-    <header class="header">
+        <!-- API Settings Button -->
+        <button id="apiSettingsTopBtn" class="ghost-button api-key-topbtn" type="button" aria-label="API Settings / सेटिंग्स">
+          <span>⚙️ APIs</span>
+        </button>
 
-        <div class="brand">
-
-            <div class="logo">
-                🌱
-            </div>
-
-            <div>
-                <h1>AgriMitra AI</h1>
-                <p>Smart Polyhouse & Farmer Advisory System</p>
-            </div>
-
-        </div>
-
-        <div class="connection">
-            <span class="status-dot" id="connectionDot"></span>
-            <span id="connectionText">System Online</span>
-        </div>
-
-        <div class="header-actions">
-            <button class="icon-button" id="themeToggle" type="button" onclick="toggleTheme()" aria-label="Toggle theme">☀️</button>
-            <button class="profile-chip" type="button" onclick="openProfileModal()"><span id="profileAvatar">👨‍🌾</span><span id="profileName">Farmer</span></button>
-        </div>
+        <span id="userGreeting" class="user-greeting" style="display:none;"></span>
+        <button id="loginButton" class="ghost-button" type="button">LOGIN</button>
+        <button id="registerButton" class="primary-button" type="button">REGISTER</button>
+      </div>
     </header>
 
-    <nav class="app-nav" aria-label="AgriMitra pages">
-        <button class="nav-item is-active" data-page="home" onclick="navigateTo('home')">🏠 <span>Welcome</span></button>
-        <button class="nav-item" data-page="sensors" onclick="navigateTo('sensors')">📡 <span>Live Sensors</span></button>
-        <button class="nav-item" data-page="actions" onclick="navigateTo('actions')">⚙️ <span>Actions</span></button>
-        <button class="nav-item" data-page="vision" onclick="navigateTo('vision')">📷 <span>Crop Vision</span></button>
-        <button class="nav-item" data-page="ai" onclick="navigateTo('ai')">🤖 <span>Anndata AI</span></button>
-        <button class="nav-item" data-page="advisory" onclick="navigateTo('advisory')">💡 <span>Advisory</span></button>
-    </nav>
-
-    <!-- ================= MAIN ================= -->
-
-    <main class="container">
-
-
-        <!-- ================= WELCOME ================= -->
-
-        <section class="welcome page-section is-active" data-page-section="home">
-
-            <div>
-
-                <p class="small-title">
-                    WELCOME TO AGRIMITRA
-                </p>
-
-                <h2>
-                    Smart Farming with
-                    <span>AI & IoT</span>
-                </h2>
-
-                <p class="welcome-text">
-                    Monitor your polyhouse, detect crop health
-                    problems and get intelligent farming advice.
-                </p>
-
+    <main>
+      <!-- Hero / Quick Status Banner -->
+      <section id="home" class="hero-section">
+        <div class="hero-card glass-card">
+          <div class="hero-header-row">
+            <div class="farmer-profile">
+              <span class="farmer-avatar">👨‍🌾</span>
+              <div>
+                <p class="greeting-sub" id="greetingSub">Namaste Farmer</p>
+                <h2 id="farmerNameText">Demo Farmer</h2>
+              </div>
             </div>
+            <div class="hardware-pill" id="devicePill">
+              <span class="status-pulse-dot" id="deviceDot"></span>
+              <span id="deviceStateText">WAITING FOR ESP32</span>
+            </div>
+          </div>
 
-            <div class="hero-3d" id="hero3d" aria-label="3D smart polyhouse illustration">
-                <div class="hero-glow"></div>
-                <div class="scene-grid"></div>
-                <div class="scene-orb orb-a"></div>
-                <div class="scene-orb orb-b"></div>
-                <div class="polyhouse">
-                    <div class="roof roof-left"></div>
-                    <div class="roof roof-right"></div>
-                    <div class="house-wall wall-left"></div>
-                    <div class="house-wall wall-right"></div>
-                    <div class="house-floor"></div>
-                    <div class="house-door"></div>
-                    <div class="plant plant-one">🌿</div>
-                    <div class="plant plant-two">🌱</div>
-                    <div class="house-sensor">●</div>
+          <!-- Quick Polyhouse Status Highlights -->
+          <div class="quick-status-grid">
+            <div class="quick-box">
+              <span class="quick-icon">📍</span>
+              <div>
+                <small id="lblLocation">Location</small>
+                <strong id="locationText">Kangra, HP</strong>
+              </div>
+            </div>
+            <div class="quick-box">
+              <span class="quick-icon">🌾</span>
+              <div>
+                <small id="lblCrop">Main Crop</small>
+                <strong id="cropText">Wheat (गेहूं)</strong>
+              </div>
+            </div>
+            <div class="quick-box">
+              <span class="quick-icon">🛡️</span>
+              <div>
+                <small id="lblSystemMode">System Mode</small>
+                <strong id="modeBadge" class="mode-badge-pill">LOCAL SQLITE</strong>
+              </div>
+            </div>
+            <div class="quick-box">
+              <span class="quick-icon">💚</span>
+              <div>
+                <small id="lblHealthScore">Farm Health</small>
+                <strong id="farmHealthScore" class="mode-badge-pill live">94%</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Instant Touch Control Center (For Every Phone User) -->
+      <section id="controls" class="controls-section">
+        <div class="section-title-row">
+          <div>
+            <span class="eyebrow" id="eyebrowControls">1-TAP CONTROLS</span>
+            <h3 id="headingControls">Quick Motor & Fan Controls</h3>
+          </div>
+          <div class="auto-mode-badge" id="autoStatusWrapper">
+            <span id="autoStatus" class="status-dot neutral">MANUAL</span>
+          </div>
+        </div>
+
+        <div class="controls-grid">
+          <!-- Water Pump Switch Card -->
+          <article class="control-card glass-card" id="pumpCard">
+            <div class="control-card-top">
+              <div class="control-icon-wrap pump-icon-wrap" id="pumpIconWrap">
+                <span class="control-emoji">💧</span>
+                <span class="water-ripple"></span>
+              </div>
+              <div class="control-info">
+                <h4 id="lblPumpTitle">Water Pump (सिंचाई मोटर)</h4>
+                <p id="pumpDescText">Water plants safely when moisture drops</p>
+              </div>
+            </div>
+            <div class="control-action-row">
+              <button id="togglePump" class="toggle-switch-btn" type="button" aria-pressed="false">
+                <span class="btn-state-dot"></span>
+                <span class="btn-text" id="togglePumpText">PUMP: OFF</span>
+              </button>
+            </div>
+          </article>
+
+          <!-- Exhaust Fan Switch Card -->
+          <article class="control-card glass-card" id="fanCard">
+            <div class="control-card-top">
+              <div class="control-icon-wrap fan-icon-wrap" id="fanIconWrap">
+                <span class="control-emoji fan-spin-elem">💨</span>
+              </div>
+              <div class="control-info">
+                <h4 id="lblFanTitle">Ventilation Fan (पंखा)</h4>
+                <p id="fanDescText">Regulate heat and air circulation</p>
+              </div>
+            </div>
+            <div class="control-action-row">
+              <button id="toggleFan" class="toggle-switch-btn active" type="button" aria-pressed="true">
+                <span class="btn-state-dot"></span>
+                <span class="btn-text" id="toggleFanText">FAN: ON</span>
+              </button>
+            </div>
+          </article>
+
+          <!-- Automatic Control Toggle -->
+          <article class="control-card glass-card auto-card">
+            <div class="control-card-top">
+              <div class="control-icon-wrap auto-icon-wrap">
+                <span class="control-emoji">🤖</span>
+              </div>
+              <div class="control-info">
+                <h4 id="lblAutoTitle">AI Auto Pilot (स्वचालित मोड)</h4>
+                <p id="autoDescText">Automatically turn pump/fan on by sensor thresholds</p>
+              </div>
+            </div>
+            <div class="control-action-row">
+              <button id="toggleAuto" class="auto-switch-btn" type="button">
+                <span class="btn-icon">⚡</span>
+                <span id="toggleAutoText">AUTO MODE: OFF</span>
+              </button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Live Sensor Telemetry Cards -->
+      <section id="sensors" class="sensors-section">
+        <div class="section-title-row">
+          <div>
+            <span class="eyebrow" id="eyebrowSensors">TELEMETRY</span>
+            <h3 id="headingSensors">Polyhouse Live Sensors</h3>
+          </div>
+          <span class="live-tag">
+            <span class="pulse-ring"></span>
+            LIVE
+          </span>
+        </div>
+
+        <div class="sensors-grid">
+          <!-- Temperature Card -->
+          <article class="sensor-card glass-card">
+            <div class="sensor-card-header">
+              <span class="sensor-icon">🌡️</span>
+              <span class="sensor-status-badge ok" id="temperatureStatus">NORMAL</span>
+            </div>
+            <div class="sensor-metric">
+              <strong id="temperatureValue">28.4°C</strong>
+              <span class="sensor-label" id="lblTempMetric">Temperature (तापमान)</span>
+            </div>
+            <div class="sensor-progress-bar">
+              <div class="progress-fill temp-fill" id="tempProgressBar" style="width: 58%;"></div>
+            </div>
+            <small class="sensor-hint" id="tempStressHint">Plant heat stress: Low</small>
+            <!-- Hidden quick bindings for legacy compatibility -->
+            <span id="tempQuick" style="display:none;">28.4°C</span>
+            <span id="heroTempValue" style="display:none;">28.4°C</span>
+          </article>
+
+          <!-- Air Humidity Card -->
+          <article class="sensor-card glass-card">
+            <div class="sensor-card-header">
+              <span class="sensor-icon">💧</span>
+              <span class="sensor-status-badge ok" id="humidityStatus">STABLE</span>
+            </div>
+            <div class="sensor-metric">
+              <strong id="humidityValue">64%</strong>
+              <span class="sensor-label" id="lblHumidityMetric">Humidity (हवा में नमी)</span>
+            </div>
+            <div class="sensor-progress-bar">
+              <div class="progress-fill humidity-fill" id="humidityProgressBar" style="width: 64%;"></div>
+            </div>
+            <small class="sensor-hint" id="humidityHint">Optimal humidity for growth</small>
+            <span id="humidityQuick" style="display:none;">64%</span>
+            <span id="heroHumidityValue" style="display:none;">64%</span>
+          </article>
+
+          <!-- Soil Moisture Card -->
+          <article class="sensor-card glass-card">
+            <div class="sensor-card-header">
+              <span class="sensor-icon">🪴</span>
+              <span class="sensor-status-badge ok" id="soilStatus">NORMAL</span>
+            </div>
+            <div class="sensor-metric">
+              <strong id="soilValue">42%</strong>
+              <span class="sensor-label" id="lblSoilMetric">Soil Moisture (मिट्टी नमी)</span>
+            </div>
+            <div class="sensor-progress-bar">
+              <div class="progress-fill soil-fill" id="soilProgressBar" style="width: 42%;"></div>
+            </div>
+            <small class="sensor-hint" id="soilHint">Moisture retention healthy</small>
+            <span id="soilQuick" style="display:none;">42%</span>
+            <span id="heroSoilValue" style="display:none;">42%</span>
+          </article>
+        </div>
+
+        <!-- Visual Polyhouse Digital Twin Graphic -->
+        <div class="twin-visual-card glass-card" aria-label="Digital Twin Graphic">
+          <div class="twin-scene">
+            <div class="polyhouse-roof">
+              <div class="roof-arch"></div>
+              <div class="poly-flag">🌱 AgriMitra Polyhouse</div>
+            </div>
+            <div class="twin-inner-bed">
+              <div class="twin-plant-group">
+                <span class="digital-plant plant-1">🌿</span>
+                <span class="digital-plant plant-2">🌱</span>
+                <span class="digital-plant plant-3">🪴</span>
+                <span class="digital-plant plant-4">🌿</span>
+              </div>
+              <div class="twin-equipment">
+                <div class="twin-equip-item" id="twinPumpIndicator">
+                  <span class="twin-eq-icon">💧</span>
+                  <small id="twinPumpText">Pump: OFF</small>
                 </div>
-                <span class="scene-label label-temp">28°</span>
-                <span class="scene-label label-humidity">65%</span>
-                <span class="scene-label label-ai">AI ACTIVE</span>
+                <div class="twin-equip-item" id="twinFanIndicator">
+                  <span class="twin-eq-icon fan-rotate">🌀</span>
+                  <small id="twinFanText">Fan: ON</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- AI Mitra - Voice & Chat Assistant (Farmer Friendly) -->
+      <section id="ai" class="ai-section">
+        <div class="section-title-row">
+          <div>
+            <span class="eyebrow" id="eyebrowAi">VOICE + CHAT ADVISOR</span>
+            <h3 id="headingAi">AI Mitra (किसान मित्र)</h3>
+          </div>
+          <span class="ai-mode-pill" id="adviceBadge">AI ADVISOR</span>
+        </div>
+
+        <div class="chat-container glass-card">
+          <div class="chat-header-bar">
+            <div class="chat-bot-profile">
+              <span class="bot-avatar">🤖</span>
+              <div>
+                <strong>AgriMitra AI</strong>
+                <small id="chatStatusText">बोल कर या लिखकर पूछें (Voice & Chat)</small>
+              </div>
+            </div>
+            <div class="chat-header-actions">
+              <button id="voiceButton" class="voice-mic-button" type="button" title="बोल कर पूछें (Voice Input)">
+                <span class="mic-icon">🎙️</span>
+                <span class="mic-label" id="voiceBtnText">SPEAK / बोलें</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Quick Question Suggestions for Fast Tapping -->
+          <div class="quick-questions-scroll" id="quickQuestions">
+            <button class="quick-chip" type="button" data-prompt="क्या आज फसल को पानी देना चाहिए?">💧 क्या आज पानी देना चाहिए?</button>
+            <button class="quick-chip" type="button" data-prompt="आज का मौसम कैसा रहेगा और क्या बारिश होगी?">🌤️ आज बारिश होगी क्या?</button>
+            <button class="quick-chip" type="button" data-prompt="पत्तियां पीली क्यों पड़ रही हैं और क्या उपाय करें?">🍂 पत्तियां पीली क्यों हैं?</button>
+            <button class="quick-chip" type="button" data-prompt="पॉलीहाउस का तापमान और वेंटिलेशन कैसे नियंत्रित करें?">💨 वेंटिलेशन सलाह</button>
+          </div>
+
+          <!-- Messages Container -->
+          <div id="chatMessages" class="chat-messages-box" aria-live="polite">
+            <div class="message bot">
+              <div class="message-content">
+                <p>नमस्ते किसान भाई! 🙏 मैं आपका <strong>AgriMitra AI</strong> हूँ। अपनी फसल, सिंचाई, कीट-रोग या मौसम के बारे में कुछ भी पूछें। आप ऊपर <strong>'बोलें' (🎙️)</strong> बटन दबाकर बोल भी सकते हैं!</p>
+              </div>
+              <div class="message-meta">
+                <button class="speak-msg-btn" type="button" title="सुनें (Listen)">🔊 सुनें</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chat Input Row -->
+          <form id="chatForm" class="chat-input-row" onsubmit="event.preventDefault();">
+            <input 
+              id="chatInput" 
+              type="text" 
+              placeholder="अपनी फसल के बारे में पूछें (Ask AgriMitra)..." 
+              aria-label="Ask AgriMitra AI" 
+              autocomplete="off"
+            />
+            <button id="sendChat" class="send-message-btn" type="button" aria-label="Send message">
+              <span>भेजें</span>
+              <span class="send-arrow">➤</span>
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Crop Leaf Disease Camera Scanner (Direct Camera Capture) -->
+      <section id="scanner" class="scanner-section">
+        <div class="section-title-row">
+          <div>
+            <span class="eyebrow" id="eyebrowScanner">CAMERA DIAGNOSIS</span>
+            <h3 id="headingScanner">Plant Disease Scanner (पत्ती रोग जांच)</h3>
+          </div>
+          <span class="scanner-badge">📷 SMART VISION</span>
+        </div>
+
+        <div class="scanner-card glass-card">
+          <p class="scanner-intro" id="scannerIntro">
+            पौधे या पत्ती की फोटो कैमरे से खींचें या अपलोड करें। AI तुरंत बीमारी पहचानकर सही उपचार बताएगा।
+          </p>
+
+          <!-- Hidden File / Camera Input -->
+          <input 
+            type="file" 
+            id="leafPhotoInput" 
+            accept="image/*" 
+            capture="environment" 
+            style="display:none;" 
+          />
+
+          <!-- Upload / Camera Trigger Area -->
+          <div class="camera-dropzone" id="cameraDropzone">
+            <div class="camera-icon-circle">📸</div>
+            <h4 id="dropzoneTitle">कैमरा खोलें या फोटो चुनें</h4>
+            <p id="dropzoneSubtitle">Tap here to open Camera / Gallery</p>
+            <button class="primary-button dropzone-btn" type="button" id="triggerCameraBtn">
+              📷 TAKE LEAF PHOTO
+            </button>
+          </div>
+
+          <!-- Image Preview Area -->
+          <div class="scanner-preview-wrap hidden" id="previewContainer">
+            <div class="preview-box">
+              <img id="leafImagePreview" src="" alt="Selected leaf preview" />
+              <button type="button" class="retake-btn" id="retakeBtn">✕ हटाएँ / Retake</button>
+            </div>
+            <button class="primary-button full-btn" type="button" id="analyzeLeafBtn">
+              🔬 CHECK DISEASE & CURE (बीमारी जांचें)
+            </button>
+          </div>
+
+          <!-- Loading State Indicator -->
+          <div class="scan-loading hidden" id="scanLoading">
+            <div class="scanner-laser"></div>
+            <p id="scanLoadingText">AI पत्ती की जांच कर रहा है... Analyzing leaf...</p>
+          </div>
+
+          <!-- Diagnostic Results Card -->
+          <div class="scan-result-card hidden" id="scanResultCard">
+            <div class="result-header">
+              <span class="result-badge-icon" id="resIcon">🌿</span>
+              <div>
+                <h4 id="resCropName">Tomato (टमाटर)</h4>
+                <span class="health-chip" id="resHealth">Early Blight</span>
+              </div>
+              <span class="confidence-pill" id="resConfidence">92% Match</span>
+            </div>
+            <div class="result-body">
+              <div class="result-row">
+                <strong id="lblDetectedDisease">पहचाना गया रोग:</strong>
+                <span id="resDiseaseName">Alternaria solani</span>
+              </div>
+              <div class="result-box advice-box">
+                <strong id="lblTreatmentAdvice">💊 किसान उपचार सलाह (Treatment Advice):</strong>
+                <p id="resTreatmentText">निचले प्रभावित पत्तों को काटकर हटाएं, और नीम के तेल (5ml/L पानी) का छिड़काव करें।</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Mandi Bhav / Agricultural Market Prices Section -->
+      <section id="mandi" class="mandi-section">
+        <div class="section-title-row">
+          <div>
+            <span class="eyebrow" id="eyebrowMandi">MARKET INTELLIGENCE</span>
+            <h3 id="headingMandi">Live Mandi Bhav (दैनिक मंडी भाव)</h3>
+          </div>
+          <div class="mandi-live-tag">
+            <span class="status-pulse-dot" style="background:#10b981;"></span>
+            <span id="mandiStatusTag">APMC LIVE RATES</span>
+          </div>
+        </div>
+
+        <div class="mandi-controls-bar glass-card">
+          <div class="mandi-search-box">
+            <span class="mandi-search-icon">🔍</span>
+            <input type="text" id="mandiSearchInput" placeholder="फसल या मंडी खोजें (e.g. Wheat, Tomato, शिमला मिर्च)..." />
+          </div>
+          <div class="mandi-filter-row">
+            <select id="mandiCommoditySelect" aria-label="Filter by Crop">
+              <option value="all">सभी फसलें (All Crops)</option>
+              <option value="wheat">गेहूं (Wheat)</option>
+              <option value="tomato">टमाटर (Tomato)</option>
+              <option value="capsicum">शिमला मिर्च (Capsicum)</option>
+              <option value="rice">धान / चावल (Paddy/Rice)</option>
+              <option value="mustard">सरसों (Mustard)</option>
+              <option value="potato">आलू (Potato)</option>
+              <option value="onion">प्याज (Onion)</option>
+              <option value="maize">मक्का (Maize)</option>
+              <option value="cotton">कपास (Cotton)</option>
+              <option value="soybean">सोयाबीन (Soybean)</option>
+            </select>
+            <select id="mandiStateSelect" aria-label="Filter by State">
+              <option value="all">सभी राज्य (All States)</option>
+              <option value="Himachal Pradesh">Himachal Pradesh</option>
+              <option value="Punjab">Punjab</option>
+              <option value="Haryana">Haryana</option>
+              <option value="Uttar Pradesh">Uttar Pradesh</option>
+              <option value="Rajasthan">Rajasthan</option>
+              <option value="Maharashtra">Maharashtra</option>
+              <option value="Madhya Pradesh">Madhya Pradesh</option>
+            </select>
+            <button id="refreshMandiBtn" class="primary-button compact" type="button">🔄 रीफ्रेश</button>
+          </div>
+        </div>
+
+        <div class="mandi-cards-grid" id="mandiCardsGrid">
+          <!-- Dynamically populated from /api/mandi -->
+        </div>
+      </section>
+
+      <!-- Weather & Irrigation Advisory Section -->
+      <section id="weather" class="weather-section">
+        <div class="section-title-row">
+          <div>
+            <span class="eyebrow" id="eyebrowWeather">WEATHER INTELLIGENCE</span>
+            <h3 id="headingWeather">Weather & Irrigation Guidance</h3>
+          </div>
+          <span id="weatherBadge" class="mode-badge-pill live">SATELLITE LIVE</span>
+        </div>
+
+        <!-- Location Search Bar for Live Weather across India -->
+        <div class="weather-search-bar glass-card">
+          <div class="wsearch-inner">
+            <span class="wsearch-icon">📍</span>
+            <input type="text" id="weatherLocationInput" placeholder="किसी भी जिले या शहर का नाम लिखें (e.g. Kangra, Agra, Karnal, Pune)..." />
+            <button id="weatherSearchBtn" class="primary-button compact" type="button">मौसम देखें (Search)</button>
+          </div>
+          <div class="weather-provider-pill" id="weatherProviderBadge">
+            <span>🛰️ Open-Meteo Live Satellite Feed</span>
+          </div>
+        </div>
+
+        <div class="weather-grid-layout">
+          <!-- Main Weather Summary Card -->
+          <article class="weather-card glass-card">
+            <div class="weather-top-row">
+              <div>
+                <strong class="weather-temp-display" id="weatherTemp">27°C</strong>
+                <span class="weather-loc-tag" id="weatherLocation">Kangra, Himachal Pradesh</span>
+                <p class="weather-desc" id="weatherSummary">Clear sky (साफ आसमान)</p>
+              </div>
+              <div class="weather-big-icon" id="weatherBigIcon">🌤️</div>
             </div>
 
-            <div class="home-tools">
-                <button class="feature-tile" type="button" onclick="openSensorSetup()">
-                    <span>📡</span><strong>Connect Polyhouse</strong><small>Sensor wiring guide & test</small>
-                </button>
-                <button class="feature-tile" type="button" onclick="navigateTo('advisory')">
-                    <span>🌦️</span><strong>Season Planner</strong><small>Monsoon, crop & fertilizer tips</small>
-                </button>
-            </div>
-        </section>
-
-
-
-        <!-- ================= SENSOR SECTION ================= -->
-
-        <section class="page-section" data-page-section="sensors">
-
-            <div class="section-title">
-
+            <div class="weather-stats-subgrid">
+              <div class="wstat-cell">
+                <span class="wstat-icon">💧</span>
                 <div>
-                    <h2>🌡️ Live Sensor Data</h2>
-                    <p>Real-time polyhouse environmental conditions</p>
+                  <small id="lblWeatherHum">Humidity</small>
+                  <strong id="weatherHumidity">60%</strong>
                 </div>
-
-                <span class="live-badge">
-                    ● LIVE
-                </span>
-
-            </div>
-
-
-            <div class="sensor-grid">
-
-
-                <!-- Temperature -->
-
-                <div class="sensor-card temperature">
-
-                    <div class="card-top">
-
-                        <div class="sensor-icon">
-                            🌡️
-                        </div>
-
-                        <span class="sensor-label">
-                            TEMPERATURE
-                        </span>
-
-                    </div>
-
-                    <h3 id="temperature">
-                        28°C
-                    </h3>
-
-                    <div class="progress">
-
-                        <div
-                            id="temperatureBar"
-                            class="progress-fill">
-                        </div>
-
-                    </div>
-
-                    <p>
-                        Comfortable
-                    </p>
-
-                </div>
-
-
-
-                <!-- Humidity -->
-
-                <div class="sensor-card humidity">
-
-                    <div class="card-top">
-
-                        <div class="sensor-icon">
-                            💧
-                        </div>
-
-                        <span class="sensor-label">
-                            HUMIDITY
-                        </span>
-
-                    </div>
-
-                    <h3 id="humidity">
-                        65%
-                    </h3>
-
-                    <div class="progress">
-
-                        <div
-                            id="humidityBar"
-                            class="progress-fill">
-                        </div>
-
-                    </div>
-
-                    <p>
-                        Normal
-                    </p>
-
-                </div>
-
-
-
-                <!-- Soil -->
-
-                <div class="sensor-card soil">
-
-                    <div class="card-top">
-
-                        <div class="sensor-icon">
-                            🌱
-                        </div>
-
-                        <span class="sensor-label">
-                            SOIL MOISTURE
-                        </span>
-
-                    </div>
-
-                    <h3 id="soilMoisture">
-                        42%
-                    </h3>
-
-                    <div class="progress">
-
-                        <div
-                            id="soilBar"
-                            class="progress-fill">
-                        </div>
-
-                    </div>
-
-                    <p id="soilStatus">
-                        Normal
-                    </p>
-
-                </div>
-
-
-
-                <!-- Rain -->
-
-                <div class="sensor-card weather">
-
-                    <div class="card-top">
-
-                        <div class="sensor-icon">
-                            ☁️
-                        </div>
-
-                        <span class="sensor-label">
-                            WEATHER
-                        </span>
-
-                    </div>
-
-                    <h3 id="rainStatus">
-                        No Rain
-                    </h3>
-
-                    <div class="weather-info">
-                        🌤️
-                        <span>Weather monitored</span>
-                    </div>
-
-                    <p>
-                        Outdoor condition
-                    </p>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- ================= AUTOMATIC ACTIONS ================= -->
-
-        <section class="actions-section page-section" data-page-section="actions">
-
-            <div class="section-title">
-
+              </div>
+              <div class="wstat-cell">
+                <span class="wstat-icon">💨</span>
                 <div>
-
-                    <h2>⚙️ Automatic Actions</h2>
-
-                    <p>
-                        Smart control based on sensor conditions
-                    </p>
-
+                  <small id="lblWeatherWind">Wind</small>
+                  <strong id="weatherWind">8 km/h</strong>
                 </div>
-
-                <button
-                    class="auto-button"
-                    id="autoModeBtn"
-                    onclick="toggleAutoMode()">
-
-                    🖐️ MANUAL MODE: ON
-                </button>
+              </div>
+              <div class="wstat-cell">
+                <span class="wstat-icon">🌧️</span>
+                <div>
+                  <small id="lblWeatherRain">Rain Risk</small>
+                  <strong id="weatherRain">12%</strong>
+                </div>
+              </div>
             </div>
-            <p class="control-hint" id="controlHint">
-                Manual control active: pump aur fan toggles ready hain.
+          </article>
+
+          <!-- Today's Advisory Recommendation Card -->
+          <article class="advice-card glass-card">
+            <div class="advice-header">
+              <span class="advice-icon">💡</span>
+              <h4 id="lblAdvisoryTitle">Today's Smart Irrigation Advice</h4>
+            </div>
+            <p class="advice-content" id="adviceText">
+              मिट्टी की नमी 42% है जो सुरक्षित सीमा में है। अभी सिंचाई टाल सकते हैं, शाम को फिर से नमी जांचें।
             </p>
-
-
-
-            <div class="actions-grid">
-
-
-                <!-- Water Pump -->
-
-                <div class="action-card">
-
-                    <div class="action-left">
-
-                        <div class="action-icon water">
-                            💧
-                        </div>
-
-                        <div>
-
-                            <h3>
-                                Water Pump
-                            </h3>
-
-                            <p>
-                                Automatic irrigation
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="action-right">
-
-                        <span
-                            id="pumpStatus"
-                            class="device-status off">
-
-                            OFF
-
-                        </span>
-
-                        <button
-                            class="toggle"
-                            id="pumpToggle"
-                            onclick="togglePump()">
-
-                            <span></span>
-
-                        </button>
-
-                    </div>
-
-                </div>
-
-
-
-                <!-- Fan -->
-
-                <div class="action-card">
-
-                    <div class="action-left">
-
-                        <div class="action-icon fan">
-                            🌬️
-                        </div>
-
-                        <div>
-
-                            <h3>
-                                Ventilation Fan
-                            </h3>
-
-                            <p>
-                                Temperature control
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="action-right">
-
-                        <span
-                            id="fanStatus"
-                            class="device-status off">
-
-                            OFF
-
-                        </span>
-
-                        <button
-                            class="toggle"
-                            id="fanToggle"
-                            onclick="toggleFan()">
-
-                            <span></span>
-
-                        </button>
-
-                    </div>
-
-                </div>
-
+            <div class="advice-footer">
+              <span class="rule-guard-tag">🛡️ Safety Rule: No pump without check</span>
             </div>
+          </article>
+        </div>
+      </section>
 
-        </section>
+      <!-- Kisan Yojana / Government Schemes Section -->
+      <section id="schemes" class="schemes-section">
+        <div class="section-title-row">
+          <div>
+            <span class="eyebrow" id="eyebrowSchemes">GOVERNMENT INITIATIVES</span>
+            <h3 id="headingSchemes">Kisan Yojana • सरकारी कृषि योजनाएं</h3>
+          </div>
+          <span class="mode-badge-pill live">VERIFIED DIRECT PORTALS</span>
+        </div>
 
+        <div class="schemes-grid" id="schemesGrid">
+          <!-- Dynamically populated from /api/schemes -->
+        </div>
+      </section>
 
+      <!-- System Health Diagnostics & Details -->
+      <section id="system" class="system-section">
+        <div class="section-title-row">
+          <div>
+            <span class="eyebrow" id="eyebrowSystem">DIAGNOSTICS & APIS</span>
+            <h3 id="headingSystem">System, Hardware & API Status</h3>
+          </div>
+          <button id="openApiSettingsSystemBtn" class="primary-button compact" type="button">⚙️ Manage APIs</button>
+        </div>
 
-        <!-- ================= CROP VISION ================= -->
+        <div class="system-grid">
+          <div class="system-card glass-card">
+            <h4 id="lblServicesTitle">Active Services & APIs</h4>
+            <ul class="system-service-list">
+              <li>
+                <span>Live Satellite Weather</span>
+                <strong id="serviceWeatherStatus" class="status-live">OPEN-METEO (LIVE)</strong>
+              </li>
+              <li>
+                <span>AI Advisor & Vision</span>
+                <strong id="serviceAiStatus" class="status-live">ACTIVE</strong>
+              </li>
+              <li>
+                <span>Mandi Bhav API</span>
+                <strong id="serviceMandiStatus" class="status-live">ONLINE (LIVE RATES)</strong>
+              </li>
+              <li>
+                <span>Kisan Schemes API</span>
+                <strong id="serviceSchemesStatus" class="status-live">ONLINE (VERIFIED)</strong>
+              </li>
+              <li>
+                <span>Local Database</span>
+                <strong id="serviceDbStatus" class="status-live">LOCAL SQLITE (ONLINE)</strong>
+              </li>
+              <li>
+                <span>Supabase Cloud</span>
+                <strong id="serviceSupabaseStatus" class="status-demo">HYBRID READY</strong>
+              </li>
+              <li>
+                <span>ESP32 Hardware</span>
+                <strong id="serviceDeviceStatus" class="status-demo">WAITING FOR ESP32</strong>
+              </li>
+            </ul>
+          </div>
 
-        <section class="vision-section page-section" data-page-section="vision">
+          <div class="system-card glass-card">
+            <h4 id="lblDailyScheduleTitle">Farming Routine (दैनिक कार्य)</h4>
+            <ul class="system-schedule-list">
+              <li><span>06:30 AM</span><strong>Morning Moisture Check (सिंचाई जांच)</strong></li>
+              <li><span>10:00 AM</span><strong>Ventilation Fan Check (पंखा जांच)</strong></li>
+              <li><span>01:30 PM</span><strong>Midday Heat Stress Review</strong></li>
+              <li><span>06:00 PM</span><strong>Evening AI Advisory Sync</strong></li>
+            </ul>
+          </div>
+        </div>
+      </section>
 
-            <div class="section-title">
+      <!-- Crops Overview Section -->
+      <section id="crops" class="crops-section">
+        <div class="section-title-row">
+          <div>
+            <span class="eyebrow" id="eyebrowCrops">CROPS</span>
+            <h3 id="headingCrops">Active Crops in Polyhouse</h3>
+          </div>
+        </div>
 
-                <div>
-
-                    <h2>📷 Crop Vision AI</h2>
-
-                    <p>
-                        Upload a crop image for health analysis
-                    </p>
-
-                </div>
-
+        <div class="crops-grid">
+          <article class="crop-card glass-card">
+            <div class="crop-card-top">
+              <span class="crop-emoji">🍅</span>
+              <div>
+                <h4>Tomato (टमाटर)</h4>
+                <span class="crop-badge good">Healthy (स्वस्थ)</span>
+              </div>
             </div>
+            <p>Moisture: 43% • Stage: Flowering (फूल आना)</p>
+            <small>Action: Keep steady ventilation</small>
+          </article>
 
-
-
-            <div class="vision-container">
-
-
-                <!-- Upload -->
-
-                <div class="upload-box">
-
-                    <div class="upload-icon">
-                        📸
-                    </div>
-
-                    <h3>
-                        Upload Crop Image
-                    </h3>
-
-                    <p>
-                        JPG, PNG up to 10MB
-                    </p>
-
-
-                    <input
-                        type="file"
-                        id="cropImage"
-                        accept="image/*"
-                        hidden
-                        onchange="previewImage(event)"
-                    >
-
-
-                    <label
-                        for="cropImage"
-                        class="upload-button">
-
-                        Choose Image
-
-                    </label>
-
-
-                    <img
-                        id="imagePreview"
-                        class="image-preview"
-                        alt="Crop Preview">
-
-                </div>
-
-
-
-                <!-- Result -->
-
-                <div class="vision-result">
-
-                    <div class="result-header">
-
-                        <h3>
-                            🧠 AI Analysis
-                        </h3>
-
-                        <span
-                            id="visionStatus"
-                            class="result-badge">
-
-                            Ready
-
-                        </span>
-
-                    </div>
-
-
-                    <div class="result-content">
-
-                        <div class="health-circle">
-
-                            <span id="healthScore">
-                                94%
-                            </span>
-
-                            <small>
-                                Confidence
-                            </small>
-
-                        </div>
-
-
-                        <div class="health-details">
-
-                            <p>
-                                Crop
-                                <strong id="cropName">
-                                    Not detected
-                                </strong>
-                            </p>
-
-                            <p>
-                                Health
-                                <strong
-                                    id="cropHealth"
-                                    class="healthy">
-
-                                    Healthy
-
-                                </strong>
-                            </p>
-
-                            <p>
-                                Possible Disease
-                                <strong id="disease">
-                                    None detected
-                                </strong>
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <button
-                        class="analyze-button"
-                        onclick="analyzeCrop()">
-
-                        🔍 Analyze Crop
-
-                    </button>
-
-                </div>
-
+          <article class="crop-card glass-card">
+            <div class="crop-card-top">
+              <span class="crop-emoji">🌾</span>
+              <div>
+                <h4>Wheat (गेहूं)</h4>
+                <span class="crop-badge warn">Watch (निगरानी)</span>
+              </div>
             </div>
+            <p>Soil: 51% • Stage: Grain Filling (दाना भरना)</p>
+            <small>Action: Check midday heat stress</small>
+          </article>
 
-        </section>
-
-
-
-        <!-- ================= ANNDATA AI ================= -->
-
-        <section class="chat-section page-section" data-page-section="ai">
-
-            <div class="section-title">
-
-                <div>
-
-                    <h2>🤖 Anndata AI</h2>
-
-                    <p>
-                        Your intelligent farmer assistant
-                    </p>
-
-                </div>
-
-                <span class="ai-badge">
-                    Annadata-AI
-                </span>
+          <article class="crop-card glass-card">
+            <div class="crop-card-top">
+              <span class="crop-emoji">🫑</span>
+              <div>
+                <h4>Capsicum (शिमला मिर्च)</h4>
+                <span class="crop-badge good">Optimal (उत्कृष्ट)</span>
+              </div>
             </div>
-
-            <div class="assistant-tools">
-                <label class="language-picker" for="languageSelect">
-                    <span>🌐 Language</span>
-                    <select id="languageSelect" onchange="changeAssistantLanguage()">
-                        <option value="Hindi">हिन्दी</option>
-                        <option value="English">English</option>
-                        <option value="Punjabi">ਪੰਜਾਬੀ</option>
-                        <option value="Tamil">தமிழ்</option>
-                        <option value="Marathi">मराठी</option>
-                    </select>
-                </label>
-                <span class="language-status" id="languageStatus">AI will reply in Hindi</span>
-            </div>
-
-            <div class="chat-box">
-
-                <div
-                    class="chat-messages"
-                    id="chatMessages">
-
-                    <div class="message ai-message">
-
-                        <div class="avatar">
-                            🌱
-                        </div>
-
-                        <div>
-
-                            <strong>
-                                Anndata AI
-                            </strong>
-
-                            <p>
-                                Namaste! 👋
-                                Main Anndata AI hoon.
-                                Aap apni crop, soil,
-                                weather ya farming problem
-                                ke baare mein mujhse pooch
-                                sakte hain.
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <div class="quick-prompts" aria-label="Quick prompts">
-                    <button type="button" onclick="useQuickPrompt('Meri fasal ke liye aaj kya karna chahiye?')">🌱 Crop care</button>
-                    <button type="button" onclick="useQuickPrompt('Kya abhi irrigation ki zaroorat hai?')">💧 Irrigation</button>
-                    <button type="button" onclick="useQuickPrompt('Meri crop ki health check karo')">🩺 Crop health</button>
-                </div>
-
-
-                <div class="chat-input">
-
-                    <input
-                        type="text"
-                        id="chatInput"
-                        placeholder="Ask Anndata AI about your crop..."
-                        onkeydown="handleChatKey(event)"
-                    >
-<button id="micButton" onclick="startVoiceInput()" title="Voice Input">🎤</button>
-                    <button
-                        onclick="sendMessage()">
-
-                        Send ➤
-
-                    </button>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- ================= ADVISORY ================= -->
-
-        <section class="advisory-section page-section" data-page-section="advisory">
-
-            <div class="section-title">
-
-                <div>
-
-                    <h2>💡 Smart Advisory</h2>
-
-                    <p>
-                        AI-generated recommendations
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <div class="advisory-grid">
-
-
-                <div class="advisory-card green">
-
-                    <div class="advisory-icon">
-                        💧
-                    </div>
-
-                    <div>
-
-                        <h3>
-                            Irrigation
-                        </h3>
-
-                        <p id="irrigationAdvice">
-                            Soil moisture is normal.
-                            No immediate irrigation required.
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-
-                <div class="advisory-card yellow">
-
-                    <div class="advisory-icon">
-                        🌡️
-                    </div>
-
-                    <div>
-
-                        <h3>
-                            Temperature
-                        </h3>
-
-                        <p id="temperatureAdvice">
-                            Temperature is within
-                            comfortable range.
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-
-                <div class="advisory-card blue">
-
-                    <div class="advisory-icon">
-                        🌱
-                    </div>
-
-                    <div>
-
-                        <h3>
-                            Crop Health
-                        </h3>
-
-                        <p id="cropAdvice">
-                            Crop appears healthy.
-                            Continue monitoring.
-                        </p>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="season-planner">
-                <div class="section-title">
-                    <div>
-                        <h2>🌦️ Weather & Season Planner</h2>
-                        <p id="seasonLocation">Location-based farming guidance</p>
-                    </div>
-                    <span class="weather-alert-badge" id="weatherAlertBadge">Checking weather</span>
-                </div>
-                <div class="season-grid">
-                    <article><span>🗓️</span><strong id="seasonTitle">Current season</strong><p id="seasonAdvice">Crop calendar is being prepared.</p></article>
-                    <article><span>🌾</span><strong>Crop plan</strong><p id="cropPlanAdvice">Choose a crop to see sowing guidance.</p></article>
-                    <article><span>🧪</span><strong>Fertilizer care</strong><p id="fertilizerAdvice">Use soil-test based doses and split applications.</p></article>
-                </div>
-            </div>
-        </section>
-
-
-
-        <!-- ================= FOOTER ================= -->
-
-        <footer>
-
-            <div>
-
-                <strong>
-                    🌱 AgriMitra AI
-                </strong>
-
-                <p>
-                    Smart technology for smarter farming.
-                </p>
-
-            </div>
-
-            <div>
-                <p>
-                    Anndata AI • AI + IoT • Smart Polyhouse
-                </p>
-            </div>
-
-        </footer>
-
-
+            <p>Humidity: 68% • Stage: Fruit Set (फल विकास)</p>
+            <small>Action: Maintain current cycle</small>
+          </article>
+        </div>
+      </section>
     </main>
 
-    <div class="profile-backdrop is-hidden" id="profileModal" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
-        <div class="profile-modal">
-            <button class="modal-close" type="button" onclick="closeProfileModal()" aria-label="Close">×</button>
-            <p class="eyebrow">KISAN PROFILE</p>
-            <h2 id="profileTitle">Aapki farming profile</h2>
-            <div class="profile-summary" id="profileSummary"></div>
-            <button class="primary-button" type="button" onclick="closeProfileModal()">Done</button>
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <p>AgriMitra AI © 2026 — Smart Polyhouse & Farming Intelligence</p>
+        <small id="footerStatus">AgriMitra running with Built-in Local SQLite Database.</small>
+      </div>
+    </footer>
+
+    <!-- Mobile Bottom Navigation Bar (Thumb Friendly for Every Phone) -->
+    <!-- Mobile Bottom Navigation Bar (Thumb Friendly for Every Phone) -->
+    <nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="Mobile Navigation">
+      <a href="#home" class="bnav-item active" data-bnav="home">
+        <span class="bnav-icon">🏠</span>
+        <span class="bnav-label" id="bnavHome">Home</span>
+      </a>
+      <a href="#controls" class="bnav-item" data-bnav="controls">
+        <span class="bnav-icon">⚡</span>
+        <span class="bnav-label" id="bnavControls">Motor</span>
+      </a>
+      <a href="#mandi" class="bnav-item" data-bnav="mandi">
+        <span class="bnav-icon">🌾</span>
+        <span class="bnav-label" id="bnavMandi">Mandi</span>
+      </a>
+      <a href="#ai" class="bnav-item bnav-highlight" data-bnav="ai">
+        <span class="bnav-icon">🤖</span>
+        <span class="bnav-label" id="bnavAi">AI Mitra</span>
+      </a>
+      <a href="#scanner" class="bnav-item" data-bnav="scanner">
+        <span class="bnav-icon">📷</span>
+        <span class="bnav-label" id="bnavScan">Scan</span>
+      </a>
+      <a href="#weather" class="bnav-item" data-bnav="weather">
+        <span class="bnav-icon">🌤️</span>
+        <span class="bnav-label" id="bnavWeather">Weather</span>
+      </a>
+    </nav>
+
+    <!-- Login / Register Modal -->
+    <div id="authModal" class="modal hidden" aria-modal="true" role="dialog">
+      <div class="modal-card">
+        <button type="button" class="close-modal-btn" id="closeModal" aria-label="Close modal">✕</button>
+        <div class="modal-header">
+          <span class="modal-logo">🌱</span>
+          <h3 id="authTitle">Farmer Login</h3>
+          <p class="modal-subtitle" id="authSubtitle">Enter your details to sync farm data</p>
         </div>
+        <form id="authForm">
+          <div class="form-group" id="nameFieldGroup" style="display:none;">
+            <label for="authName" id="lblName">Full Name (पूरा नाम)</label>
+            <input id="authName" type="text" placeholder="e.g. Ramesh Kumar" />
+          </div>
+          <div class="form-group">
+            <label for="authEmail" id="lblEmail">Email or Phone (ईमेल)</label>
+            <input id="authEmail" type="email" placeholder="farmer@agrimitra.com" required />
+          </div>
+          <div class="form-group">
+            <label for="authPassword" id="lblPassword">Password (पासवर्ड)</label>
+            <input id="authPassword" type="password" placeholder="••••••••" required />
+          </div>
+          <button id="authSubmit" class="primary-button full-btn" type="submit">LOGIN</button>
+          <button id="guestLoginBtn" class="ghost-button full-btn" type="button" style="margin-top: 8px;">CONTINUE AS GUEST</button>
+        </form>
+      </div>
     </div>
 
+    <!-- API Settings & Keys Management Modal -->
+    <div id="apiSettingsModal" class="modal hidden" aria-modal="true" role="dialog">
+      <div class="modal-card api-modal-card">
+        <button type="button" class="close-modal-btn" id="closeApiModal" aria-label="Close API modal">✕</button>
+        <div class="modal-header">
+          <span class="modal-logo">⚙️</span>
+          <h3 id="apiModalTitle">API Integration & Keys</h3>
+          <p class="modal-subtitle" id="apiModalSubtitle">Live Weather, Gemini AI, Database & Mandi APIs</p>
+        </div>
 
+        <div class="api-modal-body">
+          <!-- Active Status Overview -->
+          <div class="api-status-summary-grid">
+            <div class="api-status-chip">
+              <span class="dot-live"></span>
+              <div>
+                <small>Weather</small>
+                <strong id="modalWeatherStatusBadge">Satellite (Open-Meteo) Live</strong>
+              </div>
+            </div>
+            <div class="api-status-chip">
+              <span class="dot-live"></span>
+              <div>
+                <small>Mandi Bhav</small>
+                <strong>APMC Live Rates</strong>
+              </div>
+            </div>
+            <div class="api-status-chip">
+              <span id="modalAiDot" class="dot-live"></span>
+              <div>
+                <small>AI Engine</small>
+                <strong id="modalAiStatusBadge">Active</strong>
+              </div>
+            </div>
+          </div>
+
+          <form id="apiConfigForm">
+            <!-- 1. Google Gemini AI API -->
+            <div class="api-setting-group">
+              <div class="api-group-head">
+                <label for="cfgGeminiKey">
+                  <strong>🤖 Google Gemini AI API Key</strong>
+                  <span class="badge-optional">(Cloud Vision & Chat)</span>
+                </label>
+                <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="api-helper-link">Free Key लें ↗</a>
+              </div>
+              <div class="api-input-with-action">
+                <input id="cfgGeminiKey" type="password" placeholder="AIzaSy... (Paste Gemini Key here)" />
+                <button type="button" id="testGeminiBtn" class="ghost-button compact">⚡ Test AI</button>
+              </div>
+              <small class="field-hint">पत्ती रोग जांच (Vision AI) व प्राकृतिक भाषा बातचीत के लिए उपयोग होता है।</small>
+              <div id="geminiTestFeedback" class="test-feedback hidden"></div>
+            </div>
+
+            <!-- 2. Weather API -->
+            <div class="api-setting-group">
+              <div class="api-group-head">
+                <label for="cfgWeatherKey">
+                  <strong>🌤️ Weather Provider</strong>
+                  <span class="badge-free">100% Free Satellite Live</span>
+                </label>
+              </div>
+              <p class="api-note-text">
+                ✅ <strong>Open-Meteo</strong> रीयल-टाइम सैटेलाइट मौसम, तापमान व बारिश का सटीक डेटा बिना किसी API key के दे रहा है। यदि आपके पास OpenWeather key है तो नीचे दर्ज कर सकते हैं।
+              </p>
+              <div class="api-input-with-action">
+                <input id="cfgWeatherKey" type="password" placeholder="Optional: OpenWeatherMap API Key..." />
+                <button type="button" id="testWeatherBtn" class="ghost-button compact">⚡ Test Weather</button>
+              </div>
+              <div id="weatherTestFeedback" class="test-feedback hidden"></div>
+            </div>
+
+            <!-- 3. Supabase Cloud Configuration -->
+            <div class="api-setting-group">
+              <div class="api-group-head">
+                <label for="cfgSupabaseUrl">
+                  <strong>☁️ Supabase Cloud Database</strong>
+                  <span class="badge-optional">(वैकल्पिक - SQLite Local सक्रिय है)</span>
+                </label>
+              </div>
+              <input id="cfgSupabaseUrl" type="url" placeholder="https://your-project.supabase.co" style="margin-bottom:8px;" />
+              <div class="api-input-with-action">
+                <input id="cfgSupabaseKey" type="password" placeholder="Supabase Anon / Publishable Key" />
+                <button type="button" id="testSupabaseBtn" class="ghost-button compact">⚡ Test Cloud</button>
+              </div>
+              <div id="supabaseTestFeedback" class="test-feedback hidden"></div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="api-modal-actions">
+              <button type="submit" id="saveApiConfigBtn" class="primary-button full-btn">💾 Save All Settings to .env</button>
+            </div>
+            <div id="apiSaveMessage" class="save-feedback hidden"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Script Entrypoint -->
     <script src="app.js"></script>
-
-</body>
-
+  </body>
 </html>

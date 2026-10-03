@@ -8,7 +8,7 @@
 
 ## 👥 Team
 
-### 🚀 Team STPR
+### 🚀 Team EOOECODERS
 
 **STPR** is the team behind AgriMitra AI, focused on building practical AI-based solutions for real-world agricultural problems.
 
@@ -169,64 +169,111 @@ Ollama can also be used for local AI functionality, allowing AI models to run lo
 
 # 🛠️ Technology Stack
 
-## Frontend
+## Frontend (3D Digital Twin)
+- React 19 + Vite + TypeScript
+- Three.js + @react-three/fiber + @react-three/drei
+- Futuristic Glassmorphism Vanilla CSS & Lucide Icons
+- Web Speech API (Multilingual Voice Recognition & Text-to-Speech)
+- Progressive Web App (PWA) Offline Manifest
 
-- HTML5
-- CSS3
-- JavaScript
+## Backend & IoT
+- Node.js & Express.js with CORS and Multer
+- Production IoT Endpoints (`/api/iot/telemetry`, `/api/iot/command`, `/api/iot/provision`)
+- ESP32 DevKit V1 (Capacitive Soil Moisture, DHT22, 5V Dual Relay, I2C OLED)
+- Arduino C++ Production Firmware (`esp32_firmware.ino`)
+- Supabase Realtime & PostgreSQL Database Layer
 
-## Backend
-
-- Node.js
-- Express.js
-- Multer
-- CORS
-
-## Artificial Intelligence
-
-- Google Gemini API
-- Ollama
-- Vision AI
-- Generative AI
-
-## Development Tools
-
-- Visual Studio Code
-- Git
-- GitHub
+## Artificial Intelligence & ML
+- Google Gemini LLM & Vision API
+- Ollama Local AI Fallback
+- Penman-Monteith Agronomic Evapotranspiration Model
+- Vapor Pressure Deficit (VPD) & Fungal Risk Decision Engines
+- Random Forest ML Training Dataset Generator
 
 ---
 
-# 🏗️ Project Architecture
+# 🚀 Quick Start Guide
+
+### 1. Run the 3D Frontend
+```bash
+cd frontend
+npm install --legacy-peer-deps
+npm run dev
+```
+Open [http://localhost:5173/](http://localhost:5173/) in your web browser.
+
+### 2. Run the AI & IoT Backend
+```bash
+cd backend
+npm install
+node server.js
+```
+The server runs on [http://localhost:5000/](http://localhost:5000/).
+
+### 3. Build for Production
+```bash
+cd frontend
+npm run build
+```
+Production bundle is compiled into `frontend/dist`.
+
+---
+
+# 🏗️ System Architecture
 
 ```text
-                 ┌─────────────────────┐
-                 │       Farmer        │
-                 └──────────┬──────────┘
-                            │
-                            ▼
-                 ┌─────────────────────┐
-                 │   AgriMitra AI      │
-                 │    Web Interface    │
-                 └──────────┬──────────┘
-                            │
-             ┌──────────────┴──────────────┐
-             │                             │
-             ▼                             ▼
-      ┌───────────────┐             ┌───────────────┐
-      │ Crop Vision AI│             │ Anndata AI    │
-      │ Image Analysis│             │ Farmer Chat   │
-      └───────┬───────┘             └───────┬───────┘
-              │                             │
-              └──────────────┬──────────────┘
-                             ▼
-                    ┌─────────────────┐
-                    │   AI Backend    │
-                    │ Node + Express  │
-                    └────────┬────────┘
-                             │
-                  ┌──────────┴──────────┐
-                  ▼                     ▼
-           ┌────────────┐        ┌────────────┐
-           │ Gemini AI  │        │  Ollama    │
-           └────────────┘        └────────────┘
+                  ┌───────────────────────────────┐
+                  │       Farmer / Kisan          │
+                  └───────────────┬───────────────┘
+                                  │
+                                  ▼
+                  ┌───────────────────────────────┐
+                  │     AgriMitra AI Platform     │
+                  │   3D Digital Twin (Three.js)  │
+                  └───────────────┬───────────────┘
+                                  │
+        ┌─────────────────────────┼─────────────────────────┐
+        ▼                         ▼                         ▼
+┌───────────────┐         ┌───────────────┐         ┌───────────────┐
+│ Crop Vision AI│         │  Anndata AI   │         │ Live Sensor   │
+│ Leaf Pathology│         │ Voice/Chat LLM│         │ & Actuators   │
+└───────┬───────┘         └───────┬───────┘         └───────┬───────┘
+        │                         │                         │
+        └─────────────────────────┼─────────────────────────┘
+                                  ▼
+                  ┌───────────────────────────────┐
+                  │    Express Backend + Proxy    │
+                  │  Safety Rules & Rule Engine   │
+                  └───────────────┬───────────────┘
+                                  │
+         ┌────────────────────────┴────────────────────────┐
+         ▼                                                 ▼
+┌─────────────────┐                               ┌─────────────────┐
+│ Google Gemini   │                               │  ESP32 Hardware │
+│ AI API (Cloud)  │                               │  Edge Gateway   │
+└─────────────────┘                               └─────────────────┘
+```
+
+---
+
+# 🌐 Connected APIs & Services (लाइव APIs)
+
+AgriMitra AI comes equipped with real-time, production-ready APIs designed for zero-friction farming workflows:
+
+| API / Service | Provider | Status | Description |
+| :--- | :--- | :--- | :--- |
+| **🛰️ Live Satellite Weather** | Open-Meteo Global Feed | **Live (Zero Key Required)** | Real-time temperature, humidity, wind, and rain probability for any city/district. OpenWeatherMap fallback supported. |
+| **🌾 Mandi Bhav (Market Rates)** | APMC Agricultural Aggregator | **Live** | Real-time commodity prices, MSP comparisons, and market arrival trends with state and crop filters. |
+| **🏛️ Kisan Schemes API** | Govt Agriculture Portals | **Live** | Direct access to 6 verified central & state subsidies (PM-Kisan, PMFBY, KCC, Soil Card, etc.). |
+| **🤖 Gemini AI Advisor & Vision** | Google AI Studio | **Configurable / Local Hybrid** | Multi-model support (`gemini-2.0-flash`, `gemini-2.5-flash`) for voice/chat advice and leaf disease vision scans. |
+| **🗄️ Hybrid Database** | Local SQLite + Supabase Cloud | **Online** | Auto-initializes local SQLite (`backend/data/agrimitra.db`) with seamless Supabase cloud sync. |
+
+---
+
+# ⚙️ In-App API Key Manager
+
+You do **not** need to manually edit `.env` or run commands to test or manage your keys:
+1. Click the **`⚙️ APIs`** button in the dashboard topbar (or click **Manage APIs** under System Status).
+2. Enter your **Google Gemini API Key** or **OpenWeatherMap Key**.
+3. Click **"Test Key"** to verify connection directly with Google / Weather servers.
+4. Click **"Save API Configuration"** to write keys straight to `.env` without restarting the server!
