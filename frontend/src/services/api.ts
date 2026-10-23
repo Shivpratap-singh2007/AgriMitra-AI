@@ -5,6 +5,7 @@ import {
   SystemConfig,
   WeatherResponse,
   LiveOverview,
+  HardwareStatusResponse,
   PolyhouseSettings,
   FarmingActionItem,
   PerformanceReport,
@@ -57,6 +58,27 @@ export async function simulateTelemetry(
   });
   if (!res.ok) {
     throw new Error('Simulation failed');
+  }
+  return res.json();
+}
+
+export async function getHardwareStatus(deviceId?: string): Promise<HardwareStatusResponse> {
+  const query = deviceId ? `?device_id=${encodeURIComponent(deviceId)}` : '';
+  const res = await fetch(`${API_BASE}/iot/hardware-status${query}`);
+  if (!res.ok) {
+    throw new Error('Failed to fetch hardware status');
+  }
+  return res.json();
+}
+
+export async function pingHardware(deviceId: string = 'esp32-polyhouse-01'): Promise<{ success: boolean; message: string; timestamp?: string }> {
+  const res = await fetch(`${API_BASE}/iot/ping`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ device_id: deviceId })
+  });
+  if (!res.ok) {
+    throw new Error('Ping request failed');
   }
   return res.json();
 }

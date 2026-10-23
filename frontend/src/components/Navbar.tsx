@@ -21,6 +21,7 @@ interface NavbarProps {
   language: Language;
   setLanguage: (lang: Language) => void;
   openSettings: () => void;
+  openHardwareStatus?: () => void;
   hasGeminiKey: boolean;
 }
 
@@ -32,6 +33,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   language,
   setLanguage,
   openSettings,
+  openHardwareStatus,
   hasGeminiKey,
 }) => {
   const t = translations[language];
@@ -146,6 +148,19 @@ export const Navbar: React.FC<NavbarProps> = ({
               <Languages className="w-4 h-4 text-[#2E7D32]" />
               <span className="text-xs font-extrabold">{language === 'en' ? 'हिन्दी' : 'EN'}</span>
             </button>
+
+            {/* Hardware Status Modal Trigger with 44px touch target */}
+            {openHardwareStatus && (
+              <button
+                type="button"
+                onClick={openHardwareStatus}
+                className="touch-target p-2 rounded-lg border text-xs font-bold transition-colors cursor-pointer relative flex items-center justify-center bg-[#F1F4F8] hover:bg-[#E4E9F0] text-[#142B4A] border-[#E4E9F0]"
+                title="Hardware Diagnostics & Pin Status / हार्डवेयर स्थिति"
+                aria-label="Open Hardware Diagnostics Modal"
+              >
+                <Cpu className="w-4.5 h-4.5 text-[#2E7D32]" />
+              </button>
+            )}
 
             {/* API Settings Modal Trigger */}
             <button

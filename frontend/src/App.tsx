@@ -12,6 +12,7 @@ import { CropGuide } from './components/CropGuide';
 import { ProfileView } from './components/ProfileView';
 import { AboutView } from './components/AboutView';
 import { ApiSettingsModal } from './components/ApiSettingsModal';
+import { HardwareStatusModal } from './components/HardwareStatusModal';
 import { Footer } from './components/Footer';
 import { WifiOff } from 'lucide-react';
 
@@ -20,6 +21,7 @@ export function App() {
   const [selectedCrop, setSelectedCrop] = useState<Crop>('Tomato');
   const [language, setLanguage] = useState<Language>('en');
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isHardwareStatusOpen, setIsHardwareStatusOpen] = useState(false);
   const [config, setConfig] = useState<SystemConfig | null>(null);
   const [chatPrefill, setChatPrefill] = useState<string | undefined>(undefined);
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
@@ -92,6 +94,7 @@ export function App() {
         language={language}
         setLanguage={setLanguage}
         openSettings={() => setIsSettingsOpen(true)}
+        openHardwareStatus={() => setIsHardwareStatusOpen(true)}
         hasGeminiKey={Boolean(config?.gemini.has_key)}
       />
 
@@ -175,6 +178,13 @@ export function App() {
         onClose={() => setIsSettingsOpen(false)}
         language={language}
         onKeySaved={fetchConfig}
+      />
+
+      {/* Global Hardware Diagnostics Modal */}
+      <HardwareStatusModal
+        isOpen={isHardwareStatusOpen}
+        onClose={() => setIsHardwareStatusOpen(false)}
+        language={language}
       />
 
     </div>

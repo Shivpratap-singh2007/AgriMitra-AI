@@ -16,10 +16,12 @@ import {
   ShieldCheck,
   ChevronRight,
   Play,
-  CloudSun
+  CloudSun,
+  Radio
 } from 'lucide-react';
 import { Crop, Language, ActivePage, LiveOverview, WeatherData } from '../types';
 import { translations } from '../data/translations';
+import { HardwareStatusModal } from './HardwareStatusModal';
 import { getLiveOverview, simulateTelemetry, getLiveWeather } from '../services/api';
 
 interface HomeDashboardProps {
@@ -46,6 +48,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   const [loading, setLoading] = useState<boolean>(true);
   const [simulating, setSimulating] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [isHardwareModalOpen, setIsHardwareModalOpen] = useState<boolean>(false);
 
   // Weather state
   const [weather, setWeather] = useState<WeatherData | null>(null);
@@ -107,29 +110,29 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <div className="flex items-center gap-2 mb-2 flex-wrap">
-              {/* Liveness Badge */}
-              <span className={`inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-md border ${
-                liveData?.is_demo
-                  ? 'bg-amber-50 text-amber-900 border-amber-200'
-                  : sensorTrust?.liveness_status === 'live'
-                  ? 'bg-[#EBF7EE] text-[#15803D] border-[#C6E9CC]'
-                  : 'bg-slate-100 text-slate-700 border-slate-300'
-              }`}>
+              {/* Liveness & Hardware Badge (Clickable for Diagnostics) */}
+              <button
+                type="button"
+                onClick={() => setIsHardwareModalOpen(true)}
+                className={`inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-md border transition-all cursor-pointer ${
+                  liveData?.hardware_connected
+                    ? 'bg-[#EBF7EE] text-[#15803D] border-[#C6E9CC] hover:bg-[#dcf3e1]'
+                    : 'bg-amber-50 text-amber-900 border-amber-200 hover:bg-amber-100'
+                }`}
+                title="Click to view Hardware Connection & Diagnostics"
+              >
                 <span className={`w-2 h-2 rounded-full ${
-                  liveData?.is_demo
-                    ? 'bg-amber-500'
-                    : sensorTrust?.liveness_status === 'live'
+                  liveData?.hardware_connected
                     ? 'bg-[#2E7D32] animate-pulse'
-                    : 'bg-slate-400'
+                    : 'bg-amber-500'
                 }`} />
                 <span>
-                  {liveData?.is_demo
-                    ? tp.demoStatus
-                    : sensorTrust?.liveness_status === 'live'
-                    ? tp.liveStatus
-                    : tp.staleStatus}
+                  {liveData?.hardware_connected
+                    ? (language === 'hi' ? '🟢 हार्डवेयर लाइव' : '🟢 Hardware Live')
+                    : (language === 'hi' ? '🟡 डेमो मोड (हार्डवेयर जांचें)' : '🟡 Demo Mode (Check Hardware)')}
                 </span>
-              </span>
+                <Radio className="w-3 h-3 opacity-70 ml-0.5" />
+              </button>
 
               {/* Crop indicator */}
               <span className="text-xs font-bold text-[#142B4A] bg-[#F1F4F8] px-2.5 py-1 rounded-md border border-[#E4E9F0]">
@@ -555,6 +558,13 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
           </p>
         </section>
       )}
+
+      {/* Hardware Connection Diagnostics Modal */}
+      <HardwareStatusModal
+        isOpen={isHardwareModalOpen}
+        onClose={() => setIsHardwareModalOpen(false)}
+        language={language}
+      />
 
     </div>
   );

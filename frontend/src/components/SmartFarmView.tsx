@@ -14,10 +14,14 @@ import {
   Sliders,
   ShieldCheck,
   Zap,
-  Info
+  Info,
+  Radio,
+  Wifi,
+  WifiOff
 } from 'lucide-react';
 import { Language, LiveOverview, PolyhouseSettings } from '../types';
 import { translations } from '../data/translations';
+import { HardwareStatusModal } from './HardwareStatusModal';
 import {
   getLiveOverview,
   controlActuator,
@@ -43,6 +47,7 @@ export const SmartFarmView: React.FC<SmartFarmViewProps> = ({ language }) => {
 
   // Pump countdown timer during manual 20s run
   const [pumpCountdown, setPumpCountdown] = useState<number>(0);
+  const [isHardwareModalOpen, setIsHardwareModalOpen] = useState<boolean>(false);
 
   const loadData = async () => {
     try {
@@ -153,6 +158,63 @@ export const SmartFarmView: React.FC<SmartFarmViewProps> = ({ language }) => {
             <span>{actionError}</span>
           </div>
         )}
+      </section>
+
+      {/* Hardware Connection Live Badge & Diagnostic Launcher */}
+      <section className={`p-4 rounded-xl border transition-all ${
+        liveData?.hardware_connected
+          ? 'bg-[#EBF7EE] border-[#C6E9CC]'
+          : 'bg-amber-50/70 border-amber-200'
+      }`}>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-start gap-3">
+            <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold flex-shrink-0 mt-0.5 ${
+              liveData?.hardware_connected ? 'bg-emerald-600 text-white' : 'bg-amber-500 text-white'
+            }`}>
+              {liveData?.hardware_connected ? <Radio className="w-5 h-5 animate-pulse" /> : <WifiOff className="w-5 h-5" />}
+            </div>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className={`text-xs font-black px-2 py-0.5 rounded-md uppercase tracking-wider ${
+                  liveData?.hardware_connected
+                    ? 'bg-emerald-100 text-emerald-800'
+                    : 'bg-amber-100 text-amber-900'
+                }`}>
+                  {liveData?.hardware_connected
+                    ? (language === 'hi' ? '🟢 हार्डवेयर कनेक्टेड है' : '🟢 HARDWARE CONNECTED')
+                    : (language === 'hi' ? '🟡 हार्डवेयर कनेक्ट नहीं है' : '🟡 NO HARDWARE CONNECTED')}
+                </span>
+                <span className="text-[11px] font-bold text-[#506680]">
+                  {liveData?.hardware_connected
+                    ? `ESP32 (${liveData?.device_id || 'esp32-polyhouse-01'})`
+                    : (language === 'hi' ? 'डेमो सिमुलेशन मोड एक्टिव' : 'Demo Simulation Mode')}
+                </span>
+              </div>
+              <p className="text-xs text-[#506680] mt-1">
+                {liveData?.hardware_connected
+                  ? (language === 'hi'
+                      ? `सेंसर सक्रिय रूप से डेटा भेज रहे हैं • लेटेंसी: ${liveData?.seconds_since_last_seen || 3}s • 4/4 पिन एक्टिव`
+                      : `Sensors streaming live telemetry • Latency: ${liveData?.seconds_since_last_seen || 3}s • 4/4 pins active`)
+                  : (language === 'hi'
+                      ? 'ESP32 से अभी सिग्नल नहीं मिला। अपने वाई-फाई और सर्वर लिंक को कनेक्ट करने के लिए गाइड देखें।'
+                      : 'Waiting for telemetry on /api/iot/telemetry. Click to view credentials and pin diagnostics.')}
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setIsHardwareModalOpen(true)}
+            className="px-3.5 py-2 rounded-xl bg-white border border-[#CBD5E1] shadow-xs hover:bg-slate-50 text-xs font-black text-[#142B4A] transition-colors flex items-center justify-center gap-2 self-start sm:self-auto cursor-pointer"
+          >
+            <Cpu className="w-4 h-4 text-[#2E7D32]" />
+            <span>
+              {language === 'hi'
+                ? (liveData?.hardware_connected ? 'हार्डवेयर डायग्नोस्टिक्स' : 'हार्डवेयर कैसे जोड़ें?')
+                : (liveData?.hardware_connected ? 'Hardware Diagnostics' : 'Connect Hardware Guide')}
+            </span>
+          </button>
+        </div>
       </section>
 
       {/* 2. Live Sensor Telemetry Detail Cards */}
@@ -462,9 +524,16 @@ export const SmartFarmView: React.FC<SmartFarmViewProps> = ({ language }) => {
           <span>ESP32 Hardware Pin Assignments (Prototype Standard)</span>
         </div>
         <p className="text-[#506680] leading-relaxed">
-          DHT11 Data Pin: <span className="font-mono text-[#142B4A] font-bold">GPIO 4</span> (with 4.7kΩ pull-up) • Capacitive Soil Moisture: <span className="font-mono text-[#142B4A] font-bold">GPIO 34 (ADC1)</span> • Relay CH1 (Pump): <span className="font-mono text-[#142B4A] font-bold">GPIO 18</span> • Relay CH2 (Fan): <span className="font-mono text-[#142B4A] font-bold">GPIO 19</span>. All relays are active-low optocoupler isolated.
+          DHT11/22 Data: <span className="font-mono text-[#142B4A] font-bold">GPIO 4</span> • Capacitive Soil Moisture: <span className="font-mono text-[#142B4A] font-bold">GPIO 34 (ADC1)</span> • Relay 1 (Pump): <span className="font-mono text-[#142B4A] font-bold">GPIO 26</span> • Relay 2 (Fan): <span className="font-mono text-[#142B4A] font-bold">GPIO 27</span>. All relays are active-low optocoupler isolated.
         </p>
       </section>
+
+      {/* Hardware Connection Diagnostics Modal */}
+      <HardwareStatusModal
+        isOpen={isHardwareModalOpen}
+        onClose={() => setIsHardwareModalOpen(false)}
+        language={language}
+      />
 
     </div>
   );

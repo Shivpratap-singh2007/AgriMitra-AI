@@ -29,6 +29,8 @@ export interface SensorTrust {
   device_connected: boolean;
   last_seen_seconds_ago: number;
   liveness_status: 'live' | 'stale' | 'offline';
+  hardware_connected?: boolean;
+  is_physical_hardware?: boolean;
   dht_status: 'healthy' | 'implausible' | 'frozen' | 'missing';
   moisture_status: 'healthy' | 'implausible' | 'frozen' | 'missing';
   warnings: string[];
@@ -58,6 +60,40 @@ export interface LiveOverview {
   advisory: AdvisoryItem[];
   active_alerts_count: number;
   is_demo: boolean;
+  is_physical_hardware?: boolean;
+  hardware_connected?: boolean;
+  seconds_since_last_seen?: number;
+}
+
+export interface HardwareStatusResponse {
+  success: boolean;
+  connected: boolean;
+  is_physical_hardware: boolean;
+  status: 'live' | 'stale' | 'offline';
+  device_id: string;
+  device_name: string;
+  firmware_version?: string;
+  last_seen_at?: string;
+  seconds_since_last_seen: number;
+  human_time: string;
+  sensors: {
+    soil_moisture: { name: string; pin: string; status: string; value: number | null; unit: string };
+    temperature: { name: string; pin: string; status: string; value: number | null; unit: string };
+    humidity: { name: string; pin: string; status: string; value: number | null; unit: string };
+    pump_relay: { name: string; pin: string; status: string; state: boolean };
+    fan_relay: { name: string; pin: string; status: string; state: boolean };
+  };
+  recent_packets: Array<{
+    id: number;
+    temperature: number;
+    humidity: number;
+    soil_moisture: number;
+    pump_state: boolean;
+    fan_state: boolean;
+    voltage: number;
+    created_at: string;
+  }>;
+  api_endpoint: string;
 }
 
 export interface FarmingActionItem {
