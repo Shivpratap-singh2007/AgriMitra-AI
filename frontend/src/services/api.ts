@@ -3,11 +3,116 @@ import {
   GeminiResult,
   CompareResult,
   SystemConfig,
-  WeatherResponse
+  WeatherResponse,
+  LiveOverview,
+  PolyhouseSettings,
+  FarmingActionItem,
+  PerformanceReport,
+  SensorAlert
 } from '../types';
 
-// Supports configurable backend base URL for production deployments (e.g., https://api.yourdomain.com/api)
+// Configurable backend base URL (e.g. for production web deployment or local dev)
 const API_BASE = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/$/, '');
+
+// --- AgriMitra 2.0 Smart Polyhouse & Farm Response Intelligence APIs ---
+
+export async function getLiveOverview(deviceId: string = 'esp32-polyhouse-demo'): Promise<LiveOverview> {
+  const res = await fetch(`${API_BASE}/iot/live?device_id=${encodeURIComponent(deviceId)}`);
+  if (!res.ok) {
+    throw new Error(`Failed to fetch live overview (${res.status})`);
+  }
+  return res.json();
+}
+
+export async function controlActuator(
+  actuator: 'pump' | 'fan' | 'emergency_stop',
+  state: boolean,
+  durationSeconds?: number,
+  deviceId: string = 'esp32-polyhouse-demo'
+): Promise<{ success: boolean; message: string; action_id?: number }> {
+  const res = await fetch(`${API_BASE}/iot/devices/${encodeURIComponent(deviceId)}/control`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      actuator,
+      state,
+      duration_seconds: durationSeconds
+    })
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.detail || data.message || 'Actuator control failed');
+  }
+  return data;
+}
+
+export async function simulateTelemetry(
+  scenario: 'normal' | 'dry_soil' | 'heat_stress' | 'sensor_fault',
+  deviceId: string = 'esp32-polyhouse-demo'
+): Promise<{ success: boolean; message: string; reading: any }> {
+  const res = await fetch(`${API_BASE}/iot/simulate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ scenario, device_id: deviceId })
+  });
+  if (!res.ok) {
+    throw new Error('Simulation failed');
+  }
+  return res.json();
+}
+
+export async function getPolyhouseSettings(deviceId: string = 'esp32-polyhouse-demo'): Promise<{ success: boolean; settings: PolyhouseSettings }> {
+  const res = await fetch(`${API_BASE}/polyhouse/settings?device_id=${encodeURIComponent(deviceId)}`);
+  if (!res.ok) {
+    throw new Error('Failed to load polyhouse settings');
+  }
+  return res.json();
+}
+
+export async function updatePolyhouseSettings(settings: PolyhouseSettings): Promise<{ success: boolean; settings: PolyhouseSettings }> {
+  const res = await fetch(`${API_BASE}/polyhouse/settings`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(settings)
+  });
+  if (!res.ok) {
+    throw new Error('Failed to update polyhouse settings');
+  }
+  return res.json();
+}
+
+export async function getFarmingHistory(deviceId: string = 'esp32-polyhouse-demo', limit: number = 30): Promise<{ success: boolean; history: FarmingActionItem[] }> {
+  const res = await fetch(`${API_BASE}/polyhouse/history?device_id=${encodeURIComponent(deviceId)}&limit=${limit}`);
+  if (!res.ok) {
+    throw new Error('Failed to fetch farming history');
+  }
+  return res.json();
+}
+
+export async function getPerformanceReport(deviceId: string = 'esp32-polyhouse-demo'): Promise<{ success: boolean; metrics: PerformanceReport }> {
+  const res = await fetch(`${API_BASE}/polyhouse/reports?device_id=${encodeURIComponent(deviceId)}`);
+  if (!res.ok) {
+    throw new Error('Failed to load performance report');
+  }
+  return res.json();
+}
+
+export async function getSensorAlerts(deviceId: string = 'esp32-polyhouse-demo'): Promise<{ success: boolean; alerts: SensorAlert[] }> {
+  const res = await fetch(`${API_BASE}/polyhouse/alerts?device_id=${encodeURIComponent(deviceId)}`);
+  if (!res.ok) {
+    throw new Error('Failed to load sensor alerts');
+  }
+  return res.json();
+}
+
+export async function resolveSensorAlert(alertId: number): Promise<{ success: boolean; message: string }> {
+  const res = await fetch(`${API_BASE}/polyhouse/alerts/${alertId}/resolve`, {
+    method: 'POST'
+  });
+  return res.json();
+}
+
+// --- Retained Plant Pathology & Diagnostics APIs ---
 
 export async function predictCustomModel(
   file: File,
@@ -134,4 +239,3 @@ export async function updateSystemConfig(geminiApiKey: string): Promise<any> {
   });
   return res.json();
 }
-

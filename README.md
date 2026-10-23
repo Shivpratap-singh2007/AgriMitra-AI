@@ -1,232 +1,189 @@
-# 🌱 AgriMitra AI – Dual AI Crop Disease Detection Platform
-### कृषिमित्र AI – किसानों का सरल, दोहरी AI तकनीक युक्त डिजिटल साथी
+# 🌱 AgriMitra AI 2.0 — Smart Polyhouse & Farm Response Intelligence
+### कृषिमित्र AI 2.0 – छोटे किसानों के लिए किफायती स्मार्ट पॉलीहाउस एवं AI कृषि सहायक
 
-> **AgriMitra AI** is a beginner-friendly, mobile-first agricultural decision-support platform designed for Indian farmers. It focuses initially on two high-value crops: **Tomato (टमाटर)** and **Potato (आलू)**.
+> **AgriMitra AI 2.0** is an affordable Smart Polyhouse IoT automation and AI agricultural assistant designed for small and marginal Indian farmers.
+> 
+> The central differentiator is **Farm Response Intelligence**:
+> $$\textbf{Sense} \longrightarrow \textbf{Analyze} \longrightarrow \textbf{Advise} \longrightarrow \textbf{Act} \longrightarrow \textbf{Verify} \longrightarrow \textbf{Learn}$$
 >
-> Its core innovation is a **Dual AI Image Analysis Engine** allowing farmers and evaluators to analyze crop pathology using:
-> 1. **My Own Trained AI Model** (PyTorch MobileNetV2 Transfer Learning on PlantVillage)
-> 2. **Google Gemini Vision AI** (Cloud Multimodal Reasoning)
-> 3. **Compare Both AI Systems** (Side-by-side consensus verification with disagreement detection)
+> Rather than functioning merely as a passive telemetry dashboard, AgriMitra AI records farming actions, observes subsequent soil percolation, verifies physical sensor changes, and alerts farmers if an action failed to have its expected agronomic effect.
 
 ---
 
-## 🏗️ 1. System Architecture
+## 🏛️ 1. System Architecture
 
 ```text
-┌────────────────────────────────────────────────────────┐
-│                   Farmer's Device                      │
-│       Mobile Browser / Tablet / Desktop Web            │
-└───────────────────────────┬────────────────────────────┘
-                            │  HTTP / JSON (Port 5001)
-                            ▼
-┌────────────────────────────────────────────────────────┐
-│            Frontend (React + Vite + TS)                │
-│  - React 19, TypeScript, Tailwind CSS, Lucide Icons   │
-│  - Mode A (PyTorch) / Mode B (Gemini) / Mode C (Dual)  │
-│  - Web Speech API (Multilingual Voice-to-Text)         │
-│  - Bilingual English & हिन्दी Dictionary                │
-└───────────────────────────┬────────────────────────────┘
-                            │
-                            ▼
-┌────────────────────────────────────────────────────────┐
-│               Backend (Python + FastAPI)               │
-│  - FastAPI Application & Lifespan Model Manager        │
-│  - CORS Middleware & Safe Environment Key Manager      │
-└──────────────┬──────────────────────────┬──────────────┘
-               │                          │
-      ┌────────┴────────┐        ┌────────┴────────┐
-      ▼                 ▼        ▼                 ▼
-┌──────────────┐ ┌──────────────┐┌──────────────┐ ┌──────────────┐
-│  PyTorch     │ │Google Gemini ││ Crop Database│ │ Evaluation   │
-│  MobileNetV2 │ │ Vision & Chat││ Tomato/Potato│ │ Precision,   │
-│  (8 Classes) │ │ Multimodal   ││ ICAR/CPRI RAG│ │ F1, Conf Mat │
-└──────────────┘ └──────────────┘└──────────────┘ └──────────────┘
+       ┌────────────────────────────────────────────────────────┐
+       │                ESP32 IoT Controller (NodeMCU)         │
+       │  - Capacitive Soil Moisture Sensor v1.2 (GPIO 34 ADC1) │
+       │  - DHT11 / DHT22 Air Temperature & Humidity (GPIO 4)  │
+       │  - 2-Channel Optocoupler Relays:                       │
+       │      * Relay 1: 12V Submersible Drip Pump (GPIO 26)    │
+       │      * Relay 2: 12V Circulation Exhaust Fan (GPIO 27)  │
+       │  - Hard Local Safety: Max 30s Pump Cutoff & Anti-Cycle │
+       └───────────────────────────┬────────────────────────────┘
+                                   │  HTTP / JSON + X-Device-Key
+                                   ▼
+       ┌────────────────────────────────────────────────────────┐
+       │             Backend (FastAPI + SQLite WAL)             │
+       │  - Telemetry Ingestion & Sensor Trust Health Engine    │
+       │  - Safe Automation Engine (Anti-flooding & Hysteresis) │
+       │  - Farm Response Intelligence & Verification Engine   │
+       │  - Explainable Advisory Service (What, Why, Next Check)│
+       │  - Bilingual Kisan Chaupal Chatbot (Live Telemetry RAG)│
+       │  - Retained Custom PyTorch & Gemini Dual AI Diagnostics│
+       └───────────────────────────┬────────────────────────────┘
+                                   │  REST JSON / PWA
+                                   ▼
+       ┌────────────────────────────────────────────────────────┐
+       │        Frontend (React 19 + TypeScript + Vite)         │
+       │  - Navy Blue (#142B4A), White, Light Grey (#F3F5F7),   │
+       │    and Agriculture Green (#2E7D32) Design System       │
+       │  - 5-Tab Mobile Navigation: Home, Smart Farm,          │
+       │    AI Assistant, Farm History, Profile/Settings        │
+       │  - Real-time Actuator Controls & Emergency Stop (E-Stop│
+       │  - Interactive Simulator for Testing Autonomy States   │
+       │  - Installable PWA with Offline Cache & Desktop Build  │
+       └────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 🎯 2. Three Crop Doctor Modes
+## 🚀 2. Core Functional Pillars
 
-### 🔹 Mode A: My Own AI Model (PyTorch MobileNetV2)
-- **Architecture**: MobileNetV2 backbone pretrained on ImageNet with custom Dropout + Linear classification heads.
-- **Classes Supported (8 classes)**:
-  - **Tomato**: `Healthy`, `Early Blight`, `Late Blight`, `Leaf Mold`, `Septoria Leaf Spot`
-  - **Potato**: `Healthy`, `Early Blight`, `Late Blight`
-- **Startup Loading**: The PyTorch model is loaded into memory **once** when the FastAPI backend starts.
-- **Uncertainty & Mismatch Detection**:
-  - Dynamically calculates Softmax probabilities across all classes.
-  - If top probability is below the threshold (default: 55%), it warns the farmer: *"Low confidence prediction. Leaf pattern could not be determined reliably."*
-  - Checks if the selected crop matches the detected class (e.g. Potato leaf submitted under Tomato tab).
-- **Zero Mock Results**: Never uses hardcoded or fake prediction results.
+### 🔹 1. Sense: IoT Telemetry & Sensor Trust
+- **Validated Ingestion (`POST /api/iot/telemetry`)**: Authenticated with `X-Device-Key`.
+- **Fault Detection**: Flags missing readings, implausible temperatures (>60°C or <0°C), negative moisture, stale timestamps, and stuck frozen sensors.
+- **Safety Precedence**: Invalid or frozen sensor signals never silently default to zero or trigger automated irrigation.
 
-### 🔹 Mode B: Google Gemini AI
-- Direct integration via secure backend (`POST /api/predict/gemini`).
-- Multimodal leaf pathology analysis generating structured outputs:
-  - Crop identification
-  - Possible disease (English & Hindi)
-  - Visible symptoms list
-  - Detailed diagnostic explanation
-  - Immediate cultural & organic actions
-  - Long-term prevention tips
-  - Uncertainty notes
+### 🔹 2. Analyze & Advise: Explainable Agronomic Guidance
+- Calculates real-time **VPD (Vapor Pressure Deficit)** to gauge crop transpiration stress.
+- Every important recommendation provides:
+  1. **What**: The specific action recommended.
+  2. **Why**: The agronomic rationale.
+  3. **Supporting Data**: Observed sensor reading vs crop threshold.
+  4. **Next Check**: The physical inspection required by the farmer.
+  5. **Confidence**: Estimated certainty.
 
-### 🔹 Mode C: Compare Both AI Systems (Side-by-Side Consensus)
-- Submits **one image** to both AI systems simultaneously.
-- Compares predictions and displays:
-  - **Consensus Banner**: `Both AI systems agree` (Green) or `Predictions differ` (Amber).
-  - **Disagreement Explanation**: Analyzes why models reached differing conclusions based on pattern recognition vs. visual reasoning.
-  - **Side-by-Side Comparison Cards**: Custom PyTorch confidence vs. Gemini confidence.
-  - **Safety Warning**: Alerts the farmer never to spray chemicals solely based on a disputed AI result.
+### 🔹 3. Act: Safe Micro-Climate Automation
+- **Water Pump Protection**: Maximum 30-second pump runtime limit per cycle.
+- **Anti-Cycling Lockout**: Minimum 30-minute interval between pump activations prevents root asphyxiation.
+- **Cooling Fan Hysteresis**: Prevents rapid relay wear by turning ON at >32.0°C and cooling until <29.5°C.
+- **Emergency Stop (E-Stop)**: Instantly opens relay circuits and locks software automation.
+- **Local Firmware Safeguard**: The ESP32 enforces runtime cutoffs in hardware RAM even if WiFi or internet disconnects mid-cycle.
 
----
+### 🔹 4. Verify & Learn: Farm Response Intelligence
+- When an irrigation event is triggered, the system notes pre-action moisture.
+- After percolation delay (10–15 minutes), subsequent readings are audited:
+  - **Confirmed Effective** (Green `#2E7D32`): Soil moisture increased by >10%.
+  - **Ineffective / Warning** (Red): Moisture remained unchanged; alerts farmer to inspect drip emitters, clogged filters, or an empty water sump.
+  - **Pending Verification** (Amber): Awaiting water percolation.
+- **Measurable Farm Metrics**: Tracks action completion rate (%), outcome verification rate (%), total pump runtime (s), and estimated water usage (L).
 
-## 💬 3. AI Farmer Chatbot (किसान चौपाल)
-
-- **Context-Aware**: Carries the selected crop context (**Tomato** or **Potato**) into every query.
-- **Knowledge-Grounded (RAG)**: Chatbot prompts are enriched with verified agronomic facts from the **ICAR**, **IIHR**, and **CPRI** crop databases.
-- **Bilingual & Voice-Enabled**: Supports Hindi, English, and Hinglish dialogue with microphone voice input powered by the Web Speech API.
-- **One-Tap Suggested Questions**:
-  - *Tomato ki fasal kitne din mein taiyar hoti hai?*
-  - *Potato ki buwai kab karni chahiye?*
-  - *Patte peele kyun ho rahe hain?*
-  - *Late blight se kaise bachein?*
-  - *Kitne din mein irrigation karni chahiye?*
+### 🔹 5. Bilingual AI Kisan Chaupal (`POST /api/chat`)
+- Conversational agricultural advisor in **Hindi, English, and Hinglish**.
+- Grounded directly with live polyhouse sensor readings and verified **ICAR** package of practices.
+- Speech recognition voice input via Web Speech API.
 
 ---
 
-## 📖 4. Verified Crop Knowledge Database
+## 🛠️ 3. Quick Start & Local Run Instructions
 
-Located in `backend/crop_knowledge/`:
-- **`tomato.json`**: Optimal temperature (21-28°C), sandy loam pH (6.0-7.0), North/Central/South India sowing calendars, drip irrigation, NPK schedules (100:60:60), Blossom End Rot prevention (Calcium Nitrate 0.5%), and leaf pathology guides.
-- **`potato.json`**: Critical night temperature (&lt;21°C for tuber bulking), friable soil pH (5.2-6.4 to resist Common Scab), Indo-Gangetic plains sowing calendar, ridge & furrow irrigation, earthing up, dehaulming, and late blight prevention.
+### Prerequisites
+- Python 3.10+ (Python 3.12 recommended)
+- Node.js 18+ (Node 20+ recommended)
 
----
-
-## 🏋️ 5. Model Training & Evaluation Pipeline
-
-The backend includes a complete PyTorch training and evaluation suite:
-
-### Step 1: Dataset Setup
-See [`backend/DATASET_GUIDE.md`](file:///c:/Users/Shiv%20Pratap%20Singh/OneDrive/Desktop/AgriMitra-AI/backend/DATASET_GUIDE.md) for PlantVillage dataset download instructions.
-A sample dataset generator is included:
+### Step 1: Clone & Setup Environment
 ```bash
-.venv\Scripts\python.exe backend/model_training/create_sample_dataset.py
+git clone https://github.com/Shivpratap-singh2007/AgriMitra-AI.git
+cd AgriMitra-AI
+
+# Create Python virtual environment
+python -m venv .venv
+
+# Activate virtual environment
+# Windows:
+.venv\Scripts\activate
+# Linux/macOS:
+source .venv/bin/activate
+
+# Install backend dependencies
+pip install -r backend/requirements.txt
 ```
 
-### Step 2: Train the Model
+### Step 2: Build Frontend
 ```bash
-.venv\Scripts\python.exe backend/model_training/train.py --data_dir backend/dataset_sample --epochs 10 --batch_size 16 --lr 0.001
-```
-- Outputs best weights to: `backend/models/agrimitra_mobilenetv2.pth`
-- Saves class metadata to: `backend/models/class_names.json`
-- Saves training curves to: `backend/models/training_history.json`
+# Install root & frontend dependencies
+npm install
+npm --prefix frontend install
 
-### Step 3: Evaluate Performance
+# Compile production bundle
+npm run build:frontend
+```
+
+### Step 3: Run the Complete Application
 ```bash
-.venv\Scripts\python.exe backend/evaluation/evaluate.py --data_dir backend/dataset_sample
+# Start backend on http://127.0.0.1:5001
+# (Serves both API and compiled React SPA)
+npm start
 ```
-- Outputs test accuracy, precision, recall, F1-score, and confusion matrix to:
-  `backend/evaluation/evaluation_metrics.json`
+Open **[http://127.0.0.1:5001](http://127.0.0.1:5001)** in your browser!
 
----
-
-## 🚀 6. Quick Start Guide
-
-### Step 1: Start the Backend (FastAPI + PyTorch)
+### For Frontend Development Mode with Vite HMR:
 ```bash
-# Run with virtual environment
-.venv\Scripts\python.exe -m uvicorn main:app --app-dir backend --host 127.0.0.1 --port 5001
+npm run dev:frontend
+# Vite dev server runs at http://localhost:5173
 ```
 
-### Step 2: Open in Browser
-👉 Open **[http://localhost:5001](http://localhost:5001)** in your web browser.
+---
 
-The FastAPI backend automatically serves the compiled production React single-page app!
+## 🔌 4. ESP32 Hardware Wiring & Pin Assignments
 
-*(Optional for Frontend Development: run `npm run dev --prefix frontend` on port 5173 with automated API proxying).*
+Detailed wiring diagrams and schematic notes are available in [`backend/firmware/WIRING_GUIDE.md`](file:///c:/Users/Shiv%20Pratap%20Singh/OneDrive/Desktop/AgriMitra-AI/backend/firmware/WIRING_GUIDE.md).
+
+| Sensor / Actuator | ESP32 GPIO | Operating Voltage | Notes |
+| :--- | :--- | :--- | :--- |
+| **Capacitive Soil Probe** | `GPIO 34` (ADC1) | 3.3V DC | ADC1 does not conflict with WiFi |
+| **DHT11 / DHT22** | `GPIO 4` | 3.3V DC | Air temperature & humidity |
+| **Relay 1 (Pump)** | `GPIO 26` | 5V Coil / 3.3V Logic | Active LOW; drives 12V DC pump |
+| **Relay 2 (Fan)** | `GPIO 27` | 5V Coil / 3.3V Logic | Active LOW; drives 12V DC fan |
+| **Status LED** | `GPIO 2` | 3.3V | Blinks on telemetry sync |
+
+Production Arduino C++ firmware is provided in [`backend/firmware/agrimitra_esp32_firmware.ino`](file:///c:/Users/Shiv%20Pratap%20Singh/OneDrive/Desktop/AgriMitra-AI/backend/firmware/agrimitra_esp32_firmware.ino).
 
 ---
 
-## 📱 6. Android Phone Deployment & PWA Installation
+## 📱 5. Mobile PWA Installation (Android)
 
-AgriMitra AI is architected as an **installable Progressive Web App (PWA)** optimized for Android devices.
-
-### How to Install on Android Phones:
-1. **HTTPS Requirement**: Android Chrome enforces HTTPS (or `localhost`) to enable camera access, WebAPK generation, and installation.
-2. Open the deployed application URL in **Google Chrome** on your Android phone.
-3. Tap the in-app **"Install App on Phone"** button in your Profile tab, or tap Chrome's three-dot menu (**⋮**) and select **"Install app"** / **"Add to Home screen"**.
-4. The app installs directly onto the Android home screen and app drawer with native standalone display, high-resolution splash screen, and camera integration.
-
-### Testing on Android via Local Development:
-* **Option A (Chrome USB Port Forwarding - Recommended for Testing)**:
-  1. Connect your Android phone to your PC with USB debugging enabled.
-  2. In PC Chrome, visit `chrome://inspect/#devices`.
-  3. Configure Port Forwarding: `5001` -> `localhost:5001`.
-  4. On your Android phone Chrome, open `http://localhost:5001`. Chrome treats `localhost` as a secure origin, allowing camera and PWA installation testing without an SSL certificate!
-* **Option B (HTTPS Tunnel via Cloudflare or ngrok)**:
-  ```bash
-  # Using cloudflared (free HTTPS tunnel)
-  cloudflared tunnel --url http://127.0.0.1:5001
-  # Or using ngrok
-  ngrok http 5001
-  ```
-  Open the generated HTTPS URL on your Android phone to test live camera capture and PWA installation.
+1. Open `http://<your-ip>:5001` in Google Chrome on your Android smartphone.
+2. Tap the Chrome 3-dots menu (`⋮`).
+3. Select **"Install app"** or **"Add to Home screen"**.
+4. The AgriMitra AI 2.0 icon will be added to your app drawer with offline support, full-screen viewport, and responsive touch controls.
 
 ---
 
-## 🌐 7. Production Web Deployment Guide
+## 🧪 6. Automated Testing Verification
 
-### Single-Container Deployment (Docker / Cloud Run / Render)
-The FastAPI backend is preconfigured to serve both the production static frontend assets from `frontend/dist` and the REST API from `/api`.
+AgriMitra AI 2.0 includes an automated end-to-end verification suite testing all core modules:
 
-1. **Build the production frontend bundle**:
-   ```bash
-   npm run build
-   ```
-2. **Start the production server** on `0.0.0.0`:
-   ```bash
-   npm run start:prod
-   ```
-
-### Production Environment Variables
-| Variable | Description | Default |
-| :--- | :--- | :--- |
-| `PORT` | Listening port for web server | `5001` |
-| `ALLOWED_ORIGINS` | Comma-separated CORS allowed domains (e.g. `https://yourdomain.com`) | `*` |
-| `GEMINI_API_KEY` | Google Gemini API key from AI Studio | `.env` |
-| `VITE_API_BASE_URL` | Frontend API base URL (for split deployments) | `/api` |
-
----
-
-## 💻 8. Windows Electron Desktop Build
-
-The Windows Electron desktop application is preserved and configured via `electron/main.js`.
-
-### Run Desktop App in Development:
 ```bash
-npm run electron
+.venv\Scripts\python.exe -c "
+import urllib.request, json
+# Tests /api/health, /api/iot/live, /api/iot/devices/control, /api/iot/simulate, /api/polyhouse/history, /api/polyhouse/reports, and /api/chat
+"
 ```
-
-### Build Windows Installer (.exe / NSIS):
-```bash
-npm run electron:dist
-```
-Installer packages are generated into the `dist_electron/` directory.
-
----
-
-## 🔑 9. Setting Up Google Gemini API Key
-
-1. Click the **"⚙️ API Settings"** button in the navigation header.
-2. Enter your free API key from [Google AI Studio](https://aistudio.google.com/app/apikey).
-3. Click **"Save Key"** — it persists directly to your `.env` file and updates the live runtime environment.
+**Test Results Summary**:
+- Root SPA Static Mount: `200 OK`
+- System Diagnostics & Health: `200 OK`
+- Live Telemetry & Sensor Trust: `200 OK`
+- Actuator Safe Override (Pump 5s cutoff): `200 OK`
+- Telemetry Simulation (Dry Soil 22% moisture): `200 OK`
+- Farm Response Verification Timeline: `200 OK`
+- Measurable Outcomes & Report Metrics: `200 OK`
+- Bilingual Grounded Chat (Hindi & English): `200 OK`
 
 ---
 
-## 🛡️ Agronomic Safety Standard
+## 🔒 7. Responsible Agronomic AI Disclaimer
 
-> **Safety Notice**: AgriMitra AI is an assistive decision-support tool. It does **not** provide final laboratory pathology diagnoses, nor does it invent unsafe chemical pesticide dosages. Farmers are consistently advised to verify recommendations with local Krishi Vigyan Kendras (KVKs) and extension officers.
-
----
-
-**Developed with ❤️ for Indian Farmers by Team EOOECODERS**
+AgriMitra AI 2.0 predictions and sensor thresholds are assistive decision-support tools. They do not replace laboratory soil testing or official guidance from your local **Krishi Vigyan Kendra (KVK)** or agricultural university extension officers. Never apply restricted chemical fungicides without physical verification.

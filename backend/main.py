@@ -1,11 +1,13 @@
 """
-AgriMitra AI - FastAPI Dual AI Backend Application
+AgriMitra AI 2.0 - Smart Polyhouse & AI Agriculture Platform Backend
 Integrates:
-- Custom PyTorch MobileNetV2 Model (Transfer Learning)
-- Google Gemini Multimodal Vision API
-- Dual AI Comparison Engine
-- Grounded AI Farmer Chatbot
-- Structured Crop Knowledge Database (Tomato & Potato)
+- ESP32 IoT Sensor Telemetry & Authenticated Ingestion
+- Safe Automation Relay Control (Anti-cycle intervals, Max pump runtimes, Fan hysteresis)
+- Farm Response Intelligence (Sense -> Analyze -> Advise -> Act -> Verify -> Learn)
+- Bilingual Kisan Chaupal AI Assistant (Gemini API + Real-time Sensor Grounding)
+- Sensor Health, Fault Detection & Actionable Alerts
+- Crop Knowledge Database (ICAR/CPRI Tomato, Potato & Polyhouse Greens)
+- Custom PyTorch MobileNetV2 Disease Screening Model
 """
 
 import os
@@ -25,30 +27,44 @@ BASE_DIR = Path(__file__).resolve().parent
 if str(BASE_DIR) not in sys.path:
     sys.path.append(str(BASE_DIR))
 
+from database.db import init_db
+from iot.ingestion import router as iot_router
+from api.routes_polyhouse import router as polyhouse_router
 from api.routes_predict import router as predict_router
 from api.routes_chat import router as chat_router
 from api.routes_crops import router as crops_router
 from api.routes_weather import router as weather_router
 from model_inference.predict import CustomModelInference
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("==================================================")
-    print("[START] AgriMitra AI Backend (FastAPI + PyTorch)")
-    # Load custom PyTorch model once on startup
+    print("[START] AgriMitra AI 2.0 Backend (Smart Polyhouse & AI)")
+    # 1. Initialize SQLite Database & Schema
+    try:
+        init_db()
+        print("[OK] Database: SQLite initialized with thread-safe WAL mode.")
+    except Exception as e:
+        print(f"[ERR] Database initialization failed: {e}")
+
+    # 2. Check Custom PyTorch model
     inference = CustomModelInference.get_instance()
     if inference.is_loaded:
         print(f"[OK] PyTorch Model Active: {len(inference.classes)} classes loaded.")
     else:
         print(f"[INFO] PyTorch Model Status: {inference.load_error or 'Weights pending training'}")
-    print(f"Gemini API Key: {'Configured' if os.getenv('GEMINI_API_KEY') else 'Missing'}")
+
+    # 3. Check Gemini configuration
+    print(f"Gemini API Key: {'Configured' if os.getenv('GEMINI_API_KEY') else 'Offline Rule Grounding Mode'}")
     print("==================================================")
     yield
     print("[STOP] Shutting down AgriMitra AI Backend.")
 
+
 app = FastAPI(
-    title="AgriMitra AI - Dual AI Crop Disease Detection Platform",
-    description="Mobile-first AI agriculture assistant for Indian farmers supporting Tomato and Potato",
+    title="AgriMitra AI 2.0 — Smart Polyhouse & Farm Response Intelligence",
+    description="Affordable IoT and AI Farming Assistant for small and marginal farmers",
     version="2.0.0",
     lifespan=lifespan
 )
@@ -66,6 +82,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.middleware("http")
 async def add_security_headers(request, call_next):
     response = await call_next(request)
@@ -76,29 +93,33 @@ async def add_security_headers(request, call_next):
         response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
     return response
 
+
 # Include API Routers
+app.include_router(iot_router)
+app.include_router(polyhouse_router)
 app.include_router(predict_router)
 app.include_router(chat_router)
 app.include_router(crops_router)
 app.include_router(weather_router)
 
+
 @app.get("/api/health")
 async def health_check():
     return {
         "status": "healthy",
-        "service": "AgriMitra AI FastAPI Backend",
-        "version": "2.0.0"
+        "service": "AgriMitra AI 2.0 Backend",
+        "version": "2.0.0",
+        "modules": [
+            "IoT Telemetry & Relay Actuation",
+            "Farm Response Intelligence",
+            "Explainable Farming Advisory",
+            "Kisan Chaupal AI Assistant",
+            "Crop Disease Screening"
+        ]
     }
 
-@app.get("/api/sensors")
-async def get_sensors():
-    return {
-        "success": True,
-        "status": "idle",
-        "telemetry": {}
-    }
 
-# Serve static frontend files if frontend build or assets exist
+# Serve static frontend files if frontend build exists
 FRONTEND_DIST = BASE_DIR.parent / "frontend" / "dist"
 FRONTEND_DIR = BASE_DIR.parent / "frontend"
 

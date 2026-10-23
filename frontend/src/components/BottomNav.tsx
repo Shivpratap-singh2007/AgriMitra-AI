@@ -1,10 +1,10 @@
 import React from 'react';
 import {
   Home,
-  Stethoscope,
+  Cpu,
   MessageSquare,
-  BookOpen,
-  User
+  Clock,
+  Sliders
 } from 'lucide-react';
 import { ActivePage, Language } from '../types';
 import { translations } from '../data/translations';
@@ -29,9 +29,9 @@ export const BottomNav: React.FC<BottomNavProps> = ({
       icon: <Home className="w-5 h-5" />,
     },
     {
-      id: 'doctor' as ActivePage,
-      label: t.doctor,
-      icon: <Stethoscope className="w-5 h-5" />,
+      id: 'farm' as ActivePage,
+      label: t.farm,
+      icon: <Cpu className="w-5 h-5" />,
     },
     {
       id: 'chat' as ActivePage,
@@ -39,14 +39,14 @@ export const BottomNav: React.FC<BottomNavProps> = ({
       icon: <MessageSquare className="w-5 h-5" />,
     },
     {
-      id: 'guide' as ActivePage,
-      label: t.guide,
-      icon: <BookOpen className="w-5 h-5" />,
+      id: 'history' as ActivePage,
+      label: t.history,
+      icon: <Clock className="w-5 h-5" />,
     },
     {
       id: 'profile' as ActivePage,
       label: t.profile,
-      icon: <User className="w-5 h-5" />,
+      icon: <Sliders className="w-5 h-5" />,
     },
   ];
 
@@ -73,15 +73,15 @@ export const BottomNav: React.FC<BottomNavProps> = ({
               }`}
               aria-current={isActive ? 'page' : undefined}
             >
-              {/* Subtle Active Top Bar Indicator */}
+              {/* Active Indicator Bar */}
               {isActive && (
-                <span className="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-[#15803D] rounded-full" />
+                <span className="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-[#2E7D32] rounded-full" />
               )}
               
-              <div className={`p-1 rounded ${isActive ? 'text-[#0F2238]' : 'text-[#64748B]'}`}>
+              <div className={`p-1 rounded ${isActive ? 'text-[#142B4A]' : 'text-[#64748B]'}`}>
                 {item.icon}
               </div>
-              <span className={`text-[10px] sm:text-[11px] tracking-tight leading-tight truncate max-w-full px-0.5 ${isActive ? 'text-[#0F2238] font-black' : 'font-semibold'}`}>
+              <span className={`text-[10px] sm:text-[11px] tracking-tight leading-tight truncate max-w-full px-0.5 ${isActive ? 'text-[#142B4A] font-black' : 'font-semibold'}`}>
                 {item.label}
               </span>
             </button>
@@ -91,4 +91,3 @@ export const BottomNav: React.FC<BottomNavProps> = ({
     </nav>
   );
 };
-

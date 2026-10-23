@@ -2,12 +2,13 @@ import React from 'react';
 import {
   Sprout,
   Home,
-  Stethoscope,
+  Cpu,
   MessageSquare,
-  BookOpen,
-  User,
-  Settings,
-  Languages
+  Clock,
+  Sliders,
+  Stethoscope,
+  Languages,
+  Settings
 } from 'lucide-react';
 import { ActivePage, Crop, Language } from '../types';
 import { translations } from '../data/translations';
@@ -37,10 +38,11 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const navItems = [
     { id: 'home' as ActivePage, label: t.nav.home, icon: <Home className="w-4 h-4" /> },
-    { id: 'doctor' as ActivePage, label: t.nav.doctor, icon: <Stethoscope className="w-4 h-4" /> },
+    { id: 'farm' as ActivePage, label: t.nav.farm, icon: <Cpu className="w-4 h-4" /> },
     { id: 'chat' as ActivePage, label: t.nav.chat, icon: <MessageSquare className="w-4 h-4" /> },
-    { id: 'guide' as ActivePage, label: t.nav.guide, icon: <BookOpen className="w-4 h-4" /> },
-    { id: 'profile' as ActivePage, label: t.nav.profile, icon: <User className="w-4 h-4" /> },
+    { id: 'history' as ActivePage, label: t.nav.history, icon: <Clock className="w-4 h-4" /> },
+    { id: 'doctor' as ActivePage, label: t.nav.doctor, icon: <Stethoscope className="w-4 h-4" /> },
+    { id: 'profile' as ActivePage, label: t.nav.profile, icon: <Sliders className="w-4 h-4" /> },
   ];
 
   const handleNavClick = (page: ActivePage) => {
@@ -61,33 +63,33 @@ export const Navbar: React.FC<NavbarProps> = ({
             tabIndex={0}
             aria-label="AgriMitra AI Home"
           >
-            <div className="w-8.5 h-8.5 rounded-lg bg-[#0F2238] text-white flex items-center justify-center font-bold">
-              <Sprout className="w-4.5 h-4.5 text-[#16A34A]" />
+            <div className="w-8.5 h-8.5 rounded-lg bg-[#142B4A] text-white flex items-center justify-center font-bold">
+              <Sprout className="w-4.5 h-4.5 text-[#2E7D32]" />
             </div>
             <div>
               <div className="flex items-center gap-1.5 leading-none">
-                <span className="text-base sm:text-lg font-extrabold tracking-tight text-[#0F2238]">
-                  AgriMitra <span className="text-[#15803D]">AI</span>
+                <span className="text-base sm:text-lg font-extrabold tracking-tight text-[#142B4A]">
+                  AgriMitra <span className="text-[#2E7D32]">AI 2.0</span>
                 </span>
-                <span className="hidden sm:inline-block text-[10px] font-bold uppercase tracking-wider bg-[#F1F4F8] text-[#0F2238] px-1.5 py-0.5 rounded border border-[#E4E9F0]">
-                  Kisan
+                <span className="hidden sm:inline-block text-[10px] font-bold uppercase tracking-wider bg-[#F1F4F8] text-[#142B4A] px-1.5 py-0.5 rounded border border-[#E4E9F0]">
+                  Polyhouse
                 </span>
               </div>
               <p className="text-[11px] text-[#506680] leading-none mt-1 hidden xs:block">
-                {language === 'hi' ? 'भारतीय कृषि निर्णय प्रणाली' : 'Crop Health & Decision AI'}
+                {language === 'hi' ? 'स्मार्ट पॉलीहाउस एवं फार्म इंटेलिजेंस' : 'Smart Polyhouse & Response AI'}
               </p>
             </div>
           </div>
 
-          {/* Quick Crop Selector Pill - Large touch friendly & responsive */}
+          {/* Quick Crop Selector Pill */}
           <div className="flex items-center bg-[#F1F4F8] p-0.5 sm:p-1 rounded-lg border border-[#E4E9F0]">
             <button
               type="button"
               onClick={() => setSelectedCrop('Tomato')}
               className={`min-h-[36px] px-2.5 sm:px-3 py-1 rounded text-xs font-bold transition-all cursor-pointer flex items-center gap-1 sm:gap-1.5 ${
                 selectedCrop === 'Tomato'
-                  ? 'bg-white text-[#0F2238] border border-[#CBD5E1] shadow-xs'
-                  : 'text-[#506680] hover:text-[#0F2238]'
+                  ? 'bg-white text-[#142B4A] border border-[#CBD5E1] shadow-xs'
+                  : 'text-[#506680] hover:text-[#142B4A]'
               }`}
               title={language === 'hi' ? 'टमाटर चुनें' : 'Select Tomato'}
             >
@@ -99,8 +101,8 @@ export const Navbar: React.FC<NavbarProps> = ({
               onClick={() => setSelectedCrop('Potato')}
               className={`min-h-[36px] px-2.5 sm:px-3 py-1 rounded text-xs font-bold transition-all cursor-pointer flex items-center gap-1 sm:gap-1.5 ${
                 selectedCrop === 'Potato'
-                  ? 'bg-white text-[#0F2238] border border-[#CBD5E1] shadow-xs'
-                  : 'text-[#506680] hover:text-[#0F2238]'
+                  ? 'bg-white text-[#142B4A] border border-[#CBD5E1] shadow-xs'
+                  : 'text-[#506680] hover:text-[#142B4A]'
               }`}
               title={language === 'hi' ? 'आलू चुनें' : 'Select Potato'}
             >
@@ -109,7 +111,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
           </div>
 
-          {/* Desktop Navigation Links (Functional desktop experience) */}
+          {/* Desktop Navigation Links */}
           <nav className="hidden md:flex items-center gap-1" aria-label="Desktop Navigation">
             {navItems.map((item) => {
               const isActive = activePage === item.id;
@@ -120,8 +122,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                   onClick={() => handleNavClick(item.id)}
                   className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-colors cursor-pointer min-h-[38px] ${
                     isActive
-                      ? 'bg-[#0F2238] text-white'
-                      : 'text-[#506680] hover:text-[#0F2238] hover:bg-[#F1F4F8]'
+                      ? 'bg-[#142B4A] text-white'
+                      : 'text-[#506680] hover:text-[#142B4A] hover:bg-[#F1F4F8]'
                   }`}
                 >
                   {item.icon}
@@ -137,11 +139,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               type="button"
               onClick={() => setLanguage(language === 'en' ? 'hi' : 'en')}
-              className="touch-target flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F1F4F8] hover:bg-[#E4E9F0] border border-[#E4E9F0] text-xs font-bold text-[#0F2238] transition-colors cursor-pointer"
+              className="touch-target flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F1F4F8] hover:bg-[#E4E9F0] border border-[#E4E9F0] text-xs font-bold text-[#142B4A] transition-colors cursor-pointer"
               title="Change Language / भाषा बदलें"
               aria-label="Toggle language between English and Hindi"
             >
-              <Languages className="w-4 h-4 text-[#15803D]" />
+              <Languages className="w-4 h-4 text-[#2E7D32]" />
               <span className="text-xs font-extrabold">{language === 'en' ? 'हिन्दी' : 'EN'}</span>
             </button>
 
@@ -151,7 +153,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               onClick={openSettings}
               className={`touch-target p-2 rounded-lg border text-xs font-bold transition-colors cursor-pointer relative flex items-center justify-center ${
                 hasGeminiKey
-                  ? 'bg-[#F1F4F8] hover:bg-[#E4E9F0] text-[#0F2238] border-[#E4E9F0]'
+                  ? 'bg-[#F1F4F8] hover:bg-[#E4E9F0] text-[#142B4A] border-[#E4E9F0]'
                   : 'bg-amber-50 hover:bg-amber-100 text-amber-900 border-amber-300'
               }`}
               title="API Configuration"
@@ -169,4 +171,3 @@ export const Navbar: React.FC<NavbarProps> = ({
     </header>
   );
 };
-

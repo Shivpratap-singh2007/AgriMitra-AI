@@ -4,8 +4,10 @@ import { getSystemConfig } from './services/api';
 import { Navbar } from './components/Navbar';
 import { BottomNav } from './components/BottomNav';
 import { HomeDashboard } from './components/HomeDashboard';
-import { CropDoctor } from './components/CropDoctor';
+import { SmartFarmView } from './components/SmartFarmView';
 import { Chatbot } from './components/Chatbot';
+import { FarmHistoryView } from './components/FarmHistoryView';
+import { CropDoctor } from './components/CropDoctor';
 import { CropGuide } from './components/CropGuide';
 import { ProfileView } from './components/ProfileView';
 import { AboutView } from './components/AboutView';
@@ -106,13 +108,8 @@ export function App() {
           />
         )}
 
-        {activePage === 'doctor' && (
-          <CropDoctor
-            selectedCrop={selectedCrop}
-            setSelectedCrop={setSelectedCrop}
-            language={language}
-            onNavigateToChat={handleNavigateToChatWithQuestion}
-          />
+        {activePage === 'farm' && (
+          <SmartFarmView language={language} />
         )}
 
         {activePage === 'chat' && (
@@ -123,6 +120,19 @@ export function App() {
             openSettings={() => setIsSettingsOpen(true)}
             hasGeminiKey={Boolean(config?.gemini.has_key)}
             prefillQuestion={chatPrefill}
+          />
+        )}
+
+        {activePage === 'history' && (
+          <FarmHistoryView language={language} />
+        )}
+
+        {activePage === 'doctor' && (
+          <CropDoctor
+            selectedCrop={selectedCrop}
+            setSelectedCrop={setSelectedCrop}
+            language={language}
+            onNavigateToChat={handleNavigateToChatWithQuestion}
           />
         )}
 

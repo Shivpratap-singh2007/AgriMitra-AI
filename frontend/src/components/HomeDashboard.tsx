@@ -1,20 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Stethoscope,
-  MessageSquare,
-  ArrowRight,
-  CloudSun,
   Cpu,
-  Sparkles,
-  RefreshCw,
+  Droplets,
+  Thermometer,
+  Wind,
+  Activity,
+  AlertTriangle,
+  CheckCircle2,
   Clock,
+  ArrowRight,
+  MessageSquare,
+  Stethoscope,
+  RefreshCw,
+  Sliders,
+  ShieldCheck,
   ChevronRight,
-  Sprout,
-  CheckCircle2
+  Play,
+  CloudSun
 } from 'lucide-react';
-import { Crop, Language, ActivePage, WeatherData, DiagnosisHistoryItem } from '../types';
+import { Crop, Language, ActivePage, LiveOverview, WeatherData } from '../types';
 import { translations } from '../data/translations';
-import { getLiveWeather } from '../services/api';
+import { getLiveOverview, simulateTelemetry, getLiveWeather } from '../services/api';
 
 interface HomeDashboardProps {
   selectedCrop: Crop;
@@ -31,453 +37,525 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   language,
   navigateTo,
   hasGeminiKey,
-  isModelReady,
 }) => {
   const t = translations[language];
+  const tp = t.polyhouse;
+
+  // Live IoT Overview state
+  const [liveData, setLiveData] = useState<LiveOverview | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [simulating, setSimulating] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Weather state
   const [weather, setWeather] = useState<WeatherData | null>(null);
-  const [weatherLocation, setWeatherLocation] = useState<string>('Kangra, HP');
-  const [weatherLoading, setWeatherLoading] = useState<boolean>(true);
-  const [weatherError, setWeatherError] = useState<string | null>(null);
 
-  // Recent Diagnoses from localStorage
-  const [recentDiagnoses, setRecentDiagnoses] = useState<DiagnosisHistoryItem[]>([]);
-
-  const fetchWeather = async (loc?: string) => {
-    setWeatherLoading(true);
-    setWeatherError(null);
+  const fetchOverview = async () => {
     try {
-      const res = await getLiveWeather(loc || 'Kangra');
+      setError(null);
+      const res = await getLiveOverview('esp32-polyhouse-demo');
+      setLiveData(res);
+    } catch (err: any) {
+      setError(err.message || 'Failed to connect to Polyhouse service');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchWeather = async () => {
+    try {
+      const res = await getLiveWeather('Kangra');
       if (res.success && res.data) {
         setWeather(res.data);
-        setWeatherLocation(res.location);
-      } else {
-        setWeatherError(res.message || 'Weather feed unavailable');
       }
-    } catch (err: any) {
-      setWeatherError('Could not connect to weather feed');
-    } finally {
-      setWeatherLoading(false);
+    } catch {
+      // Non-blocking
     }
   };
 
   useEffect(() => {
-    fetchWeather('Kangra');
+    fetchOverview();
+    fetchWeather();
 
-    // Load recent diagnoses from localStorage
-    try {
-      const raw = localStorage.getItem('agrimitra_diagnosis_history');
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) {
-          setRecentDiagnoses(parsed.slice(0, 3));
-        }
-      }
-    } catch (e) {
-      console.warn('Failed reading diagnosis history:', e);
-    }
+    // Auto-refresh live data every 6 seconds
+    const interval = setInterval(fetchOverview, 6000);
+    return () => clearInterval(interval);
   }, []);
+
+  const handleSimulate = async (scenario: 'normal' | 'dry_soil' | 'heat_stress' | 'sensor_fault') => {
+    setSimulating(true);
+    try {
+      await simulateTelemetry(scenario);
+      await fetchOverview();
+    } catch (e) {
+      console.error('Simulation error:', e);
+    } finally {
+      setSimulating(false);
+    }
+  };
+
+  const reading = liveData?.latest_reading;
+  const actuators = liveData?.actuators;
+  const sensorTrust = liveData?.sensor_trust;
+  const advisory = liveData?.advisory?.[0];
 
   return (
     <div className="space-y-4 pb-4">
       
-      {/* 1. Flat Header Banner with Status Badges */}
+      {/* 1. Header Card with Live Status & Mode Badge */}
       <section className="bg-white rounded-xl border border-[#E4E9F0] p-4 sm:p-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#15803D] bg-[#EBF7EE] px-2.5 py-1 rounded-md border border-[#C6E9CC] mb-2">
-              <span className="w-2 h-2 rounded-full bg-[#15803D]" />
-              <span>{language === 'hi' ? 'सत्यापित कृषि निर्णय प्रणाली' : 'Farmer Decision Support System'}</span>
+            <div className="flex items-center gap-2 mb-2 flex-wrap">
+              {/* Liveness Badge */}
+              <span className={`inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-md border ${
+                liveData?.is_demo
+                  ? 'bg-amber-50 text-amber-900 border-amber-200'
+                  : sensorTrust?.liveness_status === 'live'
+                  ? 'bg-[#EBF7EE] text-[#15803D] border-[#C6E9CC]'
+                  : 'bg-slate-100 text-slate-700 border-slate-300'
+              }`}>
+                <span className={`w-2 h-2 rounded-full ${
+                  liveData?.is_demo
+                    ? 'bg-amber-500'
+                    : sensorTrust?.liveness_status === 'live'
+                    ? 'bg-[#2E7D32] animate-pulse'
+                    : 'bg-slate-400'
+                }`} />
+                <span>
+                  {liveData?.is_demo
+                    ? tp.demoStatus
+                    : sensorTrust?.liveness_status === 'live'
+                    ? tp.liveStatus
+                    : tp.staleStatus}
+                </span>
+              </span>
+
+              {/* Crop indicator */}
+              <span className="text-xs font-bold text-[#142B4A] bg-[#F1F4F8] px-2.5 py-1 rounded-md border border-[#E4E9F0]">
+                {selectedCrop === 'Tomato' ? '🍅 Tomato (टमाटर)' : '🥔 Potato (आलू)'}
+              </span>
             </div>
-            <h1 className="text-xl sm:text-2xl font-black text-[#0F2238] tracking-tight">
-              {language === 'hi' ? 'नमस्ते किसान साथी 🙏' : 'Welcome, Kisan Partner'}
+
+            <h1 className="text-xl sm:text-2xl font-black text-[#142B4A] tracking-tight">
+              {language === 'hi' ? 'स्मार्ट पॉलीहाउस डैशबोर्ड' : 'Smart Polyhouse Dashboard'}
             </h1>
             <p className="text-xs sm:text-sm text-[#506680] mt-1 leading-normal max-w-xl">
               {language === 'hi'
-                ? 'टमाटर और आलू की फसलों में पत्ती रोगों की सटीक जांच व सत्यापित ICAR/CPRI वैज्ञानिक समाधान।'
-                : 'Accurate disease diagnosis and ICAR-verified agronomic support for Tomato and Potato crops.'}
+                ? 'ESP32 सेंसर आधारित स्वचालित सिंचाई, तापमान नियंत्रण एवं फार्म रिस्पांस इंटेलिजेंस।'
+                : 'Autonomous ESP32 micro-climate monitoring, safe irrigation, and Farm Response Intelligence.'}
             </p>
           </div>
 
-          {/* Model Status Indicators */}
-          <div className="flex items-center gap-2 self-start sm:self-auto flex-wrap">
-            <span
-              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold border ${
-                isModelReady
-                  ? 'bg-[#EBF7EE] text-[#14532D] border-[#C6E9CC]'
-                  : 'bg-amber-50 text-amber-900 border-amber-200'
-              }`}
-              title="On-device PyTorch MobileNetV2 Neural Network"
+          <div className="flex items-center gap-2 self-start sm:self-auto">
+            <button
+              type="button"
+              onClick={fetchOverview}
+              disabled={loading}
+              className="touch-target px-3 py-1.5 rounded-lg border border-[#E4E9F0] bg-[#F8FAFC] hover:bg-[#E4E9F0] text-xs font-bold text-[#142B4A] flex items-center gap-1.5 transition-colors cursor-pointer"
+              title="Refresh Data"
             >
-              <Cpu className="w-3.5 h-3.5" />
-              <span>{isModelReady ? 'PyTorch AI: Active' : 'PyTorch: Loading'}</span>
-            </span>
+              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+              <span>{language === 'hi' ? 'ताजा करें' : 'Refresh'}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => navigateTo('farm')}
+              className="touch-target px-3 py-1.5 rounded-lg bg-[#142B4A] hover:bg-[#1B3B64] text-xs font-bold text-white flex items-center gap-1.5 transition-colors cursor-pointer"
+            >
+              <Sliders className="w-3.5 h-3.5" />
+              <span>{language === 'hi' ? 'कंट्रोल' : 'Controls'}</span>
+            </button>
+          </div>
+        </div>
 
-            <span
-              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold border ${
-                hasGeminiKey
-                  ? 'bg-slate-100 text-[#0F2238] border-[#CBD5E1]'
-                  : 'bg-amber-50 text-amber-900 border-amber-300'
-              }`}
-              title="Google Gemini Vision Model"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-blue-700" />
-              <span>{hasGeminiKey ? 'Gemini: Ready' : 'Gemini: Key needed'}</span>
+        {/* Device Last Seen Notice */}
+        {reading?.timestamp && (
+          <div className="mt-3 pt-3 border-t border-[#F1F4F8] flex items-center justify-between text-[11px] text-[#64748B]">
+            <span className="flex items-center gap-1">
+              <Clock className="w-3.5 h-3.5" />
+              <span>
+                {language === 'hi' ? 'अंतिम अपडेट: ' : 'Last reading: '}
+                {new Date(reading.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+              </span>
             </span>
+            <span className="font-semibold text-[#142B4A]">
+              ID: {liveData?.device_id || 'esp32-polyhouse-demo'}
+            </span>
+          </div>
+        )}
+      </section>
+
+      {/* 2. Live Telemetry Metric Cards */}
+      <section className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+        {/* Soil Moisture */}
+        <div className="bg-white rounded-xl border border-[#E4E9F0] p-3.5 sm:p-4 flex flex-col justify-between">
+          <div className="flex items-center justify-between text-xs text-[#506680] font-semibold">
+            <span>{tp.soilMoisture}</span>
+            <Droplets className="w-4 h-4 text-blue-600" />
+          </div>
+          <div className="my-2">
+            <span className="text-2xl sm:text-3xl font-black text-[#142B4A]">
+              {reading?.soil_moisture !== undefined ? `${reading.soil_moisture}%` : '--'}
+            </span>
+          </div>
+          <div className="text-[11px] font-bold text-[#2E7D32] flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#2E7D32]" />
+            <span>Target: 55 - 75%</span>
+          </div>
+        </div>
+
+        {/* Air Temperature */}
+        <div className="bg-white rounded-xl border border-[#E4E9F0] p-3.5 sm:p-4 flex flex-col justify-between">
+          <div className="flex items-center justify-between text-xs text-[#506680] font-semibold">
+            <span>{tp.airTemp}</span>
+            <Thermometer className="w-4 h-4 text-amber-600" />
+          </div>
+          <div className="my-2">
+            <span className="text-2xl sm:text-3xl font-black text-[#142B4A]">
+              {reading?.temperature !== undefined ? `${reading.temperature}°C` : '--'}
+            </span>
+          </div>
+          <div className="text-[11px] font-bold text-[#506680]">
+            Fan Trigger: &gt; 32.0°C
+          </div>
+        </div>
+
+        {/* Humidity */}
+        <div className="bg-white rounded-xl border border-[#E4E9F0] p-3.5 sm:p-4 flex flex-col justify-between">
+          <div className="flex items-center justify-between text-xs text-[#506680] font-semibold">
+            <span>{tp.humidity}</span>
+            <Activity className="w-4 h-4 text-emerald-600" />
+          </div>
+          <div className="my-2">
+            <span className="text-2xl sm:text-3xl font-black text-[#142B4A]">
+              {reading?.humidity !== undefined ? `${reading.humidity}%` : '--'}
+            </span>
+          </div>
+          <div className="text-[11px] font-bold text-[#506680]">
+            Blight Risk: &gt; 80%
+          </div>
+        </div>
+
+        {/* VPD Vapor Deficit */}
+        <div className="bg-white rounded-xl border border-[#E4E9F0] p-3.5 sm:p-4 flex flex-col justify-between">
+          <div className="flex items-center justify-between text-xs text-[#506680] font-semibold">
+            <span>{tp.vpd}</span>
+            <Wind className="w-4 h-4 text-indigo-600" />
+          </div>
+          <div className="my-2">
+            <span className="text-2xl sm:text-3xl font-black text-[#142B4A]">
+              {reading?.vpd_kpa !== undefined ? `${reading.vpd_kpa} kPa` : '--'}
+            </span>
+          </div>
+          <div className="text-[11px] font-bold text-[#2E7D32]">
+            Transpiration: Ideal
           </div>
         </div>
       </section>
 
-      {/* 2. Primary Mobile Action Cards (Large Touch-Friendly, Flat UI) */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        
-        {/* Action 1: Diagnose Crop Leaf */}
-        <button
-          type="button"
-          onClick={() => navigateTo('doctor')}
-          className="touch-target bg-[#0F2238] hover:bg-[#142C4C] active:bg-[#0B1C30] text-white p-4.5 rounded-xl border border-[#0F2238] text-left transition-colors cursor-pointer flex items-center justify-between group min-h-[96px]"
-        >
-          <div className="space-y-1">
-            <div className="flex items-center gap-2 text-[#16A34A]">
-              <Stethoscope className="w-5 h-5 text-[#16A34A]" />
-              <span className="text-xs font-extrabold uppercase tracking-wider">
-                {language === 'hi' ? 'कैमरा जांच' : 'Photo Diagnosis'}
-              </span>
-            </div>
-            <h2 className="text-lg font-black tracking-tight text-white">
-              {language === 'hi' ? 'फसल की जांच करें' : 'Diagnose Crop Leaf'}
-            </h2>
-            <p className="text-xs text-slate-300 line-clamp-1">
-              {language === 'hi'
-                ? 'पत्ती की फोटो लेकर झुलसा, लीफ मोल्ड व धब्बा रोग पहचानें'
-                : 'Instant analysis via MobileNetV2 & Gemini AI'}
-            </p>
-          </div>
-          <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center text-white flex-shrink-0 ml-2">
-            <ArrowRight className="w-5 h-5" />
-          </div>
-        </button>
-
-        {/* Action 2: Ask AI Assistant */}
-        <button
-          type="button"
-          onClick={() => navigateTo('chat')}
-          className="touch-target bg-white hover:bg-[#F1F4F8] active:bg-[#E4E9F0] text-[#0F2238] p-4.5 rounded-xl border-2 border-[#0F2238] text-left transition-colors cursor-pointer flex items-center justify-between group min-h-[96px]"
-        >
-          <div className="space-y-1">
-            <div className="flex items-center gap-2 text-[#15803D]">
-              <MessageSquare className="w-5 h-5" />
-              <span className="text-xs font-extrabold uppercase tracking-wider">
-                {language === 'hi' ? 'किसान चौपाल' : 'Kisan Advisor'}
-              </span>
-            </div>
-            <h2 className="text-lg font-black tracking-tight text-[#0F2238]">
-              {language === 'hi' ? 'AI से सवाल पूछें' : 'Ask AI Assistant'}
-            </h2>
-            <p className="text-xs text-[#506680] line-clamp-1">
-              {language === 'hi'
-                ? 'बुवाई, खाद, सिंचाई और रोग उपचार पर बोलकर या लिखकर पूछें'
-                : 'Bilingual advice grounded in ICAR research'}
-            </p>
-          </div>
-          <div className="w-10 h-10 rounded-lg bg-[#F1F4F8] flex items-center justify-center text-[#0F2238] flex-shrink-0 ml-2">
-            <ArrowRight className="w-5 h-5" />
-          </div>
-        </button>
-
-      </section>
-
-      {/* 3. Target Crop Focus (Tomato & Potato) */}
-      <section className="bg-white rounded-xl border border-[#E4E9F0] p-4 sm:p-5">
+      {/* 3. Actuator States Banner (Pump & Fan) */}
+      <section className="bg-white rounded-xl border border-[#E4E9F0] p-4">
         <div className="flex items-center justify-between mb-3">
-          <div>
-            <h2 className="text-xs sm:text-sm font-extrabold text-[#0F2238] uppercase tracking-wide">
-              {language === 'hi' ? 'सक्रिय फसल (Active Crop)' : 'Select Target Crop'}
-            </h2>
-            <p className="text-xs text-[#506680]">
-              {language === 'hi' ? 'पत्ती जांच और सलाह के लिए फसल चुनें' : 'Switches agronomy focus and disease models'}
-            </p>
-          </div>
-          <span className="text-xs font-extrabold px-2.5 py-1 rounded bg-[#F1F4F8] text-[#0F2238] border border-[#CBD5E1]">
-            {selectedCrop}
+          <h2 className="text-xs font-bold uppercase tracking-wider text-[#506680]">
+            {language === 'hi' ? 'सक्रिय रिले उपकरण स्थिति' : 'Active Actuator States'}
+          </h2>
+          <span className="text-[11px] font-bold text-[#2E7D32] bg-[#EBF7EE] px-2 py-0.5 rounded border border-[#C6E9CC]">
+            Auto Safe-Cycle
           </span>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          {/* Tomato Card */}
-          <div
-            onClick={() => setSelectedCrop('Tomato')}
-            className={`p-3.5 rounded-xl border-2 transition-colors cursor-pointer select-none flex flex-col justify-between touch-target ${
-              selectedCrop === 'Tomato'
-                ? 'border-[#0F2238] bg-[#F1F4F8]'
-                : 'border-[#E4E9F0] bg-white hover:border-[#CBD5E1]'
-            }`}
-            role="button"
-            tabIndex={0}
-            aria-pressed={selectedCrop === 'Tomato'}
-          >
-            <div className="flex items-start justify-between">
-              <span className="text-3xl">🍅</span>
-              {selectedCrop === 'Tomato' && (
-                <span className="bg-[#0F2238] text-white text-[10px] font-black px-2 py-0.5 rounded">
-                  ACTIVE
-                </span>
-              )}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {/* Pump Status Card */}
+          <div className={`p-3 rounded-lg border flex items-center justify-between ${
+            actuators?.pump
+              ? 'bg-[#EBF7EE] border-[#C6E9CC]'
+              : 'bg-[#F8FAFC] border-[#E4E9F0]'
+          }`}>
+            <div className="flex items-center gap-2.5">
+              <div className={`w-9 h-9 rounded-lg flex items-center justify-center font-bold ${
+                actuators?.pump
+                  ? 'bg-[#2E7D32] text-white animate-pulse'
+                  : 'bg-slate-200 text-slate-700'
+              }`}>
+                <Droplets className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-[#142B4A]">{tp.pump}</p>
+                <p className="text-[11px] text-[#506680]">
+                  {actuators?.pump ? tp.pumpStateOn : tp.pumpStateOff}
+                </p>
+              </div>
             </div>
-            <div className="mt-2">
-              <h3 className="font-extrabold text-sm text-[#0F2238]">
-                {language === 'hi' ? 'टमाटर (Tomato)' : 'Tomato'}
+            <span className={`text-xs font-extrabold px-2 py-1 rounded ${
+              actuators?.pump ? 'bg-[#2E7D32] text-white' : 'bg-slate-200 text-slate-700'
+            }`}>
+              {actuators?.pump ? 'ACTIVE' : 'IDLE'}
+            </span>
+          </div>
+
+          {/* Fan Status Card */}
+          <div className={`p-3 rounded-lg border flex items-center justify-between ${
+            actuators?.fan
+              ? 'bg-[#EBF7EE] border-[#C6E9CC]'
+              : 'bg-[#F8FAFC] border-[#E4E9F0]'
+          }`}>
+            <div className="flex items-center gap-2.5">
+              <div className={`w-9 h-9 rounded-lg flex items-center justify-center font-bold ${
+                actuators?.fan
+                  ? 'bg-[#2E7D32] text-white animate-pulse'
+                  : 'bg-slate-200 text-slate-700'
+              }`}>
+                <Wind className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-[#142B4A]">{tp.fan}</p>
+                <p className="text-[11px] text-[#506680]">
+                  {actuators?.fan ? tp.fanStateOn : tp.fanStateOff}
+                </p>
+              </div>
+            </div>
+            <span className={`text-xs font-extrabold px-2 py-1 rounded ${
+              actuators?.fan ? 'bg-[#2E7D32] text-white' : 'bg-slate-200 text-slate-700'
+            }`}>
+              {actuators?.fan ? 'ACTIVE' : 'IDLE'}
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. Sensor Trust / Warnings Alert (if any) */}
+      {sensorTrust?.warnings && sensorTrust.warnings.length > 0 && (
+        <section className="bg-amber-50 rounded-xl border border-amber-300 p-4">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-amber-700 flex-shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <h3 className="text-xs font-bold text-amber-900 uppercase tracking-wider">
+                {language === 'hi' ? 'सेंसर चेतावनी / त्रुटि पहचान' : 'Sensor Trust & Health Notice'}
               </h3>
-              <p className="text-xs text-[#506680] mt-0.5 leading-snug">
-                {language === 'hi' ? 'अगेती/पछेती झुलसा, लीफ मोल्ड, सेप्टोरिया' : 'Early Blight, Late Blight, Leaf Mold'}
+              <ul className="text-xs text-amber-800 list-disc list-inside space-y-0.5">
+                {sensorTrust.warnings.map((warn, i) => (
+                  <li key={i}>{warn}</li>
+                ))}
+              </ul>
+              <p className="text-[11px] text-amber-700 pt-1">
+                {language === 'hi'
+                  ? 'सुरक्षा नियम: अमान्य या रुका हुआ मान मिलने पर स्वतः सिंचाई अवरुद्ध रहेगी।'
+                  : 'Safety Policy: Irrigation will remain locked until healthy, valid readings are restored.'}
               </p>
             </div>
-            <div className="mt-3 pt-2 border-t border-[#E4E9F0] flex items-center justify-between text-xs font-bold text-[#0F2238]">
-              <span>{language === 'hi' ? 'जांच शुरू करें' : 'Diagnose'}</span>
-              <ChevronRight className="w-4 h-4 text-[#15803D]" />
+          </div>
+        </section>
+      )}
+
+      {/* 5. Explainable AI Recommendation Card (USP) */}
+      {advisory && (
+        <section className="bg-white rounded-xl border border-[#E4E9F0] p-4 sm:p-5">
+          <div className="flex items-center justify-between mb-2">
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#2E7D32] bg-[#EBF7EE] px-2.5 py-1 rounded-md border border-[#C6E9CC]">
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>{language === 'hi' ? 'स्पष्टीकरणीय कृषि सलाह' : 'Explainable Agronomic Advisory'}</span>
+            </div>
+            <span className="text-xs font-bold text-[#506680]">
+              Confidence: {Math.round(advisory.confidence * 100)}%
+            </span>
+          </div>
+
+          <h3 className="text-base font-extrabold text-[#142B4A] mt-1">
+            {language === 'hi' ? advisory.title_hi : advisory.title}
+          </h3>
+
+          <div className="mt-2 p-3 rounded-lg bg-[#F8FAFC] border border-[#E4E9F0] space-y-2 text-xs">
+            <div>
+              <span className="font-bold text-[#142B4A]">
+                {language === 'hi' ? 'सिफारिश (What): ' : 'Recommendation: '}
+              </span>
+              <span className="text-[#334155]">
+                {language === 'hi' ? advisory.recommendation_hi : advisory.recommendation}
+              </span>
+            </div>
+            <div>
+              <span className="font-bold text-[#142B4A]">
+                {language === 'hi' ? 'कारण (Why): ' : 'Reason: '}
+              </span>
+              <span className="text-[#506680]">
+                {language === 'hi' ? advisory.reason_hi : advisory.reason}
+              </span>
+            </div>
+            <div>
+              <span className="font-bold text-[#142B4A]">
+                {language === 'hi' ? 'अगला सत्यापन (Next Check): ' : 'Verification Check: '}
+              </span>
+              <span className="text-[#2E7D32] font-semibold">
+                {advisory.next_check}
+              </span>
             </div>
           </div>
 
-          {/* Potato Card */}
-          <div
-            onClick={() => setSelectedCrop('Potato')}
-            className={`p-3.5 rounded-xl border-2 transition-colors cursor-pointer select-none flex flex-col justify-between touch-target ${
-              selectedCrop === 'Potato'
-                ? 'border-[#0F2238] bg-[#F1F4F8]'
-                : 'border-[#E4E9F0] bg-white hover:border-[#CBD5E1]'
-            }`}
-            role="button"
-            tabIndex={0}
-            aria-pressed={selectedCrop === 'Potato'}
-          >
-            <div className="flex items-start justify-between">
-              <span className="text-3xl">🥔</span>
-              {selectedCrop === 'Potato' && (
-                <span className="bg-[#0F2238] text-white text-[10px] font-black px-2 py-0.5 rounded">
-                  ACTIVE
-                </span>
-              )}
-            </div>
-            <div className="mt-2">
-              <h3 className="font-extrabold text-sm text-[#0F2238]">
-                {language === 'hi' ? 'आलू (Potato)' : 'Potato'}
-              </h3>
-              <p className="text-xs text-[#506680] mt-0.5 leading-snug">
-                {language === 'hi' ? 'पछेती झुलसा, अगेती झुलसा, कंद स्वास्थ्य' : 'Late Blight, Early Blight, Tuber Care'}
-              </p>
-            </div>
-            <div className="mt-3 pt-2 border-t border-[#E4E9F0] flex items-center justify-between text-xs font-bold text-[#0F2238]">
-              <span>{language === 'hi' ? 'जांच शुरू करें' : 'Diagnose'}</span>
-              <ChevronRight className="w-4 h-4 text-[#15803D]" />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 4. Live Farm Weather Card (Open-Meteo Integration) */}
-      <section className="bg-white rounded-xl border border-[#E4E9F0] p-4 sm:p-5">
-        <div className="flex items-center justify-between mb-3 border-b border-[#E4E9F0] pb-2.5">
-          <div className="flex items-center gap-2">
-            <CloudSun className="w-5 h-5 text-[#0F2238]" />
-            <h2 className="text-xs sm:text-sm font-extrabold text-[#0F2238] uppercase tracking-wide">
-              {t.weather.title}
-            </h2>
-          </div>
-          <button
-            type="button"
-            onClick={() => fetchWeather('Kangra')}
-            disabled={weatherLoading}
-            className="touch-target text-[#506680] hover:text-[#0F2238] p-1.5 rounded transition-colors cursor-pointer flex items-center justify-center"
-            title="Refresh weather"
-            aria-label="Refresh weather data"
-          >
-            <RefreshCw className={`w-4 h-4 ${weatherLoading ? 'animate-spin' : ''}`} />
-          </button>
-        </div>
-
-        {weatherLoading ? (
-          <div className="py-6 text-center text-xs text-[#506680]">
-            <div className="w-6 h-6 border-2 border-slate-300 border-t-[#0F2238] rounded-full animate-spin mx-auto mb-2" />
-            <span>{language === 'hi' ? 'उपग्रह मौसम लोड हो रहा है...' : 'Fetching live satellite weather...'}</span>
-          </div>
-        ) : weatherError || !weather ? (
-          <div className="py-3 px-3 bg-[#F1F4F8] rounded-lg text-xs text-[#506680] flex items-center justify-between">
-            <span>{weatherError || 'Weather data unavailable'}</span>
+          <div className="mt-3 flex items-center justify-end gap-2">
             <button
               type="button"
-              onClick={() => fetchWeather('Kangra')}
-              className="text-xs font-bold text-[#0F2238] underline ml-2 cursor-pointer touch-target"
+              onClick={() => navigateTo('chat')}
+              className="touch-target px-3 py-1.5 rounded-lg border border-[#E4E9F0] text-xs font-bold text-[#142B4A] hover:bg-[#F1F4F8] flex items-center gap-1 transition-colors cursor-pointer"
             >
-              Retry
+              <MessageSquare className="w-3.5 h-3.5 text-[#2E7D32]" />
+              <span>{language === 'hi' ? 'AI चौपाल में पूछें' : 'Discuss with AI'}</span>
             </button>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <div>
-                <span className="text-xs text-[#506680] block truncate max-w-[220px]">
-                  📍 {weatherLocation}
-                </span>
-                <span className="text-base sm:text-lg font-black text-[#0F2238] block mt-0.5">
-                  {language === 'hi' ? weather.summaryHindi : weather.summary}
-                </span>
-              </div>
-              <div className="flex items-center gap-2 text-right">
-                <span className="text-3xl">{weather.icon}</span>
-                <span className="text-2xl font-black text-[#0F2238]">
-                  {weather.temperature}°C
-                </span>
-              </div>
-            </div>
-
-            {/* Weather Metrics Grid */}
-            <div className="grid grid-cols-3 gap-1.5 sm:gap-2 text-center text-xs">
-              <div className="bg-[#F1F4F8] p-2 sm:p-2.5 rounded-lg border border-[#E4E9F0]">
-                <span className="text-[10px] sm:text-[11px] text-[#506680] block truncate">{t.weather.humidity}</span>
-                <strong className="text-xs sm:text-sm font-extrabold text-[#0F2238]">{weather.humidity}%</strong>
-              </div>
-              <div className="bg-[#F1F4F8] p-2 sm:p-2.5 rounded-lg border border-[#E4E9F0]">
-                <span className="text-[10px] sm:text-[11px] text-[#506680] block truncate">{t.weather.rainRisk}</span>
-                <strong className="text-xs sm:text-sm font-extrabold text-[#0F2238]">{weather.rainProbability}%</strong>
-              </div>
-              <div className="bg-[#F1F4F8] p-2 sm:p-2.5 rounded-lg border border-[#E4E9F0]">
-                <span className="text-[10px] sm:text-[11px] text-[#506680] block truncate">{t.weather.wind}</span>
-                <strong className="text-xs sm:text-sm font-extrabold text-[#0F2238]">{weather.windSpeed} km/h</strong>
-              </div>
-            </div>
-
-            {/* Spray Guidance Advisory Pill (Restrained Green/Amber) */}
-            <div
-              className={`p-3 rounded-lg text-xs font-medium border flex items-start gap-2.5 ${
-                weather.sprayFavorable
-                  ? 'bg-[#EBF7EE] text-[#14532D] border-[#C6E9CC]'
-                  : 'bg-amber-50 text-amber-950 border-amber-200'
-              }`}
-            >
-              <span className="text-base mt-0.5">{weather.sprayFavorable ? '✅' : '⚠️'}</span>
-              <div>
-                <strong className="font-extrabold block text-xs uppercase tracking-wide">
-                  {t.weather.sprayTitle}
-                </strong>
-                <span className="text-xs leading-normal">
-                  {language === 'hi' ? weather.sprayAdviceHindi : weather.sprayAdvice}
-                </span>
-              </div>
-            </div>
-          </div>
-        )}
-      </section>
-
-      {/* 5. Verified Seasonal Advisory Card */}
-      <section className="bg-white rounded-xl border border-[#E4E9F0] p-4 sm:p-5">
-        <div className="flex items-center gap-2 mb-2">
-          <Sprout className="w-4.5 h-4.5 text-[#15803D]" />
-          <h2 className="text-xs sm:text-sm font-extrabold text-[#0F2238] uppercase tracking-wide">
-            {language === 'hi' ? `${selectedCrop === 'Tomato' ? 'टमाटर' : 'आलू'} मौसमी सलाह` : `${selectedCrop} Seasonal Advisory`}
-          </h2>
-        </div>
-
-        {selectedCrop === 'Tomato' ? (
-          <div className="text-xs text-[#506680] space-y-2 leading-relaxed">
-            <p>
-              • <strong className="text-[#0F2238]">{language === 'hi' ? 'सिंचाई विधि:' : 'Irrigation:'}</strong> {language === 'hi' ? 'फूल आने और फल बनते समय जलभराव से बचें; ड्रिप सिंचाई करें ताकि पत्तियां गीली न हों।' : 'Maintain uniform moisture during flowering. Use drip irrigation to prevent foliar blight.'}
-            </p>
-            <p>
-              • <strong className="text-[#0F2238]">{language === 'hi' ? 'रोग रोकथाम:' : 'Blight Alert:'}</strong> {language === 'hi' ? 'निचली संक्रमित पत्तियों को समय पर काटकर हटाएं और नीम का तेल (5ml/L) छिड़कें।' : 'Prune lower leaves touching soil. Spray cold-pressed Neem oil (5ml/L) as a prophylactic barrier.'}
-            </p>
-          </div>
-        ) : (
-          <div className="text-xs text-[#506680] space-y-2 leading-relaxed">
-            <p>
-              • <strong className="text-[#0F2238]">{language === 'hi' ? 'मिट्टी चढ़ाना (Earthing Up):' : 'Earthing Up:'}</strong> {language === 'hi' ? 'बुवाई के 30-35 दिन बाद कंदों को धूप से बचाने हेतु अच्छी मिट्टी चढ़ाएं।' : 'Mandatory earthing up at 30-35 days prevents greening and solanine buildup in tubers.'}
-            </p>
-            <p>
-              • <strong className="text-[#0F2238]">{language === 'hi' ? 'पछेती झुलसा बचाव:' : 'Late Blight:'}</strong> {language === 'hi' ? 'लगातार 2 दिन कोहरा या रिमझिम बारिश होने पर कॉपर फफूंदनाशी का सुरक्षात्मक छिड़काव करें।' : 'If continuous fog or drizzle persists for 2 days, apply protective copper spray.'}
-            </p>
-          </div>
-        )}
-
-        <button
-          type="button"
-          onClick={() => navigateTo('guide')}
-          className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-[#0F2238] hover:text-[#15803D] cursor-pointer touch-target"
-        >
-          <span>{language === 'hi' ? 'संपूर्ण वैज्ञानिक गाइड देखें' : 'View Complete Agronomic Guide'}</span>
-          <ChevronRight className="w-4 h-4 text-[#15803D]" />
-        </button>
-      </section>
-
-      {/* 6. Recent Diagnoses Section (Natural Scrolling) */}
-      <section className="bg-white rounded-xl border border-[#E4E9F0] p-4 sm:p-5">
-        <div className="flex items-center justify-between mb-3 border-b border-[#E4E9F0] pb-2.5">
-          <div className="flex items-center gap-2">
-            <Clock className="w-4 h-4 text-[#506680]" />
-            <h2 className="text-xs sm:text-sm font-extrabold text-[#0F2238] uppercase tracking-wide">
-              {language === 'hi' ? 'हाल की जांचें' : 'Recent Diagnoses'}
-            </h2>
-          </div>
-          {recentDiagnoses.length > 0 && (
             <button
               type="button"
-              onClick={() => navigateTo('profile')}
-              className="text-xs font-bold text-[#0F2238] hover:underline cursor-pointer touch-target flex items-center"
+              onClick={() => navigateTo('history')}
+              className="touch-target px-3 py-1.5 rounded-lg bg-[#142B4A] text-xs font-bold text-white hover:bg-[#1B3B64] flex items-center gap-1 transition-colors cursor-pointer"
             >
-              {language === 'hi' ? 'सभी देखें' : 'View all'}
+              <span>{language === 'hi' ? 'सत्यापन इतिहास' : 'View History'}</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
+          </div>
+        </section>
+      )}
+
+      {/* 6. Interactive Simulator Bar for Testing Autonomy & Safety */}
+      <section className="bg-white rounded-xl border border-[#E4E9F0] p-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2.5">
+          <div>
+            <h2 className="text-xs font-extrabold uppercase tracking-wider text-[#142B4A] flex items-center gap-1.5">
+              <Play className="w-3.5 h-3.5 text-[#2E7D32]" />
+              <span>{tp.simulationMode}</span>
+            </h2>
+            <p className="text-[11px] text-[#506680] mt-0.5">
+              {tp.simulationDesc}
+            </p>
+          </div>
+          {simulating && (
+            <span className="text-[11px] font-bold text-amber-700 animate-pulse">
+              Injecting Telemetry...
+            </span>
           )}
         </div>
 
-        {recentDiagnoses.length === 0 ? (
-          <div className="py-5 px-4 bg-[#F1F4F8] rounded-lg text-center text-xs text-[#506680] space-y-2">
-            <p>{language === 'hi' ? 'अभी तक कोई पत्ती स्कैन नहीं की गई है।' : 'No leaf diagnoses recorded yet.'}</p>
-            <button
-              type="button"
-              onClick={() => navigateTo('doctor')}
-              className="touch-target px-4 py-2.5 bg-[#0F2238] text-white rounded-lg text-xs font-bold hover:bg-[#142C4C] transition-colors cursor-pointer inline-flex items-center gap-2"
-            >
-              <Stethoscope className="w-4 h-4 text-[#16A34A]" />
-              <span>{language === 'hi' ? 'पहला फोटो स्कैन करें' : 'Diagnose Your First Leaf'}</span>
-            </button>
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {recentDiagnoses.map((item) => (
-              <div
-                key={item.id}
-                onClick={() => navigateTo('doctor')}
-                className="p-3 bg-[#F1F4F8] hover:bg-[#E4E9F0] rounded-lg border border-[#E4E9F0] flex items-center justify-between transition-colors cursor-pointer touch-target"
-                role="button"
-                tabIndex={0}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-md bg-white border border-[#CBD5E1] flex items-center justify-center text-base flex-shrink-0">
-                    {item.crop === 'Tomato' ? '🍅' : '🥔'}
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-extrabold text-[#0F2238]">
-                      {language === 'hi' ? item.diseaseHindi || item.disease : item.disease}
-                    </h4>
-                    <span className="text-[11px] text-[#506680]">
-                      {item.crop} • {item.timestamp}
-                    </span>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <span className="text-xs font-black text-[#15803D]">
-                    {item.confidence}%
-                  </span>
-                  <span className="text-[10px] text-[#506680] block capitalize">
-                    {item.mode}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <button
+            type="button"
+            onClick={() => handleSimulate('normal')}
+            disabled={simulating}
+            className="touch-target px-2.5 py-2 rounded-lg bg-[#F8FAFC] hover:bg-[#EBF7EE] hover:border-[#C6E9CC] border border-[#E4E9F0] text-left transition-colors cursor-pointer"
+          >
+            <p className="text-xs font-bold text-[#142B4A]">{tp.simNormal}</p>
+            <p className="text-[10px] text-[#506680]">Moist 62% • Temp 27°C</p>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleSimulate('dry_soil')}
+            disabled={simulating}
+            className="touch-target px-2.5 py-2 rounded-lg bg-[#F8FAFC] hover:bg-blue-50 hover:border-blue-300 border border-[#E4E9F0] text-left transition-colors cursor-pointer"
+          >
+            <p className="text-xs font-bold text-blue-900">{tp.simDry}</p>
+            <p className="text-[10px] text-blue-700">Moist 22% • Safe Pump</p>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleSimulate('heat_stress')}
+            disabled={simulating}
+            className="touch-target px-2.5 py-2 rounded-lg bg-[#F8FAFC] hover:bg-amber-50 hover:border-amber-300 border border-[#E4E9F0] text-left transition-colors cursor-pointer"
+          >
+            <p className="text-xs font-bold text-amber-900">{tp.simHeat}</p>
+            <p className="text-[10px] text-amber-700">Temp 34.5°C • Fan Auto</p>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleSimulate('sensor_fault')}
+            disabled={simulating}
+            className="touch-target px-2.5 py-2 rounded-lg bg-[#F8FAFC] hover:bg-red-50 hover:border-red-300 border border-[#E4E9F0] text-left transition-colors cursor-pointer"
+          >
+            <p className="text-xs font-bold text-red-900">{tp.simFault}</p>
+            <p className="text-[10px] text-red-700">Frozen • Pump Lock</p>
+          </button>
+        </div>
       </section>
+
+      {/* 7. Quick Navigation to Core Features */}
+      <section className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {/* Ask AI Chaupal */}
+        <div
+          onClick={() => navigateTo('chat')}
+          className="bg-white rounded-xl border border-[#E4E9F0] p-4 hover:border-[#142B4A] transition-all cursor-pointer flex items-center justify-between touch-target"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[#EBF7EE] text-[#2E7D32] flex items-center justify-center font-bold">
+              <MessageSquare className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-sm font-extrabold text-[#142B4A]">
+                {language === 'hi' ? 'AI किसान चौपाल' : 'AI Farmer Assistant'}
+              </h3>
+              <p className="text-[11px] text-[#506680]">
+                {language === 'hi' ? 'पॉलीहाउस डेटा आधारित हिंदी/अंग्रेजी संवाद' : 'Grounded in live polyhouse sensor telemetry'}
+              </p>
+            </div>
+          </div>
+          <ChevronRight className="w-5 h-5 text-[#506680]" />
+        </div>
+
+        {/* Crop Doctor / Disease Diagnosis */}
+        <div
+          onClick={() => navigateTo('doctor')}
+          className="bg-white rounded-xl border border-[#E4E9F0] p-4 hover:border-[#142B4A] transition-all cursor-pointer flex items-center justify-between touch-target"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center font-bold">
+              <Stethoscope className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-sm font-extrabold text-[#142B4A]">
+                {language === 'hi' ? 'क्रॉप डॉक्टर (रोग जांच)' : 'Crop Doctor Diagnosis'}
+              </h3>
+              <p className="text-[11px] text-[#506680]">
+                {language === 'hi' ? 'टमाटर व आलू की पत्ती का फोटो स्कैन करें' : 'MobileNetV2 + Gemini Dual AI inspection'}
+              </p>
+            </div>
+          </div>
+          <ChevronRight className="w-5 h-5 text-[#506680]" />
+        </div>
+      </section>
+
+      {/* 8. Satellite Agro-Weather Feed Card */}
+      {weather && (
+        <section className="bg-white rounded-xl border border-[#E4E9F0] p-4">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <CloudSun className="w-4 h-4 text-[#142B4A]" />
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#142B4A]">
+                {language === 'hi' ? 'क्षेत्रीय उपग्रह मौसम' : 'Satellite Agro-Weather'}
+              </h3>
+            </div>
+            <span className="text-[11px] font-bold text-[#506680]">
+              {language === 'hi' ? 'कांगड़ा क्षेत्र' : 'Kangra Region'}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-3 gap-2 py-2 text-center border-y border-[#F1F4F8]">
+            <div>
+              <p className="text-[10px] text-[#506680]">{t.weather.humidity}</p>
+              <p className="text-sm font-bold text-[#142B4A]">{weather.humidity}%</p>
+            </div>
+            <div>
+              <p className="text-[10px] text-[#506680]">{t.weather.rainRisk}</p>
+              <p className="text-sm font-bold text-[#142B4A]">{weather.rainProbability}%</p>
+            </div>
+            <div>
+              <p className="text-[10px] text-[#506680]">{t.weather.wind}</p>
+              <p className="text-sm font-bold text-[#142B4A]">{weather.windSpeed} km/h</p>
+            </div>
+          </div>
+
+          <p className="text-xs text-[#334155] mt-2 font-medium">
+            {language === 'hi' ? weather.sprayAdviceHindi : weather.sprayAdvice}
+          </p>
+        </section>
+      )}
 
     </div>
   );
 };
-

@@ -1,7 +1,125 @@
 export type Crop = 'Tomato' | 'Potato';
 export type Language = 'en' | 'hi';
 export type AnalysisMode = 'custom' | 'gemini' | 'compare';
-export type ActivePage = 'home' | 'doctor' | 'chat' | 'guide' | 'profile' | 'about';
+export type ActivePage = 'home' | 'farm' | 'chat' | 'history' | 'profile' | 'doctor' | 'guide' | 'about';
+
+// --- AgriMitra AI 2.0 Smart Polyhouse & Farm Response Intelligence Types ---
+
+export interface TelemetryReading {
+  temperature: number;
+  humidity: number;
+  soil_moisture: number;
+  vpd_kpa: number;
+  pump_state: boolean;
+  fan_state: boolean;
+  timestamp: string;
+  is_demo: boolean;
+}
+
+export interface ActuatorState {
+  pump: boolean;
+  fan: boolean;
+  emergency_stop: boolean;
+  auto_mode: boolean;
+  last_pump_activation: string | null;
+  anti_cycle_remaining_sec: number;
+}
+
+export interface SensorTrust {
+  device_connected: boolean;
+  last_seen_seconds_ago: number;
+  liveness_status: 'live' | 'stale' | 'offline';
+  dht_status: 'healthy' | 'implausible' | 'frozen' | 'missing';
+  moisture_status: 'healthy' | 'implausible' | 'frozen' | 'missing';
+  warnings: string[];
+}
+
+export interface AdvisoryItem {
+  title: string;
+  title_hi: string;
+  recommendation: string;
+  recommendation_hi: string;
+  reason: string;
+  reason_hi: string;
+  supporting_data: Record<string, any>;
+  action_type: 'irrigate' | 'ventilate' | 'inspect' | 'maintain' | 'monitor';
+  suggested_duration_sec?: number;
+  confidence: number;
+  next_check: string;
+}
+
+export interface LiveOverview {
+  success: boolean;
+  device_id: string;
+  device_name: string;
+  latest_reading: TelemetryReading | null;
+  actuators: ActuatorState;
+  sensor_trust: SensorTrust;
+  advisory: AdvisoryItem[];
+  active_alerts_count: number;
+  is_demo: boolean;
+}
+
+export interface FarmingActionItem {
+  id: number;
+  device_id: string;
+  action_type: string;
+  trigger_source: 'automated' | 'manual_farmer' | 'ai_advisory';
+  crop: string;
+  crop_stage: string;
+  pre_moisture: number;
+  pre_temperature: number;
+  duration_seconds: number;
+  status: 'completed' | 'in_progress' | 'failed' | 'aborted_safety';
+  post_moisture: number | null;
+  post_temperature: number | null;
+  verified_at: string | null;
+  verification_status: 'pending' | 'confirmed_effective' | 'ineffective_warning' | 'unverifiable';
+  outcome_notes: string | null;
+  created_at: string;
+}
+
+export interface PolyhouseSettings {
+  device_id: string;
+  crop_type: string;
+  crop_stage: string;
+  substrate: string;
+  moisture_low_trigger: number;
+  moisture_high_cutoff: number;
+  temp_fan_start: number;
+  temp_fan_stop: number;
+  max_pump_duration_seconds: number;
+  anti_cycle_interval_minutes: number;
+  auto_irrigation_enabled: boolean;
+  auto_ventilation_enabled: boolean;
+  emergency_stop: boolean;
+  water_flow_rate_lpm: number;
+}
+
+export interface PerformanceReport {
+  total_irrigation_actions: number;
+  completed_actions: number;
+  completion_rate_pct: number;
+  verified_effective_actions: number;
+  effective_verification_rate_pct: number;
+  total_pump_runtime_seconds: number;
+  total_water_liters: number;
+  sensor_fault_count: number;
+  active_alerts_count: number;
+  sensor_availability_pct: number;
+}
+
+export interface SensorAlert {
+  id: number;
+  alert_type: string;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  message: string;
+  suggested_action: string;
+  created_at: string;
+  resolved_at: string | null;
+}
+
+// --- Retained V1 Leaf Doctor & Plant Pathology Types ---
 
 export interface ProbabilityItem {
   crop: string;

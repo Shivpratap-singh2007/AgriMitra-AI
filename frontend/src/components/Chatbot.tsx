@@ -10,7 +10,9 @@ import {
   User,
   Trash2,
   RefreshCw,
-  AlertCircle
+  AlertCircle,
+  Sparkles,
+  ShieldCheck
 } from 'lucide-react';
 
 interface ChatbotProps {
@@ -24,7 +26,6 @@ interface ChatbotProps {
 
 export const Chatbot: React.FC<ChatbotProps> = ({
   selectedCrop,
-  setSelectedCrop,
   language,
   openSettings,
   hasGeminiKey,
@@ -41,19 +42,19 @@ export const Chatbot: React.FC<ChatbotProps> = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
 
-  // Suggested questions based on active crop
+  // Suggested questions based on active crop and polyhouse context
   const suggestedQuestions =
     selectedCrop === 'Tomato'
       ? [
-          language === 'hi' ? 'टमाटर की फसल कितने दिन में तैयार होती है?' : 'How many days does tomato take to grow?',
-          language === 'hi' ? 'टमाटर में पत्तियां पीली क्यों हो रही हैं?' : 'What causes yellow leaves on tomatoes?',
+          language === 'hi' ? 'क्या मुझे अभी सिंचाई करनी चाहिए?' : 'Should I irrigate my polyhouse tomatoes now?',
+          language === 'hi' ? 'टमाटर की पत्तियां पीली क्यों हो रही हैं?' : 'What causes yellow leaves on tomatoes?',
           language === 'hi' ? 'टमाटर में खाद (NPK) कब और कितनी दें?' : 'Which fertilizer schedule is best for tomato?',
           language === 'hi' ? 'अगेती झुलसा (Early Blight) से बचाव कैसे करें?' : 'How can I prevent tomato early blight?'
         ]
       : [
-          language === 'hi' ? 'आलू की बुवाई का सही समय कब है?' : 'When should I plant potatoes in India?',
           language === 'hi' ? 'आलू में पछेती झुलसा (Late Blight) से कैसे बचें?' : 'How can I prevent potato late blight?',
           language === 'hi' ? 'कंद बड़ा करने के लिए सिंचाई कब करें?' : 'How often should I water during tuber bulking?',
+          language === 'hi' ? 'आलू की बुवाई का सही समय कब है?' : 'When should I plant potatoes in India?',
           language === 'hi' ? 'आलू में मिट्टी चढ़ाने (Earthing Up) का क्या महत्व है?' : 'Why is earthing up important for potato?'
         ];
 
@@ -100,10 +101,10 @@ export const Chatbot: React.FC<ChatbotProps> = ({
 
     const greetingText =
       language === 'hi'
-        ? `नमस्ते किसान भाई! 🙏 मैं आपका कृषिमित्र AI चौपाल सलाहकार हूँ। अभी हम ${
+        ? `नमस्ते किसान भाई! 🙏 मैं आपका कृषिमित्र AI चौपाल सलाहकार हूँ। मैं पॉलीहाउस के ताजा तापमान, नमी और ICAR कृषि अनुसंधान से जुड़ा हूँ। ${
             selectedCrop === 'Tomato' ? 'टमाटर' : 'आलू'
-          } की फसल पर बात कर रहे हैं। बुवाई, रोग, सिंचाई या खाद के बारे में कोई भी सवाल पूछें!`
-        : `Hello Farmer! 🙏 I am your AgriMitra AI Assistant. We are currently discussing ${selectedCrop}. Ask me anything about sowing, diseases, irrigation, or fertilizer!`;
+          } की सिंचाई, पत्ती रोग या खाद के बारे में कोई भी सवाल पूछें!`
+        : `Hello Farmer! 🙏 I am your AgriMitra AI Assistant. I am connected to your live polyhouse sensors and ICAR research. Ask me anything about irrigation, disease management, or fertilizer for ${selectedCrop}!`;
 
     setMessages([
       {
@@ -203,8 +204,9 @@ export const Chatbot: React.FC<ChatbotProps> = ({
     localStorage.removeItem(`agrimitra_chat_${selectedCrop}`);
     const greetingText =
       language === 'hi'
-        ? `नमस्ते किसान भाई! मैं आपका कृषिमित्र AI सलाहकार हूँ। ${selectedCrop} के बारे में कुछ भी पूछें।`
-        : `Hello! I am your AgriMitra AI assistant. Ask me anything about ${selectedCrop}.`;
+        ? `चैट इतिहास मिटा दिया गया है। ${selectedCrop === 'Tomato' ? 'टमाटर' : 'आलू'} के बारे में नया सवाल पूछें!`
+        : `Chat history cleared. Ask a new question about ${selectedCrop}!`;
+
     setMessages([
       {
         id: Date.now().toString(),
@@ -217,194 +219,171 @@ export const Chatbot: React.FC<ChatbotProps> = ({
   };
 
   return (
-    <div className="space-y-3 pb-4">
+    <div className="flex flex-col h-[calc(100vh-10rem)] max-h-[850px] bg-white rounded-xl border border-[#E4E9F0] overflow-hidden">
       
-      {/* 1. Chat Header & Crop Context */}
-      <section className="bg-white rounded-xl border border-[#E4E9F0] p-3.5 sm:p-4 flex items-center justify-between gap-3">
+      {/* Top Header */}
+      <div className="p-3.5 sm:p-4 bg-white border-b border-[#E4E9F0] flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-lg bg-[#0F2238] text-white flex items-center justify-center font-bold text-sm">
-            🤖
+          <div className="w-9 h-9 rounded-lg bg-[#142B4A] text-white flex items-center justify-center font-bold">
+            <Bot className="w-5 h-5 text-[#2E7D32]" />
           </div>
           <div>
-            <h1 className="text-base font-black text-[#0F2238]">
+            <h1 className="text-sm sm:text-base font-extrabold text-[#142B4A] tracking-tight leading-none">
               {t.title}
             </h1>
-            <p className="text-xs text-[#506680]">
-              {t.activeContext} <strong className="text-[#0F2238] font-extrabold">{selectedCrop}</strong>
+            <p className="text-[11px] text-[#506680] mt-1">
+              {language === 'hi'
+                ? `सक्रिय संदर्भ: ${selectedCrop === 'Tomato' ? 'टमाटर' : 'आलू'} • लाइव सेंसर लिंक्ड`
+                : `Context: ${selectedCrop} • Live sensor linked`}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          {/* Quick Crop Switch */}
-          <div className="flex items-center bg-[#F1F4F8] p-1 rounded-lg border border-[#E4E9F0]">
-            <button
-              type="button"
-              onClick={() => setSelectedCrop('Tomato')}
-              className={`min-h-[32px] px-2.5 py-1 rounded text-xs font-bold transition-all cursor-pointer ${
-                selectedCrop === 'Tomato' ? 'bg-white text-[#0F2238] border border-[#CBD5E1]' : 'text-[#506680]'
-              }`}
-              title="Tomato"
-            >
-              🍅
-            </button>
-            <button
-              type="button"
-              onClick={() => setSelectedCrop('Potato')}
-              className={`min-h-[32px] px-2.5 py-1 rounded text-xs font-bold transition-all cursor-pointer ${
-                selectedCrop === 'Potato' ? 'bg-white text-[#0F2238] border border-[#CBD5E1]' : 'text-[#506680]'
-              }`}
-              title="Potato"
-            >
-              🥔
-            </button>
-          </div>
+        <button
+          type="button"
+          onClick={clearChat}
+          className="touch-target p-2 rounded-lg text-[#506680] hover:text-[#142B4A] hover:bg-[#F1F4F8] transition-colors cursor-pointer"
+          title={t.clearChatBtn}
+        >
+          <Trash2 className="w-4 h-4" />
+        </button>
+      </div>
 
-          <button
-            type="button"
-            onClick={clearChat}
-            className="touch-target p-2 text-[#506680] hover:text-red-700 rounded-lg border border-[#E4E9F0] bg-white transition-colors cursor-pointer flex items-center justify-center"
-            title={t.clearChatBtn}
-            aria-label="Clear chat history"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
-        </div>
-      </section>
-
-      {/* Missing Gemini Key Notification Banner */}
+      {/* API Key Alert if not configured */}
       {!hasGeminiKey && (
-        <div className="p-3 bg-amber-50 border border-amber-300 rounded-xl text-xs text-amber-950 flex items-start justify-between gap-2">
-          <div className="flex items-start gap-2">
-            <AlertCircle className="w-4 h-4 text-amber-700 flex-shrink-0 mt-0.5" />
-            <span className="leading-relaxed">{t.keyAlert}</span>
+        <div className="bg-amber-50 border-b border-amber-200 px-3 py-2 flex items-center justify-between text-xs text-amber-900">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-amber-700 flex-shrink-0" />
+            <span className="line-clamp-1">{t.keyAlert}</span>
           </div>
           <button
             type="button"
             onClick={openSettings}
-            className="text-xs font-bold text-amber-950 underline whitespace-nowrap cursor-pointer ml-2 touch-target"
+            className="font-bold underline text-amber-900 ml-2 whitespace-nowrap cursor-pointer"
           >
             Settings
           </button>
         </div>
       )}
 
-      {/* 2. Suggested Quick Questions (Horizontal momentum scroll) */}
-      <section className="space-y-1.5">
-        <span className="text-[11px] font-extrabold text-[#506680] uppercase tracking-wide block px-1">
-          {t.suggestedQuestions}
-        </span>
-        <div className="flex gap-2 scroll-touch-x pb-1">
-          {suggestedQuestions.map((q, idx) => (
-            <button
-              type="button"
-              key={idx}
-              onClick={() => handleSend(q)}
-              className="touch-target bg-white hover:bg-[#F1F4F8] text-[#0F2238] border border-[#CBD5E1] rounded-lg px-3.5 py-2 text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer flex-shrink-0"
-            >
-              💬 {q}
-            </button>
-          ))}
-        </div>
-      </section>
-
-      {/* 3. Chat Messages Stream (Responsive container height, no clipping) */}
-      <section className="bg-white rounded-xl border border-[#E4E9F0] flex flex-col h-[60vh] min-h-[380px] max-h-[560px] overflow-hidden">
-        
-        {/* Messages scroll box with overscroll containment */}
-        <div className="flex-1 overflow-y-auto overscroll-contain p-3.5 sm:p-4 space-y-3 bg-[#F1F4F8]/60">
-          {messages.map((msg) => {
-            const isUser = msg.sender === 'user';
-            return (
-              <div
-                key={msg.id}
-                className={`flex items-start gap-2.5 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}
-              >
-                <div
-                  className={`w-7.5 h-7.5 rounded-full flex items-center justify-center text-xs flex-shrink-0 ${
-                    isUser ? 'bg-[#0F2238] text-white' : 'bg-[#15803D] text-white'
-                  }`}
-                >
-                  {isUser ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
-                </div>
-
-                <div
-                  className={`p-3.5 rounded-xl max-w-[85%] text-xs leading-relaxed break-words ${
-                    isUser
-                      ? 'bg-[#0F2238] text-white rounded-tr-none'
-                      : msg.isError
-                      ? 'bg-red-50 border border-red-200 text-red-950 rounded-tl-none'
-                      : 'bg-white border border-[#CBD5E1] text-[#0F2238] rounded-tl-none'
-                  }`}
-                >
-                  <p className="whitespace-pre-line leading-relaxed">{msg.text}</p>
-                  <span
-                    className={`text-[10px] block text-right mt-1.5 ${
-                      isUser ? 'text-slate-300' : 'text-[#64748B]'
-                    }`}
-                  >
-                    {msg.timestamp}
-                  </span>
-                </div>
-              </div>
-            );
-          })}
-
-          {loading && (
-            <div className="flex items-center gap-2 text-xs text-[#506680] bg-white p-3 rounded-xl border border-[#E4E9F0] max-w-xs">
-              <RefreshCw className="w-4 h-4 animate-spin text-[#0F2238]" />
-              <span>{language === 'hi' ? 'AI जवाब तैयार कर रहा है...' : 'AI is generating advice...'}</span>
-            </div>
-          )}
-
-          <div ref={messagesEndRef} />
-        </div>
-
-        {/* 4. Fixed Composer Input Bar with 44px Touch Targets & 16px font to prevent mobile zoom */}
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSend();
-          }}
-          className="p-2.5 sm:p-3 bg-white border-t border-[#E4E9F0] flex items-center gap-2"
-        >
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder={t.placeholder}
-            className="flex-1 bg-[#F1F4F8] border border-[#CBD5E1] focus:border-[#0F2238] focus:bg-white rounded-lg px-3.5 py-2.5 text-base sm:text-sm text-[#0F2238] outline-none transition-colors min-h-[44px]"
-          />
-
-          {speechSupported && (
-            <button
-              type="button"
-              onClick={toggleListening}
-              className={`touch-target p-2.5 rounded-lg border transition-colors cursor-pointer flex-shrink-0 flex items-center justify-center ${
-                isListening
-                  ? 'bg-red-600 text-white border-red-700 animate-pulse'
-                  : 'bg-[#F1F4F8] hover:bg-[#E4E9F0] text-[#0F2238] border-[#CBD5E1]'
+      {/* Messages Scroll Area */}
+      <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 bg-[#F8FAFC]">
+        {messages.map((msg) => {
+          const isUser = msg.sender === 'user';
+          return (
+            <div
+              key={msg.id}
+              className={`flex gap-2 max-w-[88%] sm:max-w-[78%] ${
+                isUser ? 'ml-auto flex-row-reverse' : 'mr-auto'
               }`}
-              title={isListening ? 'Stop listening' : t.voiceBtn}
-              aria-label="Voice Input"
             >
-              {isListening ? <MicOff className="w-4.5 h-4.5" /> : <Mic className="w-4.5 h-4.5" />}
-            </button>
-          )}
+              <div
+                className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold ${
+                  isUser
+                    ? 'bg-[#142B4A] text-white'
+                    : 'bg-[#2E7D32] text-white'
+                }`}
+              >
+                {isUser ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
+              </div>
 
+              <div
+                className={`p-3 rounded-xl text-xs sm:text-sm leading-relaxed ${
+                  isUser
+                    ? 'bg-[#142B4A] text-white rounded-tr-none'
+                    : msg.isError
+                    ? 'bg-red-50 text-red-800 border border-red-200 rounded-tl-none'
+                    : 'bg-white text-[#1E293B] border border-[#E4E9F0] shadow-2xs rounded-tl-none'
+                }`}
+              >
+                <p className="whitespace-pre-wrap">{msg.text}</p>
+                <span
+                  className={`text-[9px] mt-1.5 block text-right font-medium ${
+                    isUser ? 'text-slate-300' : 'text-[#64748B]'
+                  }`}
+                >
+                  {msg.timestamp}
+                </span>
+              </div>
+            </div>
+          );
+        })}
+
+        {loading && (
+          <div className="flex gap-2 max-w-[75%] mr-auto items-center">
+            <div className="w-7 h-7 rounded-full bg-[#2E7D32] text-white flex items-center justify-center">
+              <Bot className="w-4 h-4" />
+            </div>
+            <div className="bg-white border border-[#E4E9F0] p-3 rounded-xl rounded-tl-none text-xs text-[#506680] flex items-center gap-2">
+              <RefreshCw className="w-3.5 h-3.5 animate-spin text-[#2E7D32]" />
+              <span>{language === 'hi' ? 'AI सलाह तैयार कर रहा है...' : 'Formulating agricultural advice...'}</span>
+            </div>
+          </div>
+        )}
+
+        <div ref={messagesEndRef} />
+      </div>
+
+      {/* Suggested Questions Pills */}
+      <div className="p-2 bg-white border-t border-[#E4E9F0] overflow-x-auto scroll-touch-x flex items-center gap-1.5">
+        <span className="text-[10px] font-bold text-[#506680] whitespace-nowrap pl-1">
+          {language === 'hi' ? 'सुझाव:' : 'Quick:'}
+        </span>
+        {suggestedQuestions.map((q, idx) => (
           <button
-            type="submit"
-            disabled={!input.trim() || loading}
-            className="touch-target px-4 py-2.5 rounded-lg bg-[#0F2238] hover:bg-[#142C4C] active:bg-[#0B1C30] disabled:bg-slate-300 text-white text-xs font-extrabold transition-colors cursor-pointer flex items-center justify-center gap-1.5 flex-shrink-0"
+            type="button"
+            key={idx}
+            onClick={() => handleSend(q)}
+            disabled={loading}
+            className="touch-target px-2.5 py-1 rounded-full bg-[#F1F4F8] hover:bg-[#E4E9F0] text-[11px] font-semibold text-[#142B4A] whitespace-nowrap border border-[#E4E9F0] transition-colors cursor-pointer"
           >
-            <span>{t.sendBtn}</span>
-            <Send className="w-3.5 h-3.5" />
+            {q}
           </button>
-        </form>
+        ))}
+      </div>
 
-      </section>
+      {/* Input Bar with Voice Support */}
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSend();
+        }}
+        className="p-2 sm:p-3 bg-white border-t border-[#E4E9F0] flex items-center gap-2"
+      >
+        {speechSupported && (
+          <button
+            type="button"
+            onClick={toggleListening}
+            className={`touch-target p-2 rounded-lg border transition-colors cursor-pointer ${
+              isListening
+                ? 'bg-red-500 text-white border-red-600 animate-pulse'
+                : 'bg-[#F1F4F8] text-[#506680] hover:text-[#142B4A] border-[#E4E9F0]'
+            }`}
+            title={t.voiceBtn}
+          >
+            {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+          </button>
+        )}
+
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder={isListening ? t.listening : t.placeholder}
+          disabled={loading}
+          className="flex-1 px-3 py-2 text-xs sm:text-sm rounded-lg border border-[#CBD5E1] bg-[#F8FAFC] text-[#142B4A] focus:outline-none focus:border-[#142B4A]"
+        />
+
+        <button
+          type="submit"
+          disabled={!input.trim() || loading}
+          className="touch-target px-4 py-2 rounded-lg bg-[#142B4A] hover:bg-[#1B3B64] disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+        >
+          <Send className="w-4 h-4" />
+          <span className="hidden sm:inline">{t.sendBtn}</span>
+        </button>
+      </form>
 
     </div>
   );
 };
-
