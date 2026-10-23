@@ -153,7 +153,16 @@ Production Arduino C++ firmware is provided in [`backend/firmware/agrimitra_esp3
 
 ---
 
-## 📱 5. Mobile PWA Installation (Android)
+## 🌐 5. Production Cloud Deployment (डिप्लॉयमेंट)
+
+AgriMitra AI 2.0 can be deployed online **100% free** on Render, Railway, or any Docker VPS:
+- **Zero-Config Single Container**: FastAPI automatically builds and serves the React 19 frontend and SQLite database from one single service.
+- **Auto CI/CD**: Pushing to `main` automatically triggers deployment.
+- **Detailed Step-by-Step Guide**: See [`DEPLOYMENT.md`](file:///c:/Users/Shiv%20Pratap%20Singh/OneDrive/Desktop/AgriMitra-AI/DEPLOYMENT.md) for complete instructions in Hindi and English.
+
+---
+
+## 📱 6. Mobile PWA Installation (Android)
 
 1. Open `http://<your-ip>:5001` in Google Chrome on your Android smartphone.
 2. Tap the Chrome 3-dots menu (`⋮`).
@@ -162,7 +171,7 @@ Production Arduino C++ firmware is provided in [`backend/firmware/agrimitra_esp3
 
 ---
 
-## 🧪 6. Automated Testing Verification
+## 🧪 7. Automated Testing Verification
 
 AgriMitra AI 2.0 includes an automated end-to-end verification suite testing all core modules:
 
@@ -184,6 +193,6 @@ import urllib.request, json
 
 ---
 
-## 🔒 7. Responsible Agronomic AI Disclaimer
+## 🔒 8. Responsible Agronomic AI Disclaimer
 
 AgriMitra AI 2.0 predictions and sensor thresholds are assistive decision-support tools. They do not replace laboratory soil testing or official guidance from your local **Krishi Vigyan Kendra (KVK)** or agricultural university extension officers. Never apply restricted chemical fungicides without physical verification.

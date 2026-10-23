@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: agrimitra-ai
+    runtime: docker
+    plan: free
+    region: oregon
+    branch: main
+    dockerfilePath: ./Dockerfile
+    autoDeploy: true
+    healthCheckPath: /api/health
+    envVars:
+      - key: PORT
+        value: 5001
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: DEVICE_SECRET_KEY
+        generateValue: true
+      - key: DATABASE_PATH
+        value: /app/backend/data/agrimitra_v2.db

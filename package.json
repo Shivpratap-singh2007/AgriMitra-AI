@@ -5,9 +5,10 @@
   "description": "AgriMitra AI - Dual AI Crop Disease Detection Platform",
   "main": "electron/main.js",
   "scripts": {
-    "start": ".venv\\Scripts\\python.exe -m uvicorn main:app --app-dir backend --host 127.0.0.1 --port 5001",
-    "start:prod": ".venv\\Scripts\\python.exe -m uvicorn main:app --app-dir backend --host 0.0.0.0 --port 5001",
-    "dev:backend": ".venv\\Scripts\\python.exe -m uvicorn main:app --app-dir backend --host 127.0.0.1 --port 5001 --reload",
+    "start": "python start.py",
+    "start:local": ".venv\\Scripts\\python.exe start.py",
+    "start:prod": "python start.py",
+    "dev:backend": "python start.py",
     "dev:frontend": "npm run dev --prefix frontend",
     "build:frontend": "npm run build --prefix frontend",
     "build": "npm run build --prefix frontend",
