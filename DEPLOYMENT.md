@@ -64,7 +64,26 @@ Render पर हर महीने 750 घंटे मुफ़्त मि�
 
 ---
 
-## 🐳 Option 3: Docker से अपने VPS या लोकल सर्वर पर चलाएं
+## ⚡ Option 3: Vercel पर फ्रंटएंड डिप्लॉय करें (Vercel Frontend Deployment)
+
+यदि आप **Vercel** का उपयोग कर रहे हैं:
+- हमने `vercel.json` और रूट `package.json` को कॉन्फ़िगर कर दिया है ताकि `tsc: command not found` या `BUILD_UTILS_SPAWN_127` एरर दोबारा न आए।
+
+### Vercel डिप्लॉयमेंट स्टेप्स:
+1. [https://vercel.com](https://vercel.com) पर जाएं और `Shivpratap-singh2007/AgriMitra-AI` को **Import** करें।
+2. **Framework Preset**: `Vite`
+3. **Root Directory**: `./` (खाली छोड़ें या `./` रखें)
+4. **Build Command**: `npm run build` (यह स्वतः `frontend` की डिपेंडेंसी इंस्टॉल करके बिल्ड कर देगा)
+5. **Output Directory**: `frontend/dist`
+6. **Environment Variables**:
+   - `VITE_API_BASE_URL`: अपने लाइव बैकएंड का URL (जैसे `https://agrimitra-ai.onrender.com/api`)
+7. **Deploy** पर क्लिक करें!
+
+> 💡 **नोट**: Vercel केवल फ्रंटएंड (React UI) होस्ट करता है। ESP32 सेंसर डेटा और Python AI मॉडल के लिए बैकएंड को Render.com या Railway पर चलाना आवश्यक है। यदि आप सब कुछ एक ही जगह चाहते हैं, तो **Option 1 (Render.com Docker)** सबसे सरल और संपूर्ण समाधान है।
+
+---
+
+## 🐳 Option 4: Docker से अपने VPS या लोकल सर्वर पर चलाएं
 
 यदि आपके पास Ubuntu/Debian VPS (AWS EC2, DigitalOcean, Hetzner, आदि) है:
 
