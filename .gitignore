@@ -12,3 +12,5 @@ backend/data/*.db
 .venv/
 __pycache__/
 *.pyc
+frontend_legacy/
+html-css.html
