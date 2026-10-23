@@ -1243,141 +1243,151 @@ app.post("/api/auth/logout", (req, res) => {
 
 app.post("/api/ai/chat", async (req, res) => {
   try {
-    const { message, language = "Hindi", location = "Kangra", crop = "Wheat", userEmail } = req.body || {};
+    const { message, language = "Hindi", crop = "Tomato", userEmail } = req.body || {};
     if (!message || !String(message).trim()) {
       return res.status(400).json(buildResult(false, "Message is required.", {}));
     }
 
-    let reply = "";
-    let mode = "rule-based";
-
-    if (geminiClient) {
-      try {
-        const prompt = `You are AgriMitra AI, a farmer-first agricultural advisor. Respond in ${language}. Use simple language for a farmer in ${location}. Consider crop ${crop}, soil moisture ${sensorState.soilMoisture}%, temperature ${sensorState.temperature}°C, humidity ${sensorState.humidity}%. Do not invent live weather. Keep advice brief and actionable. Farmer question: ${message}`;
-        reply = await callGeminiText(prompt);
-        mode = "gemini";
-      } catch (err) {
-        console.warn("Gemini call failed, using rule-based fallback:", err.message);
-        reply = getRuleBasedReply(message, language, location, crop);
-      }
-    } else {
-      reply = getRuleBasedReply(message, language, location, crop);
+    if (!geminiClient) {
+      return res.json(buildResult(false, "Google Gemini API Key is not configured. Please add your GEMINI_API_KEY in the API Settings to enable live AI Farmer Chatbot.", {
+        apiKeyMissing: true,
+        reply: language === "Hindi"
+          ? "⚠️ AI चैटबॉट सक्रिय नहीं है क्योंकि Gemini API Key दर्ज नहीं है। कृपया ऊपर ⚙️ API Settings बटन पर क्लिक करके अपनी Google Gemini API Key दर्ज करें।"
+          : "⚠️ AI Chatbot is not active because Gemini API Key is not configured. Please click ⚙️ API Settings in the header to add your free Gemini API Key.",
+      }));
     }
+
+    const prompt = `You are AgriMitra AI, a dedicated farmer assistant and crop advisor for Indian farmers.
+Current conversation context: Crop is "${crop}" (Tomato or Potato).
+Language to respond in: ${language}.
+
+Guidelines:
+1. Provide short, practical, easy-to-understand advice for a farmer in India.
+2. Focus on practical solutions for ${crop} (soil, irrigation, spacing, common pests, sowing seasons, harvesting).
+3. If giving advice, avoid inventing dangerous chemical pesticide dosages. Mention organic/cultural practices first (e.g. neem oil, proper spacing, field drainage) and recommend consulting local Krishi Vigyan Kendra (KVK) or agriculture officer before using heavy chemicals.
+4. Keep the tone friendly, respectful, and direct.
+5. If the user asks in Hindi, answer in pure, simple Hindi (Devanagari script). If English, use simple clear English.
+
+Farmer Question: ${message}`;
+
+    const reply = await callGeminiText(prompt);
 
     localDb.logChatInteraction({
       userEmail: userEmail || "farmer",
       message,
       reply,
       language,
-      location,
+      location: "India",
       crop,
-      mode,
+      mode: "gemini",
     });
 
     return res.json(buildResult(true, "AI reply produced.", {
       reply,
-      mode,
+      mode: "gemini",
+      crop,
     }));
   } catch (error) {
-    const fallbackReply = getRuleBasedReply(
-      (req.body || {}).message || "",
-      (req.body || {}).language || "Hindi",
-      (req.body || {}).location || "Kangra",
-      (req.body || {}).crop || "Wheat"
-    );
-
-    return res.json(buildResult(true, "AI reply produced from local fallback.", {
-      reply: fallbackReply,
-      mode: "local",
-      note: error.message,
+    console.error("Chat error:", error);
+    return res.status(500).json(buildResult(false, `Chat failed: ${error.message}`, {
+      reply: "माफ़ कीजिये, AI सर्वर से संपर्क नहीं हो पाया। कृपया दोबारा प्रयास करें या इंटरनेट जांचें।",
     }));
   }
 });
 
 app.post("/api/analyze", upload.single("image"), async (req, res) => {
   try {
+    const selectedCrop = (req.body?.crop || "Tomato").trim();
+    const language = (req.body?.language || "Hindi").trim();
+
     if (!req.file) {
-      return res.status(400).json(buildResult(false, "Image file is required.", {}));
+      return res.status(400).json(buildResult(false, "Image file is required. Please upload or take a photo of a crop leaf."));
     }
 
     if (!req.file.mimetype.startsWith("image/")) {
-      return res.status(400).json(buildResult(false, "Only image files are supported.", {}));
+      return res.status(400).json(buildResult(false, "Only image files (JPEG, PNG, WEBP) are supported."));
     }
 
-    const sampleDiagnoses = [
-      {
-        crop: "Tomato (टमाटर)",
-        health: "Early Blight (हल्का झुलसा रोग)",
-        confidence: 91,
-        disease: "Alternaria solani (Early Blight)",
-        treatment: "Prune affected bottom leaves, improve ventilation, and apply neem oil or copper fungicide spray.",
-        treatmentHindi: "निचले प्रभावित पत्तों को काटकर हटाएं, हवा का आवागमन बढ़ाएं, और नीम तेल (5ml/L) या कॉपर फंगीसाइड का छिड़काव करें।"
-      },
-      {
-        crop: "Wheat (गेहूं)",
-        health: "Healthy (स्वस्थ)",
-        confidence: 96,
-        disease: "None detected (कोई रोग नहीं)",
-        treatment: "Plant tissue is vigorous and well hydrated. Continue standard irrigation cycle.",
-        treatmentHindi: "फसल बिल्कुल स्वस्थ है। सामान्य सिंचाई और निगरानी जारी रखें।"
-      },
-      {
-        crop: "Capsicum (शिमला मिर्च)",
-        health: "Nutrient Deficiency (पोषक तत्व कमी)",
-        confidence: 88,
-        disease: "Nitrogen/Zinc Deficiency",
-        treatment: "Mild yellowing of veins detected. Apply balanced micronutrient spray (NPK 19-19-19) in early morning.",
-        treatmentHindi: "पत्तियों में हल्का पीलापन है। सुबह के समय घुलनशील एनपीके (19-19-19) या सूक्ष्म पोषक तत्वों का छिड़काव करें।"
-      }
-    ];
+    // Check if Gemini API key is configured
+    if (!geminiClient) {
+      return res.json(buildResult(false, "Google Gemini API Key is not configured. Please add your GEMINI_API_KEY in the API Settings to enable real AI Crop Doctor diagnosis.", {
+        apiKeyMissing: true,
+        crop: selectedCrop,
+      }));
+    }
 
-    const randomPick = sampleDiagnoses[Math.floor(Math.random() * sampleDiagnoses.length)];
-    let result = { ...randomPick };
-    let mode = "demo";
+    const base64Image = req.file.buffer.toString("base64");
+    const visionPrompt = `You are AgriMitra AI, an expert agricultural pathologist helping Indian smallholder farmers.
+The farmer has selected the crop: "${selectedCrop}" (Tomato or Potato).
+Analyze this uploaded image carefully.
 
-    if (geminiClient) {
-      try {
-        const base64Image = req.file.buffer.toString("base64");
-        const prompt = `Return strict JSON with keys: crop, health, confidence (number 0-100), disease, treatment (English), treatmentHindi (simple Hindi). Analyze this crop leaf image for pests, fungal, bacterial or environmental stress. Example: {"crop":"Tomato","health":"Early Blight","confidence":92,"disease":"Early Blight","treatment":"Apply copper fungicide","treatmentHindi":"कॉपर फफूंदनाशक का छिड़काव करें"}`;
-        const rawResponse = await callGeminiVision(prompt, base64Image, req.file.mimetype);
-        const match = rawResponse.match(/\{[\s\S]*\}/);
-        const parsed = JSON.parse(match ? match[0] : rawResponse);
-        result = {
-          crop: parsed.crop || result.crop,
-          health: parsed.health || result.health,
-          confidence: Number(parsed.confidence || result.confidence),
-          disease: parsed.disease || result.disease,
-          treatment: parsed.treatment || result.treatment,
-          treatmentHindi: parsed.treatmentHindi || result.treatmentHindi
-        };
-        mode = "gemini";
-      } catch (error) {
-        console.warn("Gemini vision analysis notice:", error.message);
-        result.disease = "Field diagnostic applied (Local)";
-        mode = "local-expert";
-      }
+Tasks:
+1. First verify if this image is a plant or crop leaf. If it is blurry, dark, unclear, or not a plant leaf, set "isClear": false, and explain in "unclearReason" (in English) and "unclearReasonHindi" (in simple Hindi).
+2. If clear, identify visible symptoms and the most likely disease or physiological disorder (e.g. Early Blight, Late Blight, Leaf Curl Virus, Septoria Leaf Spot, Bacterial Wilt, Aphids, Potassium/Nitrogen deficiency, or Healthy).
+3. Provide symptoms observed.
+4. Estimate confidence percentage (60-98%).
+5. Provide practical, organic/cultural recommended next steps. Do NOT invent specific chemical pesticide dosages. Always advise confirming with a local agricultural extension officer or Krishi Vigyan Kendra (KVK) before any chemical spray.
+6. Provide preventive agronomic tips for the farmer.
+
+Return ONLY a valid JSON object with EXACTLY this structure:
+{
+  "isClear": true,
+  "crop": "${selectedCrop}",
+  "healthStatus": "Diseased",
+  "diseaseName": "Name in English (e.g. Early Blight / Alternaria solani)",
+  "diseaseNameHindi": "सरल हिंदी में नाम (उदा. अगेती झुलसा रोग)",
+  "confidence": 92,
+  "symptoms": ["Symptom 1 in English", "Symptom 2 in English"],
+  "symptomsHindi": ["हिंदी में लक्षण 1", "हिंदी में लक्षण 2"],
+  "nextSteps": "Practical immediate action in English. Avoid specific chemical pesticide dosages.",
+  "nextStepsHindi": "सरल हिंदी में तुरंत किए जाने वाले उपाय। रासायनिक कीटनाशक से पहले कृषि विशेषज्ञ की सलाह लें।",
+  "preventionTips": ["Prevention tip 1 in English", "Prevention tip 2 in English"],
+  "preventionTipsHindi": ["रोकथाम का उपाय 1 हिंदी में", "रोकथाम का उपाय 2 हिंदी में"],
+  "disclaimer": "This is an AI-assisted preliminary assessment, not a certified laboratory test. Consult your local Krishi Vigyan Kendra (KVK) or agricultural officer before applying chemical treatments."
+}`;
+
+    const rawResponse = await callGeminiVision(visionPrompt, base64Image, req.file.mimetype);
+    const match = rawResponse.match(/\{[\s\S]*\}/);
+    if (!match) {
+      throw new Error("Could not parse AI response JSON.");
+    }
+    const parsed = JSON.parse(match[0]);
+
+    if (parsed.isClear === false) {
+      return res.json(buildResult(false, parsed.unclearReason || "Image is not clear or does not appear to be a crop leaf. Please upload a clearer photo.", {
+        isUnclear: true,
+        crop: selectedCrop,
+        unclearReasonHindi: parsed.unclearReasonHindi || "फोटो धुंधली है या पत्ती स्पष्ट नहीं दिख रही है। कृपया पत्ती की साफ फोटो दोबारा अपलोड करें。"
+      }));
     }
 
     localDb.logCropAnalysis({
       userEmail: req.body?.userEmail || "farmer",
-      crop: result.crop || "Unknown",
-      health: result.health || "Unknown",
-      confidence: Number(result.confidence || 0),
-      disease: result.disease || "None detected",
-      mode,
+      crop: parsed.crop || selectedCrop,
+      health: parsed.healthStatus || "Observed",
+      confidence: Number(parsed.confidence || 85),
+      disease: parsed.diseaseName || "Diagnosed",
+      mode: "gemini",
     });
 
-    return res.json(buildResult(true, "Crop leaf diagnosis complete & saved to database.", {
-      crop: result.crop,
-      health: result.health,
-      confidence: result.confidence,
-      disease: result.disease,
-      treatment: result.treatment,
-      treatmentHindi: result.treatmentHindi,
-      mode,
+    return res.json(buildResult(true, "Crop diagnosis completed successfully.", {
+      crop: parsed.crop || selectedCrop,
+      healthStatus: parsed.healthStatus || "Diagnosed",
+      diseaseName: parsed.diseaseName,
+      diseaseNameHindi: parsed.diseaseNameHindi,
+      confidence: Number(parsed.confidence || 85),
+      symptoms: parsed.symptoms || [],
+      symptomsHindi: parsed.symptomsHindi || [],
+      nextSteps: parsed.nextSteps,
+      nextStepsHindi: parsed.nextStepsHindi,
+      preventionTips: parsed.preventionTips || [],
+      preventionTipsHindi: parsed.preventionTipsHindi || [],
+      disclaimer: parsed.disclaimer,
+      mode: "gemini",
     }));
   } catch (error) {
-    return res.status(500).json(buildResult(false, "Crop analysis failed.", { error: error.message }));
+    console.error("Diagnosis error:", error);
+    return res.status(500).json(buildResult(false, `Crop analysis failed: ${error.message}`));
   }
 });
 

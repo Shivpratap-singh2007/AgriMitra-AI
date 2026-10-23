@@ -1,21 +1,54 @@
-﻿{
+{
   "name": "agrimitra-ai",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
-  "description": "AgriMitra AI smart polyhouse and farming intelligence platform",
-  "main": "backend/server.js",
+  "description": "AgriMitra AI - Dual AI Crop Disease Detection Platform",
+  "main": "electron/main.js",
   "scripts": {
-    "start": "node backend/server.js",
-    "dev": "node backend/server.js",
-    "check": "node --check backend/server.js && node --check frontend/app.js",
-    "build": "node -e \"console.log('AgriMitra build check passed.');\""
+    "start": ".venv\\Scripts\\python.exe -m uvicorn main:app --app-dir backend --host 127.0.0.1 --port 5001",
+    "start:prod": ".venv\\Scripts\\python.exe -m uvicorn main:app --app-dir backend --host 0.0.0.0 --port 5001",
+    "dev:backend": ".venv\\Scripts\\python.exe -m uvicorn main:app --app-dir backend --host 127.0.0.1 --port 5001 --reload",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "build:frontend": "npm run build --prefix frontend",
+    "build": "npm run build --prefix frontend",
+    "electron": "npx electron electron/main.js",
+    "electron:pack": "npx electron-builder --dir",
+    "electron:dist": "npx electron-builder --win",
+    "train": ".venv\\Scripts\\python.exe backend/model_training/train.py --data_dir backend/dataset_sample",
+    "eval": ".venv\\Scripts\\python.exe backend/evaluation/evaluate.py --data_dir backend/dataset_sample"
+  },
+  "build": {
+    "appId": "com.agrimitra.ai",
+    "productName": "AgriMitra AI",
+    "copyright": "Copyright © 2026 AgriMitra AI",
+    "directories": {
+      "output": "dist_electron"
+    },
+    "win": {
+      "target": ["nsis"],
+      "icon": "frontend/public/icon-512.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "AgriMitra AI"
+    },
+    "files": [
+      "electron/**/*",
+      "backend/**/*",
+      "frontend/dist/**/*",
+      "package.json"
+    ]
   },
   "dependencies": {
-    "@google/genai": "^1.5.0",
-    "@supabase/supabase-js": "^2.54.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
-    "express": "^4.21.2",
-    "multer": "^1.4.5-lts.1"
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "electron": "^36.3.2",
+    "electron-builder": "^26.0.12"
   }
 }

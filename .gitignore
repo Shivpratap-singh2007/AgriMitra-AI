@@ -9,3 +9,6 @@ dist/
 build/
 *.db
 backend/data/*.db
+.venv/
+__pycache__/
+*.pyc

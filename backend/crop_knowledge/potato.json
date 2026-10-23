@@ -1,0 +1,111 @@
+{
+  "crop": "Potato",
+  "crop_hindi": "आलू",
+  "scientific_name": "Solanum tuberosum",
+  "family": "Solanaceae",
+  "overview": "Potato is the fourth most important food crop in the world and a staple cash crop in India. It is a cool-season tuber crop requiring low night temperatures for tuberization and tuber bulking.",
+  "overview_hindi": "आलू दुनिया की सबसे महत्वपूर्ण खाद्य फसलों में से एक है और भारत में एक प्रमुख नकदी फसल है। यह कंद बनाने के लिए रात के ठंडे तापमान की आवश्यकता वाली शीतकालीन फसल है।",
+  "growing_conditions": {
+    "temperature_range": "Day: 20-25°C | Night: 15-18°C (Critical: Tuber bulking stops if night temperature exceeds 21°C)",
+    "soil_type": "Well-drained, friable, loose sandy loam or silt loam rich in organic matter. Compact clay impedes tuber expansion.",
+    "soil_ph": "5.2 to 6.4 (Slightly acidic soil significantly reduces Common Scab incidence)",
+    "sunlight": "Full sun (6-8 hours daily)",
+    "frost_tolerance": "Foliage damaged below 0°C; protect using light irrigation before frosty nights"
+  },
+  "sowing_calendar": {
+    "north_indian_plains": {
+      "main_crop_rabi": "Planting: 15 October to 5 November | Harvest: January to March",
+      "early_crop": "Planting: Mid September to 5 October | Harvest: Mid November to December (Short duration like Kufri Pukhraj)"
+    },
+    "north_indian_hills": {
+      "spring_summer_crop": "Planting: March to April | Harvest: August to September (e.g. Himachal Pradesh, Uttarakhand)"
+    },
+    "plateau_and_central_india": {
+      "rabi_crop": "Planting: October to November | Harvest: January to February (Maharashtra, MP, Gujarat)",
+      "kharif_crop_rainfed": "Planting: June to July | Harvest: September to October (Plateau regions like Pune, Satara, Hassan)"
+    },
+    "eastern_india": {
+      "rabi_crop": "Planting: 1 November to 20 November | Harvest: February to March (West Bengal, Bihar)"
+    }
+  },
+  "duration_and_harvest": {
+    "seed_tuber_preparation": "Sprout seed tubers in diffuse light (chitting) for 10-14 days before planting until healthy green sprouts (1-1.5 cm) emerge.",
+    "crop_duration": "Early varieties: 70-90 days; Medium/Late varieties: 90-120 days",
+    "dehaulming": "Cut/kill potato haulms (stems) 10-15 days before digging to harden tuber skin and prevent late blight spores from infecting tubers during harvest.",
+    "curing": "Cure harvested tubers in a cool, dark, ventilated shed at 15-18°C with 85-90% humidity for 10-15 days before packing or cold storage."
+  },
+  "water_management": {
+    "critical_stages": ["Stolon emergence (20-25 DAP)", "Tuber initiation (35-45 DAP)", "Tuber bulking (50-75 DAP)"],
+    "frequency": "Light frequent irrigations every 7-10 days. Avoid flooding beds; water should reach only two-thirds up the ridge.",
+    "pre_harvest_stoppage": "Stop irrigation 10-12 days before harvesting to dry soil and harden tuber skins."
+  },
+  "nutrient_management": {
+    "organic_manure": "25-30 tonnes/ha well-decomposed FYM incorporated during summer plowing",
+    "fertilizer_npk_standard": "150-180 kg N : 80-100 kg P2O5 : 100-120 kg K2O per hectare (Potassium enhances tuber size, skin quality, and shelf life; MOP or SOP can be used)",
+    "application_schedule": "Apply full P, full K, and half N as basal placement in furrows 5 cm away from seed tubers. Apply remaining half N at earthing up (30-35 days after planting).",
+    "earthing_up": "Mandatory earthing up (making ridges) at 30-35 DAP to prevent tuber greening (solanine toxicity) and tuber moth exposure."
+  },
+  "diseases": [
+    {
+      "id": "potato_late_blight",
+      "name": "Late Blight",
+      "hindi_name": "पछेती झुलसा",
+      "pathogen": "Phytophthora infestans (Oomycete)",
+      "symptoms": [
+        "Water-soaked circular or irregular brown lesions on leaf margins and tips",
+        "White downy/frosty fungal growth on the underside of affected leaves in morning hours or humid weather",
+        "Rapid rotting of entire plant canopy giving a burnt/scorched field appearance",
+        "Tubers develop dry, sunken, purplish-brown surface lesions and rusty brown granular rot inside"
+      ],
+      "favorable_conditions": "Temperature 10-20°C with high relative humidity (>80%) and persistent fog or rain for 2 or more consecutive days",
+      "prevention_and_cultural": [
+        "Plant certified, disease-free seed tubers from trusted sources (e.g. CPRI, state seed corporations)",
+        "Never dump infected cull potatoes near fields; destroy them completely",
+        "Monitor local late-blight weather warnings (JHULSACAST model)",
+        "Perform timely dehaulming 10-15 days before harvest and spray haulms if blight is present"
+      ],
+      "basic_organic_care": "Protective copper-based sprays (Bordeaux mixture 1% or Copper Oxychloride 2.5 g/L) before disease onset. For active infection, consult your local district agricultural officer or KVK for curative fungicide advice."
+    },
+    {
+      "id": "potato_early_blight",
+      "name": "Early Blight",
+      "hindi_name": "अगेती झुलसा",
+      "pathogen": "Alternaria solani (Fungus)",
+      "symptoms": [
+        "Small, isolated, dark brown to black angular spots on lower leaves",
+        "Distinct concentric target-board rings inside older lesions",
+        "Spots coalesce, causing leaves to curl, dry up, and drop prematurely",
+        "Tubers may show brown, sunken, irregular lesions with raised margins"
+      ],
+      "favorable_conditions": "Alternating wet and dry warm conditions (24-30°C) when plants are stressed or maturing",
+      "prevention_and_cultural": [
+        "Balanced fertilization (adequate nitrogen reduces premature crop senescence)",
+        "Maintain uniform soil moisture; avoid water stress during tuber bulking",
+        "Practice 2-3 year crop rotation with maize, sorghum, or pulses",
+        "Destroy crop residues after harvest by deep plowing"
+      ],
+      "basic_organic_care": "Bio-fungicide spray with Trichoderma harzianum or neem seed kernel extract (NSKE 5%). Remove severely infected bottom foliage."
+    },
+    {
+      "id": "potato_healthy",
+      "name": "Healthy Potato",
+      "hindi_name": "स्वस्थ आलू",
+      "symptoms": [
+        "Lush, upright green canopy with smooth, undamaged compound leaves",
+        "Sturdy erect stems with well-formed ridges protecting developing tubers",
+        "Absence of chlorosis, necrosis, leaf curling, or mold"
+      ],
+      "maintenance_tips": [
+        "Ensure timely earthing up around 30-35 days to keep growing tubers well covered with soil",
+        "Monitor field twice a week for aphid populations to prevent viral transmission",
+        "Maintain optimum soil moisture throughout tuber expansion"
+      ]
+    }
+  ],
+  "verified_references": [
+    "ICAR - Central Potato Research Institute (CPRI), Shimla (Potato Production Technologies & Package of Practices)",
+    "ICAR - All India Coordinated Research Project on Potato",
+    "FAO Potato Cultivation Guide and Global Potato Database",
+    "Punjab Agricultural University (PAU) Vegetable Farming Handbook"
+  ]
+}

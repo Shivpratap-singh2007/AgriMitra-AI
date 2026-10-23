@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    /* Primary Color Palette: Navy Blue, White, Light Grey with Restrained Agri-Green Accents */
+    --navy-900: #0B1C30;
+    --navy-800: #0F2238;
+    --navy-700: #142C4C;
+    --navy-600: #1B3B64;
+    
+    --grey-50: #F8FAFC;
+    --grey-100: #F1F4F8;
+    --grey-200: #E4E9F0;
+    --grey-300: #D0D9E4;
+    --grey-500: #64748B;
+    --grey-700: #334155;
+    
+    /* Restrained Agriculture-Green Accents */
+    --agri-green-dark: #14532D;
+    --agri-green-primary: #15803D;
+    --agri-green-accent: #16A34A;
+    --agri-green-light: #EBF7EE;
+    --agri-green-border: #C6E9CC;
+    
+    /* Semantic Surfaces */
+    --bg-page: #F4F6F9;
+    --bg-surface: #FFFFFF;
+    --border-card: #E4E9F0;
+    --text-heading: #0F2238;
+    --text-body: #1E293B;
+    --text-subtle: #506680;
+  }
+
+  * {
+    -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
+  }
+
+  html, body {
+    background-color: var(--bg-page);
+    color: var(--text-heading);
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    min-height: 100%;
+    width: 100%;
+    /* Ensure scrolling is natural on mobile without clipping */
+    overflow-x: hidden;
+  }
+
+  /* Clear accessible focus indicators */
+  button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+    outline: 2px solid var(--navy-700);
+    outline-offset: 2px;
+  }
+
+  /* Clean flat scrollbars that do not obstruct reading */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #F4F6F9;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94A3B8;
+  }
+}
+
+/* Ergonomic Mobile Viewport & Touch Target Utilities */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.pb-mobile-nav {
+  padding-bottom: calc(4.25rem + env(safe-area-inset-bottom, 0px));
+}
+
+.bottom-nav-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Horizontal momentum scroll for mobile pill bars */
+.scroll-touch-x {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.scroll-touch-x::-webkit-scrollbar {
+  display: none;
+}
+

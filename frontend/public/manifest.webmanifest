@@ -1,0 +1,61 @@
+{
+  "id": "/",
+  "name": "AgriMitra AI — Mobile Crop Doctor",
+  "short_name": "AgriMitra",
+  "description": "Mobile-first AI Crop Doctor and Decision Support Platform for Indian Tomato & Potato Farmers",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F3F5F7",
+  "theme_color": "#142B4A",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Diagnose Crop",
+      "short_name": "Doctor",
+      "description": "Instant AI leaf disease diagnosis",
+      "url": "/?tab=doctor",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "AI Farmer Assistant",
+      "short_name": "Chatbot",
+      "description": "Ask farming & advisory questions",
+      "url": "/?tab=chat",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "categories": ["agriculture", "education", "utilities"]
+}

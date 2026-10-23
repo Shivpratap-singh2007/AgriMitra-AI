@@ -1,0 +1,148 @@
+{
+  "crop": "Tomato",
+  "crop_hindi": "टमाटर",
+  "scientific_name": "Solanum lycopersicum",
+  "family": "Solanaceae",
+  "overview": "Tomato is one of the most widely cultivated vegetable crops in India, valued for both fresh consumption and processing. It is a day-neutral warm-season crop sensitive to frost and waterlogging.",
+  "overview_hindi": "टमाटर भारत में सबसे व्यापक रूप से उगाई जाने वाली सब्जियों में से एक है। यह पाला और जलभराव के प्रति संवेदनशील गर्म मौसम की फसल है।",
+  "growing_conditions": {
+    "temperature_range": "21°C to 28°C (Optimal for fruit set: 20-25°C day, 15-20°C night)",
+    "soil_type": "Deep, well-drained sandy loam to clay loam rich in organic matter",
+    "soil_ph": "6.0 to 7.0",
+    "sunlight": "Full sun (6-8 hours daily)",
+    "frost_tolerance": "None (frost sensitive)"
+  },
+  "sowing_calendar": {
+    "north_india_plains": {
+      "autumn_winter_crop": "Nursery: June-July | Transplanting: July-August | Harvest: November-February",
+      "spring_summer_crop": "Nursery: November-December | Transplanting: January-February | Harvest: April-June"
+    },
+    "north_india_hills": {
+      "summer_autumn_crop": "Nursery: March-April | Transplanting: April-May | Harvest: July-October"
+    },
+    "central_and_western_india": {
+      "kharif": "Nursery: June | Transplanting: July | Harvest: October-December",
+      "rabi": "Nursery: September-October | Transplanting: October-November | Harvest: January-April"
+    },
+    "south_india": {
+      "year_round": "Transplanted almost year-round; peak windows in June-July and October-November"
+    }
+  },
+  "duration_and_harvest": {
+    "nursery_period": "25 to 30 days (seedlings reach 10-15 cm with 4-5 true leaves)",
+    "transplant_to_first_harvest": "60 to 75 days depending on hybrid/variety",
+    "total_crop_duration": "120 to 150 days",
+    "harvest_stages": "Green mature (for long-distance transport), Turning/Pink (local market), Fully ripe (processing/immediate kitchen use)"
+  },
+  "water_management": {
+    "critical_stages": ["Establishment after transplanting", "Early flowering", "Fruit development and expansion"],
+    "frequency": "Winter: every 7-10 days; Summer: every 4-5 days. Avoid wetting leaves to prevent fungal infection.",
+    "method_recommendation": "Drip irrigation with fertigation saves 40-50% water and reduces foliar disease pressure by 60%."
+  },
+  "nutrient_management": {
+    "organic_manure": "20-25 tonnes/hectare well-decomposed FYM or compost applied during final land preparation",
+    "fertilizer_npk_standard": "100-120 kg N : 60-80 kg P2O5 : 60-80 kg K2O per hectare (for open-pollinated varieties); 150:100:120 for indeterminate hybrids",
+    "application_schedule": "Apply full P, full K, and 1/3 N as basal dose. Apply remaining N in two equal splits at 30 days and 50 days after transplanting.",
+    "calcium_boron_note": "Foliar application of Calcium Nitrate (0.5%) prevents Blossom End Rot (BER) during heavy fruit set."
+  },
+  "diseases": [
+    {
+      "id": "tomato_early_blight",
+      "name": "Early Blight",
+      "hindi_name": "अगेती झुलसा",
+      "pathogen": "Alternaria solani (Fungus)",
+      "symptoms": [
+        "Dark brown to black spots with concentric rings ('bullseye' or target pattern) on older lower leaves first",
+        "Yellow chlorotic halo around leaf spots",
+        "Leaves turn yellow, dry out, and drop prematurely (defoliation)",
+        "Dark sunken cankers on stems and collar region"
+      ],
+      "favorable_conditions": "Warm temperatures (24-30°C) with alternating dry and wet periods or heavy dew",
+      "prevention_and_cultural": [
+        "Use certified disease-free seeds or seedlings",
+        "Practice 2-3 year crop rotation with non-solanaceous crops (avoid potato, brinjal, chilli)",
+        "Prune lower bottom leaves (up to 30 cm from ground) to improve airflow",
+        "Avoid overhead sprinkler irrigation; water at soil level",
+        "Mulch with clean straw or plastic to prevent soil splash onto lower foliage"
+      ],
+      "basic_organic_care": "Remove and burn affected lower leaves at earliest sign. Spray Trichoderma viride or Pseudomonas fluorescens (5g/L) as a bio-protective measure. For chemical fungicidal confirmation, consult local KVK."
+    },
+    {
+      "id": "tomato_late_blight",
+      "name": "Late Blight",
+      "hindi_name": "पछेती झुलसा",
+      "pathogen": "Phytophthora infestans (Oomycete)",
+      "symptoms": [
+        "Water-soaked, pale green to brown irregular lesions on leaf edges and tips",
+        "White cottony/frosty mold growth on leaf undersides under high humidity",
+        "Rapid browning and collapse of stems and leaves (looks like frost or fire burn)",
+        "Firm, brown, greasy lesions on green fruits"
+      ],
+      "favorable_conditions": "Cool temperatures (15-20°C) and persistent high relative humidity (>90%) with fog or drizzle",
+      "prevention_and_cultural": [
+        "Provide wide plant spacing (60 x 45 cm or 75 x 60 cm for staked hybrids) to ensure good air circulation",
+        "Immediately rogue (uproot) and destroy infected plants outside the field",
+        "Avoid planting tomato immediately adjacent to potato crops",
+        "Staking/trellising plants to keep foliage off wet ground"
+      ],
+      "basic_organic_care": "Bordeaux mixture (1%) or Copper Oxychloride spray upon disease forewarning in cool wet weather. Seek certified agricultural extension advice for emergency fungicidal intervention."
+    },
+    {
+      "id": "tomato_leaf_mold",
+      "name": "Leaf Mold",
+      "hindi_name": "पत्ती का फफूंद (लीफ मोल्ड)",
+      "pathogen": "Passalora fulva (syn. Cladosporium fulvum)",
+      "symptoms": [
+        "Pale green to yellowish patches on upper leaf surfaces",
+        "Olive green to velvety brown fuzzy fungal growth on the matching lower leaf surface",
+        "In severe cases, leaves wither and drop, reducing photosynthetic area"
+      ],
+      "favorable_conditions": "High relative humidity (>85%) and moderate temperatures (20-24°C), common in polyhouses and dense plantings",
+      "prevention_and_cultural": [
+        "Ensure ventilation in polyhouses and green shade nets",
+        "Reduce planting density and prune suckers to promote air circulation",
+        "Drip irrigation to keep leaves dry"
+      ],
+      "basic_organic_care": "Remove diseased leaves promptly. Bio-fungicide spray of Bacillus subtilis or Trichoderma viride."
+    },
+    {
+      "id": "tomato_septoria_leaf_spot",
+      "name": "Septoria Leaf Spot",
+      "hindi_name": "सेप्टोरिया लीफ स्पॉट",
+      "pathogen": "Septoria lycopersici (Fungus)",
+      "symptoms": [
+        "Numerous small circular spots (2-3 mm) with dark brown margins and sunken grayish-white centers",
+        "Tiny black fruiting specks (pycnidia) visible inside older spot centers with a hand lens",
+        "Starts on oldest leaves after fruit set and works upward"
+      ],
+      "favorable_conditions": "Warm and wet weather with rain splashing spores from soil onto leaves",
+      "prevention_and_cultural": [
+        "Crop rotation for at least 2 years without solanaceous crops",
+        "Organic straw mulching to block soil splash",
+        "Avoid handling or weeding wet plants to prevent spreading spores"
+      ],
+      "basic_organic_care": "Neem oil emulsion (5 ml/L with soap water) or copper-based protective sprays under agricultural extension guidance."
+    },
+    {
+      "id": "tomato_healthy",
+      "name": "Healthy Tomato",
+      "hindi_name": "स्वस्थ टमाटर",
+      "symptoms": [
+        "Uniformly vibrant green foliage without spots, yellow halos, or lesions",
+        "Sturdy erect stems with healthy branching",
+        "Normal blossom clusters and firm fruit development"
+      ],
+      "maintenance_tips": [
+        "Maintain uniform soil moisture; avoid water stress during flowering",
+        "Apply balanced NPK and organic compost at 30-day intervals",
+        "Keep staking clean and scout fields twice a week for early pest detection"
+      ]
+    }
+  ],
+  "verified_references": [
+    "ICAR - Indian Institute of Horticultural Research (IIHR), Bengaluru (Package of Practices for Tomato)",
+    "ICAR - Directorate of Onion and Garlic / National Horticultural Board (NHB) Crop Guidelines",
+    "FAO Horticultural Crop Management Guide - Solanaceae",
+    "G.B. Pant University of Agriculture & Technology (GBPUAT) Vegetable Production Manual"
+  ]
+}
