@@ -12,8 +12,6 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from crop_knowledge.knowledge_base import get_all_crops, load_crop_knowledge
-from gemini_service.gemini_client import is_valid_gemini_key
-
 router = APIRouter(prefix="/api", tags=["Crop Knowledge & System Config"])
 
 class ConfigPayload(BaseModel):
@@ -42,14 +40,13 @@ async def get_crop_details(crop_name: str):
 async def get_system_config():
     """Returns runtime AI status, Gemini key availability, and version info."""
     gemini_key = os.getenv("GEMINI_API_KEY", "").strip()
-    has_valid_key = is_valid_gemini_key(gemini_key)
 
     return {
         "success": True,
         "gemini": {
-            "has_key": has_valid_key,
-            "model": os.getenv("GEMINI_MODEL", "gemini-2.5-flash"),
-            "status_message": "Gemini API key configured" if has_valid_key else "API key missing or needs setup"
+            "has_key": bool(gemini_key),
+            "model": os.getenv("GEMINI_MODEL", "gemini-2.0-flash"),
+            "status_message": "Gemini API key configured" if bool(gemini_key) else "API key missing"
         },
         "crops_supported": ["Tomato", "Potato"],
         "weather_provider": "Open-Meteo (Free Live Satellite Weather, No Key Required)"
@@ -87,4 +84,4 @@ async def update_system_config(payload: ConfigPayload):
         "success": True,
         "message": "Configuration updated successfully.",
         "has_key": bool(os.environ.get("GEMINI_API_KEY"))
-    }
+    } 

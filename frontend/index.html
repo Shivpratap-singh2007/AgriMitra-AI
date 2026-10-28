@@ -6,6 +6,11 @@
     <meta name="theme-color" content="#142B4A" />
     <meta name="description" content="AgriMitra AI - Affordable Smart Polyhouse & Farm Response Intelligence for Indian Farmers." />
     
+    <!-- Prevent stale HTML caching -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+
     <!-- Mobile PWA Capabilities -->
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -28,11 +33,13 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <script>
-      // Safe PWA Service Worker Registration
+      // Safe PWA Service Worker Registration with Auto-Update
       if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js').catch((err) => {
-            console.log('PWA ServiceWorker registration note:', err.message);
+          navigator.serviceWorker.register('/sw.js').then((reg) => {
+            reg.update();
+          }).catch((err) => {
+            console.log('PWA ServiceWorker note:', err.message);
           });
         });
       }

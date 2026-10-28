@@ -132,12 +132,22 @@ if FRONTEND_DIST.exists():
         # Try to serve the exact file
         file_path = FRONTEND_DIST / filename
         if filename and file_path.exists() and file_path.is_file():
+            # For sw.js, never cache
+            if filename == "sw.js":
+                return FileResponse(str(file_path), headers={"Cache-Control": "no-cache, no-store, must-revalidate"})
             return FileResponse(str(file_path))
 
-        # Fallback to index.html for SPA client-side routing
+        # Fallback to index.html for SPA client-side routing with no-cache headers
         index_path = FRONTEND_DIST / "index.html"
         if index_path.exists():
-            return FileResponse(str(index_path))
+            return FileResponse(
+                str(index_path),
+                headers={
+                    "Cache-Control": "no-cache, no-store, must-revalidate",
+                    "Pragma": "no-cache",
+                    "Expires": "0"
+                }
+            )
 
         return JSONResponse({"detail": "Not Found"}, status_code=404)
 
