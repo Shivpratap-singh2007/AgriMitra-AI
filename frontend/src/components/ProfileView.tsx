@@ -334,26 +334,6 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
         </div>
 
         <div className="space-y-2 text-xs">
-          {/* Custom Model */}
-          <div className="p-3 bg-[#F8FAFC] rounded-lg border border-[#E4E9F0] flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <Cpu className="w-4 h-4 text-[#2E7D32]" />
-              <div>
-                <span className="font-extrabold text-[#142B4A] block">{t.modelStatus}</span>
-                <span className="text-[10px] text-[#506680]">MobileNetv1 PyTorch Weights</span>
-              </div>
-            </div>
-            <span
-              className={`px-2 py-0.5 rounded text-[10px] font-black border ${
-                config?.custom_model.is_loaded
-                  ? 'bg-[#EBF7EE] text-[#14532D] border-[#C6E9CC]'
-                  : 'bg-amber-50 text-amber-900 border-amber-200'
-              }`}
-            >
-              {config?.custom_model.is_loaded ? 'ONLINE' : 'FALLBACK'}
-            </span>
-          </div>
-
           {/* Gemini API */}
           <div className="p-3 bg-[#F8FAFC] rounded-lg border border-[#E4E9F0] flex items-center justify-between">
             <div className="flex items-center gap-2.5">

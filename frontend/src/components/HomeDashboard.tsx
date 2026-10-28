@@ -500,7 +500,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
           <ChevronRight className="w-5 h-5 text-[#506680]" />
         </div>
 
-        {/* Crop Doctor / Disease Diagnosis */}
+        {/* Crop Agronomic Guide */}
         <div
           onClick={() => navigateTo('guide')}
           className="bg-white rounded-xl border border-[#E4E9F0] p-4 hover:border-[#142B4A] transition-all cursor-pointer flex items-center justify-between touch-target"
