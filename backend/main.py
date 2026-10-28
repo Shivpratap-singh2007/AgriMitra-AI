@@ -1,5 +1,5 @@
 """
-AgriMitra AI 2.0 - Smart Polyhouse & AI Agriculture Platform Backend
+AgriMitra AI - Smart Polyhouse & AI Agriculture Platform Backend
 Integrates:
 - ESP32 IoT Sensor Telemetry & Authenticated Ingestion
 - Safe Automation Relay Control (Anti-cycle intervals, Max pump runtimes, Fan hysteresis)
@@ -7,7 +7,6 @@ Integrates:
 - Bilingual Kisan Chaupal AI Assistant (Gemini API + Real-time Sensor Grounding)
 - Sensor Health, Fault Detection & Actionable Alerts
 - Crop Knowledge Database (ICAR/CPRI Tomato, Potato & Polyhouse Greens)
-- Custom PyTorch MobileNetV2 Disease Screening Model
 """
 
 import os
@@ -15,9 +14,10 @@ import sys
 from pathlib import Path
 from contextlib import asynccontextmanager
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse, JSONResponse
 
 # Load environment variables
 load_dotenv()
@@ -30,17 +30,15 @@ if str(BASE_DIR) not in sys.path:
 from database.db import init_db
 from iot.ingestion import router as iot_router
 from api.routes_polyhouse import router as polyhouse_router
-from api.routes_predict import router as predict_router
 from api.routes_chat import router as chat_router
 from api.routes_crops import router as crops_router
 from api.routes_weather import router as weather_router
-from model_inference.predict import CustomModelInference
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("==================================================")
-    print("[START] AgriMitra AI 2.0 Backend (Smart Polyhouse & AI)")
+    print("[START] AgriMitra AI Backend (Smart Polyhouse & AI)")
     # 1. Initialize SQLite Database & Schema
     try:
         init_db()
@@ -48,24 +46,18 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         print(f"[ERR] Database initialization failed: {e}")
 
-    # 2. Check Custom PyTorch model
-    inference = CustomModelInference.get_instance()
-    if inference.is_loaded:
-        print(f"[OK] PyTorch Model Active: {len(inference.classes)} classes loaded.")
-    else:
-        print(f"[INFO] PyTorch Model Status: {inference.load_error or 'Weights pending training'}")
-
-    # 3. Check Gemini configuration
+    # 2. Check Gemini configuration
     print(f"Gemini API Key: {'Configured' if os.getenv('GEMINI_API_KEY') else 'Offline Rule Grounding Mode'}")
+    print(f"Server PORT: {os.getenv('PORT', 'default')}")
     print("==================================================")
     yield
     print("[STOP] Shutting down AgriMitra AI Backend.")
 
 
 app = FastAPI(
-    title="AgriMitra AI 2.0 — Smart Polyhouse & Farm Response Intelligence",
+    title="AgriMitra AI — Smart Polyhouse & Farm Response Intelligence",
     description="Affordable IoT and AI Farming Assistant for small and marginal farmers",
-    version="2.0.0",
+    version="1.0.0",
     lifespan=lifespan
 )
 
@@ -97,7 +89,6 @@ async def add_security_headers(request, call_next):
 # Include API Routers
 app.include_router(iot_router)
 app.include_router(polyhouse_router)
-app.include_router(predict_router)
 app.include_router(chat_router)
 app.include_router(crops_router)
 app.include_router(weather_router)
@@ -107,26 +98,49 @@ app.include_router(weather_router)
 async def health_check():
     return {
         "status": "healthy",
-        "service": "AgriMitra AI 2.0 Backend",
-        "version": "2.0.0",
+        "service": "AgriMitra AI Backend",
+        "version": "1.0.0",
         "modules": [
             "IoT Telemetry & Relay Actuation",
             "Farm Response Intelligence",
             "Explainable Farming Advisory",
-            "Kisan Chaupal AI Assistant",
-            "Crop Disease Screening"
+            "Kisan Chaupal AI Assistant"
         ]
     }
 
 
-# Serve static frontend files if frontend build exists
+# --- Static Frontend Serving with SPA Fallback ---
 FRONTEND_DIST = BASE_DIR.parent / "frontend" / "dist"
-FRONTEND_DIR = BASE_DIR.parent / "frontend"
 
 if FRONTEND_DIST.exists():
-    app.mount("/", StaticFiles(directory=str(FRONTEND_DIST), html=True), name="static-dist")
-elif FRONTEND_DIR.exists():
-    app.mount("/", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="static-frontend")
+    # Mount static assets (JS, CSS, images) under /assets
+    assets_dir = FRONTEND_DIST / "assets"
+    if assets_dir.exists():
+        app.mount("/assets", StaticFiles(directory=str(assets_dir)), name="static-assets")
+
+    # Serve known static files at root (favicon, manifest, icons, sw.js, etc.)
+    @app.get("/{filename:path}")
+    async def serve_frontend(request: Request, filename: str):
+        """
+        SPA catch-all: serves static files from frontend/dist if they exist,
+        otherwise falls back to index.html for client-side routing.
+        """
+        # Don't intercept /api routes (already handled above)
+        if filename.startswith("api/"):
+            return JSONResponse({"detail": "Not Found"}, status_code=404)
+
+        # Try to serve the exact file
+        file_path = FRONTEND_DIST / filename
+        if filename and file_path.exists() and file_path.is_file():
+            return FileResponse(str(file_path))
+
+        # Fallback to index.html for SPA client-side routing
+        index_path = FRONTEND_DIST / "index.html"
+        if index_path.exists():
+            return FileResponse(str(index_path))
+
+        return JSONResponse({"detail": "Not Found"}, status_code=404)
+
 
 if __name__ == "__main__":
     import uvicorn

@@ -1,5 +1,5 @@
 """
-AgriMitra AI 2.0 - Explainable Farming Advisory Engine
+AgriMitra AI - Explainable Farming Advisory Engine
 Generates transparent, structured agronomic recommendations grounded in
 live sensor readings, crop stage, growing medium, and ICAR guidelines.
 """

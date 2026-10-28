@@ -1,8 +1,8 @@
 {
   "name": "agrimitra-ai",
-  "version": "2.0.0",
+  "version": "1.0.0",
   "private": true,
-  "description": "AgriMitra AI - Dual AI Crop Disease Detection Platform",
+  "description": "AgriMitra AI - Smart Polyhouse & Farm Response Intelligence Platform",
   "main": "electron/main.js",
   "scripts": {
     "start": "python start.py",
@@ -15,9 +15,7 @@
     "build": "npm --prefix frontend install && npm --prefix frontend run build",
     "electron": "npx electron electron/main.js",
     "electron:pack": "npx electron-builder --dir",
-    "electron:dist": "npx electron-builder --win",
-    "train": ".venv\\Scripts\\python.exe backend/model_training/train.py --data_dir backend/dataset_sample",
-    "eval": ".venv\\Scripts\\python.exe backend/evaluation/evaluate.py --data_dir backend/dataset_sample"
+    "electron:dist": "npx electron-builder --win"
   },
   "build": {
     "appId": "com.agrimitra.ai",

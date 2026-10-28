@@ -1,5 +1,5 @@
 """
-AgriMitra AI 2.0 - Farm Response Intelligence Engine
+AgriMitra AI - Farm Response Intelligence Engine
 USP: Sense -> Analyze -> Advise -> Act -> Verify -> Learn
 Tracks farming actions, monitors subsequent sensor responses, verifies outcomes,
 and flags ineffective actions (e.g. dry run, clogged drippers, pipe disconnection).

@@ -1,5 +1,5 @@
 """
-AgriMitra AI 2.0 - IoT Telemetry Ingestion & Device Control Router
+AgriMitra AI - IoT Telemetry Ingestion & Device Control Router
 Handles authenticated device communication, real-time telemetry processing,
 fault alerts, safe relay actuation commands, and manual overrides.
 """
@@ -29,7 +29,7 @@ class TelemetryInput(BaseModel):
     pump_state: Optional[bool] = False
     fan_state: Optional[bool] = False
     voltage: Optional[float] = 5.0
-    firmware_version: Optional[str] = "2.0.0"
+    firmware_version: Optional[str] = "1.0.0"
 
 
 class DeviceRegisterInput(BaseModel):
@@ -126,7 +126,7 @@ async def ingest_telemetry(
     UPDATE devices
     SET status = 'online', is_demo = 0, last_seen_at = CURRENT_TIMESTAMP, firmware_version = ?
     WHERE device_id = ?
-    """, (payload.firmware_version or "2.0.0", payload.device_id))
+    """, (payload.firmware_version or "1.0.0", payload.device_id))
 
     # Insert Any Detected Alerts
     for alt in alerts:
@@ -527,7 +527,7 @@ async def simulate_polyhouse_reading(
             pump_state=False,
             fan_state=temp > 30.0,
             voltage=5.02,
-            firmware_version="2.0.0-demo"
+            firmware_version="1.0.0-demo"
         ),
         x_device_key=None
     )
@@ -656,7 +656,7 @@ async def get_hardware_status(device_id: Optional[str] = None):
         "status": "live" if is_live else ("stale" if seconds_ago < 300 else "offline"),
         "device_id": active_device_id,
         "device_name": dev.get("name", "ESP32 Polyhouse Controller"),
-        "firmware_version": dev.get("firmware_version", "2.0.0"),
+        "firmware_version": dev.get("firmware_version", "1.0.0"),
         "last_seen_at": last_seen_at,
         "seconds_since_last_seen": seconds_ago,
         "human_time": f"{seconds_ago}s ago" if seconds_ago < 60 else f"{seconds_ago // 60}m ago",

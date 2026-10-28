@@ -7,7 +7,6 @@ import { HomeDashboard } from './components/HomeDashboard';
 import { SmartFarmView } from './components/SmartFarmView';
 import { Chatbot } from './components/Chatbot';
 import { FarmHistoryView } from './components/FarmHistoryView';
-import { CropDoctor } from './components/CropDoctor';
 import { CropGuide } from './components/CropGuide';
 import { ProfileView } from './components/ProfileView';
 import { AboutView } from './components/AboutView';
@@ -64,12 +63,6 @@ export function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleNavigateToChatWithQuestion = (diseaseName?: string) => {
-    setChatPrefill(diseaseName);
-    setActivePage('chat');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
   return (
     <div className="min-h-screen bg-[#F3F5F7] text-[#0F1D30] flex flex-col font-sans selection:bg-[#142B4A] selection:text-white">
       
@@ -107,7 +100,6 @@ export function App() {
             language={language}
             navigateTo={navigateTo}
             hasGeminiKey={Boolean(config?.gemini.has_key)}
-            isModelReady={Boolean(config?.custom_model.is_loaded)}
           />
         )}
 
@@ -128,15 +120,6 @@ export function App() {
 
         {activePage === 'history' && (
           <FarmHistoryView language={language} />
-        )}
-
-        {activePage === 'doctor' && (
-          <CropDoctor
-            selectedCrop={selectedCrop}
-            setSelectedCrop={setSelectedCrop}
-            language={language}
-            onNavigateToChat={handleNavigateToChatWithQuestion}
-          />
         )}
 
         {activePage === 'guide' && (

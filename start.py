@@ -1,5 +1,5 @@
 """
-AgriMitra AI 2.0 - Cross-Platform Production Server Launcher
+AgriMitra AI - Cross-Platform Production Server Launcher
 Works seamlessly on Linux, Windows, macOS, Render, Railway, Docker, and VPS.
 """
 
@@ -19,7 +19,7 @@ if __name__ == "__main__":
     host = os.getenv("HOST", "0.0.0.0")
 
     print("==================================================")
-    print("  AgriMitra AI 2.0 - Production Server")
+    print("  AgriMitra AI - Production Server")
     print(f"  Listening on: http://{host}:{port}")
     print("==================================================")
 

@@ -1,5 +1,5 @@
 """
-AgriMitra AI 2.0 - Sensor Trust and Fault Detection Engine
+AgriMitra AI - Sensor Trust and Fault Detection Engine
 Validates incoming IoT sensor readings, detects anomalies, stale telemetry,
 implausible values, and stuck sensors to guarantee safe automation.
 """

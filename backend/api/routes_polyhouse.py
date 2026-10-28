@@ -1,5 +1,5 @@
 """
-AgriMitra AI 2.0 - Polyhouse Settings, History, Alerts & Reports API Router
+AgriMitra AI - Polyhouse Settings, History, Alerts & Reports API Router
 """
 
 from fastapi import APIRouter, HTTPException, Query

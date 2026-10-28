@@ -1,5 +1,5 @@
 """
-AgriMitra AI 2.0 - Safe Automation & Actuator Control Engine
+AgriMitra AI - Safe Automation & Actuator Control Engine
 Guarantees fail-safe relay switching, enforces anti-cycling intervals,
 limits maximum pump runtimes, and prevents runaway irrigation.
 """

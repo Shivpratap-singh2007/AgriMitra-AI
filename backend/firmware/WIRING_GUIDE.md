@@ -1,6 +1,6 @@
-# AgriMitra AI 2.0 — ESP32 Smart Polyhouse Wiring & Hardware Guide
+# AgriMitra AI — ESP32 Smart Polyhouse Wiring & Hardware Guide
 
-This document specifies the exact physical wiring, power distribution, and component pinouts for the AgriMitra AI 2.0 IoT controller.
+This document specifies the exact physical wiring, power distribution, and component pinouts for the AgriMitra AI IoT controller.
 
 ---
 

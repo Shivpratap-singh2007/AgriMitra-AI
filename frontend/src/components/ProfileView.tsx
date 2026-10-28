@@ -201,7 +201,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           <div className="p-3 bg-[#F8FAFC] rounded-lg border border-[#E4E9F0] flex items-center justify-between">
             <div>
               <span className="font-extrabold text-[#142B4A] block">Device ID: esp32-polyhouse-demo</span>
-              <span className="text-[10px] text-[#506680]">Firmware: v2.0.0-ino • Protocol: REST / JSON / Opto-Isolated</span>
+              <span className="text-[10px] text-[#506680]">Firmware: v1.0.0-ino • Protocol: REST / JSON / Opto-Isolated</span>
             </div>
             <span className="text-[10px] font-black text-[#2E7D32] bg-[#EBF7EE] px-2 py-0.5 rounded border border-[#C6E9CC]">
               READY
@@ -340,7 +340,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
               <Cpu className="w-4 h-4 text-[#2E7D32]" />
               <div>
                 <span className="font-extrabold text-[#142B4A] block">{t.modelStatus}</span>
-                <span className="text-[10px] text-[#506680]">MobileNetV2 PyTorch Weights</span>
+                <span className="text-[10px] text-[#506680]">MobileNetv1 PyTorch Weights</span>
               </div>
             </div>
             <span

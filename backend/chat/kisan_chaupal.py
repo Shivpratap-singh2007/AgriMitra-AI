@@ -1,5 +1,5 @@
 """
-AgriMitra AI 2.0 - Kisan Chaupal AI Farming Assistant
+AgriMitra AI - Kisan Chaupal AI Farming Assistant
 Bilingual (Hindi/English/Hinglish) assistant grounded in real-time polyhouse sensors,
 growth stage, substrate medium, recent actions, and verified ICAR knowledge.
 """

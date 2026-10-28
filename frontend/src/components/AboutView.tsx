@@ -5,7 +5,7 @@ import {
   ShieldCheck,
   Cpu,
   Sparkles,
-  GitCompare,
+  CircuitBoard,
   CheckCircle2,
   Users
 } from 'lucide-react';
@@ -26,8 +26,8 @@ export const AboutView: React.FC<AboutViewProps> = ({ language }) => {
         </h1>
         <p className="text-xs sm:text-sm text-[#506680] mt-1 max-w-lg mx-auto">
           {language === 'hi'
-            ? 'भारतीय किसानों के लिए पारदर्शी और जिम्मेदार दोहरी AI कृषि तकनीक'
-            : 'Transparent and responsible dual AI agricultural intelligence for Indian farmers'}
+            ? 'भारतीय किसानों के लिए पारदर्शी और जिम्मेदार स्मार्ट पॉलीहाउस एवं फार्म इंटेलिजेंस'
+            : 'Transparent and responsible smart polyhouse and farm intelligence for Indian farmers'}
         </p>
       </section>
 
@@ -42,10 +42,10 @@ export const AboutView: React.FC<AboutViewProps> = ({ language }) => {
         </p>
       </section>
 
-      {/* Why Dual AI */}
+      {/* System Architecture */}
       <section className="bg-white rounded-xl border border-[#E4E9F0] p-4 sm:p-5 space-y-3">
         <h2 className="text-base font-extrabold text-[#0F2238] flex items-center gap-2">
-          <GitCompare className="w-4 h-4 text-[#0F2238]" />
+          <CircuitBoard className="w-4 h-4 text-[#0F2238]" />
           <span>{t.whyDualAiTitle}</span>
         </h2>
         <p className="text-xs sm:text-sm text-[#1E293B] leading-relaxed">
@@ -56,20 +56,20 @@ export const AboutView: React.FC<AboutViewProps> = ({ language }) => {
           <div className="p-3 bg-[#F1F4F8] rounded-lg border border-[#E4E9F0]">
             <strong className="text-[#0F2238] flex items-center gap-1.5 mb-1 font-extrabold">
               <Cpu className="w-4 h-4 text-[#15803D]" />
-              <span>1. Custom PyTorch AI</span>
+              <span>1. ESP32-WROOM-32 Edge Controller</span>
             </strong>
             <p className="text-[#506680] leading-relaxed text-xs">
-              Lightweight MobileNetV2 trained on PlantVillage for fast, on-device disease classification.
+              Autonomous micro-climate monitoring with soil moisture probes, temperature sensors, and relay controls.
             </p>
           </div>
 
           <div className="p-3 bg-[#F1F4F8] rounded-lg border border-[#E4E9F0]">
             <strong className="text-[#0F2238] flex items-center gap-1.5 mb-1 font-extrabold">
               <Sparkles className="w-4 h-4 text-blue-600" />
-              <span>2. Google Gemini Vision</span>
+              <span>2. AI Kisan Chaupal</span>
             </strong>
             <p className="text-[#506680] leading-relaxed text-xs">
-              High-capacity cloud multimodal reasoning analyzing visual lesion morphology and symptoms.
+              Context-aware agricultural advisor grounded in real-time sensor readings and verified ICAR agronomic guidance.
             </p>
           </div>
         </div>
@@ -88,15 +88,15 @@ export const AboutView: React.FC<AboutViewProps> = ({ language }) => {
         <div className="space-y-1.5 text-xs text-[#506680]">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-[#15803D] flex-shrink-0" />
-            <span className="text-[#1E293B]">Zero Fake AI: Real PyTorch neural network and real Gemini API.</span>
+            <span className="text-[#1E293B]">Hardware Safety: Maximum pump runtimes and anti-cycling locks prevent flooding.</span>
           </div>
           <div className="flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-[#15803D] flex-shrink-0" />
-            <span className="text-[#1E293B]">Uncertainty detection: Low confidence predictions are clearly flagged.</span>
+            <span className="text-[#1E293B]">Sensor Fault Detection: Frozen or implausible readings immediately lock irrigation.</span>
           </div>
           <div className="flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-[#15803D] flex-shrink-0" />
-            <span className="text-[#1E293B]">Agronomic Safety: Chemical pesticide dosages are never fabricated.</span>
+            <span className="text-[#1E293B]">Agronomic Grounding: Factual recommendations verified against agricultural standards.</span>
           </div>
         </div>
       </section>
@@ -108,10 +108,9 @@ export const AboutView: React.FC<AboutViewProps> = ({ language }) => {
           <span>AgriMitra AI Project • Open Agriculture Initiative</span>
         </div>
         <p className="text-[11px] text-[#506680]">
-          Dedicated to Indian smallholder farmers cultivating Tomato and Potato crops.
+          Dedicated to Indian smallholder farmers cultivating polyhouse crops.
         </p>
       </section>
     </div>
   );
 };
-

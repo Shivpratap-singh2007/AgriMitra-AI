@@ -6,7 +6,6 @@ import {
   MessageSquare,
   Clock,
   Sliders,
-  Stethoscope,
   Languages,
   Settings
 } from 'lucide-react';
@@ -43,7 +42,6 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'farm' as ActivePage, label: t.nav.farm, icon: <Cpu className="w-4 h-4" /> },
     { id: 'chat' as ActivePage, label: t.nav.chat, icon: <MessageSquare className="w-4 h-4" /> },
     { id: 'history' as ActivePage, label: t.nav.history, icon: <Clock className="w-4 h-4" /> },
-    { id: 'doctor' as ActivePage, label: t.nav.doctor, icon: <Stethoscope className="w-4 h-4" /> },
     { id: 'profile' as ActivePage, label: t.nav.profile, icon: <Sliders className="w-4 h-4" /> },
   ];
 
@@ -71,7 +69,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div>
               <div className="flex items-center gap-1.5 leading-none">
                 <span className="text-base sm:text-lg font-extrabold tracking-tight text-[#142B4A]">
-                  AgriMitra <span className="text-[#2E7D32]">AI 2.0</span>
+                  AgriMitra <span className="text-[#2E7D32]">AI</span>
                 </span>
                 <span className="hidden sm:inline-block text-[10px] font-bold uppercase tracking-wider bg-[#F1F4F8] text-[#142B4A] px-1.5 py-0.5 rounded border border-[#E4E9F0]">
                   Polyhouse

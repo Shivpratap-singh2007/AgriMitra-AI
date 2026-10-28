@@ -10,7 +10,7 @@ import {
   Clock,
   ArrowRight,
   MessageSquare,
-  Stethoscope,
+  BookOpen,
   RefreshCw,
   Sliders,
   ShieldCheck,
@@ -30,8 +30,7 @@ interface HomeDashboardProps {
   language: Language;
   navigateTo: (page: ActivePage) => void;
   hasGeminiKey: boolean;
-  isModelReady: boolean;
-}
+  }
 
 export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   selectedCrop,

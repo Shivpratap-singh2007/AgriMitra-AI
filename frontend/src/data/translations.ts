@@ -1,7 +1,7 @@
 export const translations = {
   en: {
-    appName: "AgriMitra AI 2.0",
-    appHindiName: "कृषिमित्र AI 2.0",
+    appName: "AgriMitra AI",
+    appHindiName: "कृषिमित्र AI ",
     tagline: "Smart Polyhouse & Farm Response Intelligence",
     nav: {
       home: "Home",
@@ -102,7 +102,7 @@ export const translations = {
       modeA: "Mode A: Custom PyTorch AI",
       modeB: "Mode B: Google Gemini AI",
       modeC: "Mode C: Compare Both AI Systems",
-      modeADesc: "Fast on-premise MobileNetV2 neural network trained on PlantVillage.",
+      modeADesc: "Fast on-premise MobileNetv1 neural network trained on PlantVillage.",
       modeBDesc: "Cloud multimodal vision reasoning with visual symptom inspection.",
       modeCDesc: "Simultaneous dual-engine evaluation with automated agreement checks.",
       dragDropPrompt: "Tap to capture or upload leaf photo",
@@ -132,7 +132,7 @@ export const translations = {
       agreementTitle: "Consensus Status:",
       agreeMsg: "Both AI systems agree on the diagnosis",
       disagreeMsg: "Predictions differ between AI engines",
-      customCardTitle: "Custom PyTorch (MobileNetV2)",
+      customCardTitle: "Custom PyTorch (MobileNetv1)",
       geminiCardTitle: "Google Gemini Vision",
       summaryLabel: "Multi-Model Summary:",
       safetyNote: "When AI models disagree, never assume either is definitively correct. Inspect physical leaf symptoms or consult a local extension specialist."
@@ -169,7 +169,7 @@ export const translations = {
       noDiagnoses: "No diagnoses saved yet.",
       clearHistory: "Clear All History",
       systemStatus: "System & Hardware Diagnostics",
-      modelStatus: "Custom PyTorch MobileNetV2",
+      modelStatus: "Custom PyTorch MobileNetv1",
       geminiStatus: "Google Gemini Vision API",
       weatherProvider: "Weather Provider",
       apiKeyConfig: "Manage Gemini API Key",
@@ -182,9 +182,9 @@ export const translations = {
       pwaInstalled: "App installed on device"
     },
     about: {
-      title: "About AgriMitra AI 2.0",
+      title: "About AgriMitra AI",
       missionTitle: "Our Mission",
-      missionText: "AgriMitra AI 2.0 empowers Indian small and marginal farmers with an affordable Smart Polyhouse kit and Farm Response Intelligence. Unlike passive dashboards, AgriMitra tracks every farming action and verifies whether the crop actually responded before updating farmer guidance.",
+      missionText: "AgriMitra AI empowers Indian small and marginal farmers with an affordable Smart Polyhouse kit and Farm Response Intelligence. Unlike passive dashboards, AgriMitra tracks every farming action and verifies whether the crop actually responded before updating farmer guidance.",
       whyDualAiTitle: "Sense → Analyze → Advise → Act → Verify → Learn",
       whyDualAiText: "We close the agricultural loop. When irrigation starts, our sensor health engine observes water percolation. If the soil remains dry, the farmer is alerted to a clogged emitter or empty sump.",
       safetyTitle: "Hardware Safety & Anti-Flooding",
@@ -294,7 +294,7 @@ export const translations = {
       modeA: "मोड A: अपना PyTorch AI मॉडल",
       modeB: "मोड B: Google Gemini विज़न AI",
       modeC: "मोड C: दोनों AI की तुलना (Compare)",
-      modeADesc: "प्लांटविलेज पर प्रशिक्षित तेज व सुरक्षित MobileNetV2 मॉडल।",
+      modeADesc: "प्लांटविलेज पर प्रशिक्षित तेज व सुरक्षित MobileNetv1 मॉडल।",
       modeBDesc: "गूगल जेमिनी मल्टीमॉडल विज़न द्वारा विस्तृत लक्षण विश्लेषण।",
       modeCDesc: "एक ही फोटो पर दोनों AI द्वारा एक साथ जांच और तुलना।",
       dragDropPrompt: "फोटो खींचने या अपलोड करने के लिए टैप करें",
@@ -361,7 +361,7 @@ export const translations = {
       noDiagnoses: "अभी तक कोई जांच सहेजी नहीं गई है।",
       clearHistory: "सभी रिकॉर्ड मिटाएं",
       systemStatus: "सिस्टम व हार्डवेयर डायग्नोस्टिक्स",
-      modelStatus: "कस्टम PyTorch MobileNetV2",
+      modelStatus: "कस्टम PyTorch MobileNetv1",
       geminiStatus: "Google Gemini विज़न API",
       weatherProvider: "मौसम प्रदाता",
       apiKeyConfig: "Gemini API Key प्रबंधित करें",

@@ -14,7 +14,9 @@ import {
   X,
   Droplets,
   Thermometer,
-  ShieldCheck
+  ShieldCheck,
+  Usb,
+  CircuitBoard
 } from 'lucide-react';
 import { Language, HardwareStatusResponse } from '../types';
 import { getHardwareStatus, pingHardware } from '../services/api';
@@ -111,7 +113,7 @@ export const HardwareStatusModal: React.FC<HardwareStatusModalProps> = ({
                 {isHindi ? 'हार्डवेयर कनेक्शन स्थिति एवं डायग्नोस्टिक्स' : 'Hardware Connection & Diagnostics'}
               </h2>
               <p className="text-xs text-[#506680]">
-                {isHindi ? 'ESP32 पॉलीहाउस कंट्रोलर की लाइव स्थिति' : 'ESP32 Smart Polyhouse Edge Controller'}
+                {isHindi ? 'ESP32-WROOM-32 (USB-C) कंट्रोलर की लाइव स्थिति' : 'ESP32-WROOM-32 (USB-C) Edge Controller'}
               </p>
             </div>
           </div>
@@ -179,6 +181,96 @@ export const HardwareStatusModal: React.FC<HardwareStatusModalProps> = ({
               <span>{pingResult}</span>
             </div>
           )}
+
+          {/* 1b. ESP32 Board Info Card */}
+          <div className="p-3.5 rounded-xl border border-[#E4E9F0] bg-gradient-to-br from-[#F8FAFC] to-white space-y-2.5">
+            <h3 className="font-black text-xs uppercase tracking-wider text-[#142B4A] flex items-center gap-1.5">
+              <CircuitBoard className="w-3.5 h-3.5 text-[#2E7D32]" />
+              <span>{isHindi ? 'माइक्रोकंट्रोलर बोर्ड विवरण' : 'Microcontroller Board Details'}</span>
+            </h3>
+
+            <div className="grid grid-cols-2 gap-2">
+              {/* Board Model */}
+              <div className="p-2.5 rounded-lg bg-white border border-[#E4E9F0]">
+                <div className="text-[10px] text-[#506680] font-semibold uppercase">
+                  {isHindi ? 'बोर्ड मॉडल' : 'Board Model'}
+                </div>
+                <div className="text-xs font-extrabold text-[#142B4A] mt-0.5">
+                  ESP32-WROOM-32
+                </div>
+              </div>
+
+              {/* USB Connection */}
+              <div className="p-2.5 rounded-lg bg-white border border-[#E4E9F0]">
+                <div className="text-[10px] text-[#506680] font-semibold uppercase flex items-center gap-1">
+                  <Usb className="w-3 h-3" />
+                  {isHindi ? 'USB कनेक्शन' : 'USB Interface'}
+                </div>
+                <div className={`text-xs font-extrabold mt-0.5 flex items-center gap-1 ${
+                  isConnected ? 'text-[#15803D]' : 'text-[#142B4A]'
+                }`}>
+                  <span>USB Type-C</span>
+                  {isConnected && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#15803D] animate-pulse" />
+                  )}
+                </div>
+              </div>
+
+              {/* Firmware Version */}
+              <div className="p-2.5 rounded-lg bg-white border border-[#E4E9F0]">
+                <div className="text-[10px] text-[#506680] font-semibold uppercase">
+                  {isHindi ? 'फर्मवेयर वर्ज़न' : 'Firmware Version'}
+                </div>
+                <div className="text-xs font-extrabold text-[#142B4A] mt-0.5">
+                  {data?.firmware_version || 'v1.0.0'}
+                </div>
+              </div>
+
+              {/* Connection Status */}
+              <div className="p-2.5 rounded-lg bg-white border border-[#E4E9F0]">
+                <div className="text-[10px] text-[#506680] font-semibold uppercase">
+                  {isHindi ? 'कनेक्शन स्थिति' : 'Connection Status'}
+                </div>
+                <div className={`text-xs font-extrabold mt-0.5 ${
+                  isConnected ? 'text-[#15803D]' : data?.status === 'stale' ? 'text-amber-700' : 'text-red-700'
+                }`}>
+                  {isConnected 
+                    ? (isHindi ? '🟢 लाइव (ऑनलाइन)' : '🟢 Live (Online)')
+                    : data?.status === 'stale' 
+                      ? (isHindi ? '🟡 रुका हुआ (Stale)' : '🟡 Stale')
+                      : (isHindi ? '🔴 ऑफलाइन' : '🔴 Offline')}
+                </div>
+              </div>
+            </div>
+
+            {/* Connection info when connected */}
+            {isConnected && (
+              <div className="p-2.5 rounded-lg bg-[#EBF7EE] border border-[#C6E9CC] flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#15803D] flex-shrink-0" />
+                <span className="text-xs font-bold text-[#15803D]">
+                  {isHindi 
+                    ? `ESP32-WROOM-32 (USB-C) सफलतापूर्वक कनेक्ट है • Device ID: ${data?.device_id} • ${data?.seconds_since_last_seen}s पहले डेटा प्राप्त`
+                    : `ESP32-WROOM-32 (USB-C) connected successfully • Device: ${data?.device_id} • Last data ${data?.seconds_since_last_seen}s ago`}
+                </span>
+              </div>
+            )}
+
+            {/* Not connected helper */}
+            {!isConnected && (
+              <div className="p-2.5 rounded-lg bg-amber-50 border border-amber-200 text-xs text-amber-800 space-y-1">
+                <div className="font-bold flex items-center gap-1.5">
+                  <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
+                  {isHindi ? 'ESP32 कनेक्ट करने के लिए:' : 'To connect your ESP32-WROOM-32:'}
+                </div>
+                <ol className="list-decimal list-inside space-y-0.5 pl-1 text-[11px]">
+                  <li>{isHindi ? 'ESP32-WROOM-32 बोर्ड को USB Type-C केबल से कंप्यूटर में लगाएं' : 'Connect ESP32-WROOM-32 board via USB Type-C cable to your computer'}</li>
+                  <li>{isHindi ? 'Arduino IDE में नीचे दिए गए सर्वर URL और सीक्रेट कुंजी डालें' : 'Flash the firmware with Server URL and Secret Key shown below'}</li>
+                  <li>{isHindi ? 'ESP32 को अपने WiFi नेटवर्क से जोड़ें' : 'Connect ESP32 to your WiFi network'}</li>
+                  <li>{isHindi ? 'बोर्ड हर 15 सेकंड में सर्वर को डेटा भेजेगा' : 'Board will transmit telemetry every 15 seconds'}</li>
+                </ol>
+              </div>
+            )}
+          </div>
 
           {/* 2. Sensor & Pin Health Grid */}
           <div>

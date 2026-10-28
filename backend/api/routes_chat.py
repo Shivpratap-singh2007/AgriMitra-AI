@@ -1,5 +1,5 @@
 """
-AgriMitra AI 2.0 - FastAPI Routes for AI Farmer Chatbot
+AgriMitra AI - FastAPI Routes for AI Farmer Chatbot
 Endpoint: POST /api/chat
 Grounded in real-time polyhouse sensor telemetry, substrate moisture,
 anti-cycle status, and verified ICAR agricultural knowledge.

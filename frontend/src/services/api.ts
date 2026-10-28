@@ -1,7 +1,4 @@
 import {
-  CustomModelResult,
-  GeminiResult,
-  CompareResult,
   SystemConfig,
   WeatherResponse,
   LiveOverview,
@@ -15,7 +12,7 @@ import {
 // Configurable backend base URL (e.g. for production web deployment or local dev)
 const API_BASE = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/$/, '');
 
-// --- AgriMitra 2.0 Smart Polyhouse & Farm Response Intelligence APIs ---
+// --- AgriMitra AI Smart Polyhouse & Farm Response Intelligence APIs ---
 
 export async function getLiveOverview(deviceId: string = 'esp32-polyhouse-demo'): Promise<LiveOverview> {
   const res = await fetch(`${API_BASE}/iot/live?device_id=${encodeURIComponent(deviceId)}`);
@@ -134,72 +131,7 @@ export async function resolveSensorAlert(alertId: number): Promise<{ success: bo
   return res.json();
 }
 
-// --- Retained Plant Pathology & Diagnostics APIs ---
-
-export async function predictCustomModel(
-  file: File,
-  crop: string,
-  threshold: number = 0.55
-): Promise<CustomModelResult> {
-  const formData = new FormData();
-  formData.append('image', file);
-  formData.append('crop', crop);
-  formData.append('confidence_threshold', threshold.toString());
-
-  const res = await fetch(`${API_BASE}/predict/custom-model`, {
-    method: 'POST',
-    body: formData,
-  });
-  if (!res.ok) {
-    const errorText = await res.text();
-    throw new Error(errorText || 'Failed to analyze with Custom Model');
-  }
-  return res.json();
-}
-
-export async function predictGemini(
-  file: File,
-  crop: string,
-  language: string = 'en'
-): Promise<GeminiResult> {
-  const formData = new FormData();
-  formData.append('image', file);
-  formData.append('crop', crop);
-  formData.append('language', language);
-
-  const res = await fetch(`${API_BASE}/predict/gemini`, {
-    method: 'POST',
-    body: formData,
-  });
-  if (!res.ok) {
-    const errorText = await res.text();
-    throw new Error(errorText || 'Failed to analyze with Gemini AI');
-  }
-  return res.json();
-}
-
-export async function predictCompare(
-  file: File,
-  crop: string,
-  language: string = 'en',
-  threshold: number = 0.55
-): Promise<CompareResult> {
-  const formData = new FormData();
-  formData.append('image', file);
-  formData.append('crop', crop);
-  formData.append('language', language);
-  formData.append('confidence_threshold', threshold.toString());
-
-  const res = await fetch(`${API_BASE}/predict/compare`, {
-    method: 'POST',
-    body: formData,
-  });
-  if (!res.ok) {
-    const errorText = await res.text();
-    throw new Error(errorText || 'Failed to run Dual AI comparison');
-  }
-  return res.json();
-}
+// --- Conversational & Knowledge APIs ---
 
 export async function sendChatMessage(
   message: string,
@@ -246,7 +178,6 @@ export async function getSystemConfig(): Promise<{ success: boolean; config: Sys
   return {
     success: data.success,
     config: {
-      custom_model: data.custom_model,
       gemini: data.gemini,
       crops_supported: data.crops_supported
     }

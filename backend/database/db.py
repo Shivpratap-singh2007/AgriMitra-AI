@@ -1,5 +1,5 @@
 """
-AgriMitra AI 2.0 - Database Management Module
+AgriMitra AI - Database Management Module
 Uses SQLite with thread-safe connection pooling, automated schema initialization,
 and indexing for high-speed sensor time-series queries.
 """
@@ -15,7 +15,7 @@ logger = logging.getLogger("agrimitra.db")
 
 DB_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
 os.makedirs(DB_DIR, exist_ok=True)
-DB_PATH = os.getenv("DATABASE_PATH", os.path.join(DB_DIR, "agrimitra_v2.db"))
+DB_PATH = os.getenv("DATABASE_PATH", os.path.join(DB_DIR, "agrimitra_v1.db"))
 
 
 def get_db_connection() -> sqlite3.Connection:
@@ -28,7 +28,7 @@ def get_db_connection() -> sqlite3.Connection:
 
 
 def init_db():
-    """Initializes all AgriMitra AI 2.0 tables, constraints, and initial demo data."""
+    """Initializes all AgriMitra AI tables, constraints, and initial demo data."""
     conn = get_db_connection()
     cursor = conn.cursor()
 
@@ -42,7 +42,7 @@ def init_db():
         is_demo BOOLEAN DEFAULT 0,
         status TEXT DEFAULT 'offline', -- 'online', 'stale', 'offline', 'simulated'
         last_seen_at DATETIME,
-        firmware_version TEXT DEFAULT '2.0.0',
+        firmware_version TEXT DEFAULT '1.0.0',
         ip_address TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
@@ -219,7 +219,7 @@ def init_db():
 
     conn.commit()
     conn.close()
-    logger.info("AgriMitra AI 2.0 database initialized successfully.")
+    logger.info("AgriMitra AI database initialized successfully.")
 
 
 if __name__ == "__main__":

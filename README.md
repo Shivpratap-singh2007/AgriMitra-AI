@@ -1,7 +1,7 @@
-# 🌱 AgriMitra AI 2.0 — Smart Polyhouse & Farm Response Intelligence
+# 🌱 AgriMitra AI — Smart Polyhouse & Farm Response Intelligence
 ### कृषिमित्र AI 2.0 – छोटे किसानों के लिए किफायती स्मार्ट पॉलीहाउस एवं AI कृषि सहायक
 
-> **AgriMitra AI 2.0** is an affordable Smart Polyhouse IoT automation and AI agricultural assistant designed for small and marginal Indian farmers.
+> **AgriMitra AI** is an affordable Smart Polyhouse IoT automation and AI agricultural assistant designed for small and marginal Indian farmers.
 > 
 > The central differentiator is **Farm Response Intelligence**:
 > $$\textbf{Sense} \longrightarrow \textbf{Analyze} \longrightarrow \textbf{Advise} \longrightarrow \textbf{Act} \longrightarrow \textbf{Verify} \longrightarrow \textbf{Learn}$$
@@ -155,7 +155,7 @@ Production Arduino C++ firmware is provided in [`backend/firmware/agrimitra_esp3
 
 ## 🌐 5. Production Cloud Deployment (डिप्लॉयमेंट)
 
-AgriMitra AI 2.0 can be deployed online **100% free** on Render, Railway, or any Docker VPS:
+AgriMitra AI can be deployed online **100% free** on Render, Railway, or any Docker VPS:
 - **Zero-Config Single Container**: FastAPI automatically builds and serves the React 19 frontend and SQLite database from one single service.
 - **Auto CI/CD**: Pushing to `main` automatically triggers deployment.
 - **Detailed Step-by-Step Guide**: See [`DEPLOYMENT.md`](file:///c:/Users/Shiv%20Pratap%20Singh/OneDrive/Desktop/AgriMitra-AI/DEPLOYMENT.md) for complete instructions in Hindi and English.
@@ -167,13 +167,13 @@ AgriMitra AI 2.0 can be deployed online **100% free** on Render, Railway, or any
 1. Open `http://<your-ip>:5001` in Google Chrome on your Android smartphone.
 2. Tap the Chrome 3-dots menu (`⋮`).
 3. Select **"Install app"** or **"Add to Home screen"**.
-4. The AgriMitra AI 2.0 icon will be added to your app drawer with offline support, full-screen viewport, and responsive touch controls.
+4. The AgriMitra AI icon will be added to your app drawer with offline support, full-screen viewport, and responsive touch controls.
 
 ---
 
 ## 🧪 7. Automated Testing Verification
 
-AgriMitra AI 2.0 includes an automated end-to-end verification suite testing all core modules:
+AgriMitra AI includes an automated end-to-end verification suite testing all core modules:
 
 ```bash
 .venv\Scripts\python.exe -c "
@@ -195,4 +195,4 @@ import urllib.request, json
 
 ## 🔒 8. Responsible Agronomic AI Disclaimer
 
-AgriMitra AI 2.0 predictions and sensor thresholds are assistive decision-support tools. They do not replace laboratory soil testing or official guidance from your local **Krishi Vigyan Kendra (KVK)** or agricultural university extension officers. Never apply restricted chemical fungicides without physical verification.
+AgriMitra AI predictions and sensor thresholds are assistive decision-support tools. They do not replace laboratory soil testing or official guidance from your local **Krishi Vigyan Kendra (KVK)** or agricultural university extension officers. Never apply restricted chemical fungicides without physical verification.

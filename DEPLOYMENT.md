@@ -1,13 +1,13 @@
-# 🚀 AgriMitra AI 2.0 — Production Deployment Guide
+# 🚀 AgriMitra AI — Production Deployment Guide
 ## एग्रीमित्र AI 2.0 डिप्लॉयमेंट गाइड (Render, Railway, Docker & VPS)
 
-इस गाइड में AgriMitra AI 2.0 को इंटरनेट पर 100% मुफ़्त (Free Tier) में लाइव डिप्लॉय करने का सबसे आसान और सुरक्षित तरीका बताया गया है।
+इस गाइड में AgriMitra AI को इंटरनेट पर 100% मुफ़्त (Free Tier) में लाइव डिप्लॉय करने का सबसे आसान और सुरक्षित तरीका बताया गया है।
 
 ---
 
 ## 🌟 आर्किटेक्चर (Architecture Overview)
 
-AgriMitra AI 2.0 एक **Single-Container Full-Stack** आर्किटेक्चर पर काम करता है:
+AgriMitra AI एक **Single-Container Full-Stack** आर्किटेक्चर पर काम करता है:
 - **Frontend**: React 19 + TypeScript + Vite + Tailwind CSS + PWA (स्मार्टफोन रेस्पॉन्सिव).
 - **Backend**: FastAPI + Uvicorn + SQLite WAL mode + IoT Telemetry Engine + Gemini AI.
 - **Single Service**: FastAPI स्वचालित रूप से `frontend/dist` को रूट `/` पर सर्व करता है। इसका मतलब है कि आपको फ्रंटएंड और बैकएंड के लिए अलग-अलग सर्वर नहीं चाहिए — **एक ही मुफ़्त सर्विस में पूरा सिस्टम लाइव चलेगा!**
@@ -41,7 +41,7 @@ Render पर हर महीने 750 घंटे मुफ़्त मि�
 
 1. `GEMINI_API_KEY`: अपना Google Gemini API Key डालें (यदि न हो तो खाली छोड़ें, सिस्टम में ऑफ़लाइन AI मॉडल बैकअप मौजूद है)।
 2. `DEVICE_SECRET_KEY`: कोई भी सुरक्षित कोड लिखें, जैसे `agrimitra_polyhouse_secret_2026` (यह ESP32 को ऑथेंटिकेट करने के लिए है)।
-3. `DATABASE_PATH`: `/app/backend/data/agrimitra_v2.db`
+3. `DATABASE_PATH`: `/app/backend/data/agrimitra_v1.db`
 
 ### Step 5: डिप्लॉय करें!
 - **"Create Web Service"** बटन पर क्लिक करें।
@@ -132,7 +132,7 @@ curl http://localhost:5001/api/health
 
 ## 📱 किसान के मोबाइल पर PWA ऐप इंस्टॉल करना (Install App on Phone)
 
-AgriMitra AI 2.0 एक आधुनिक Progressive Web App (PWA) है:
+AgriMitra AI एक आधुनिक Progressive Web App (PWA) है:
 
 1. किसान अपने मोबाइल के Chrome या Safari ब्राउज़र में लाइव लिंक खोलें (`https://agrimitra-ai.onrender.com`)।
 2. स्क्रीन के नीचे **"Install App"** का बैनर दिखेगा, या ब्राउज़र के 3-डॉट मेनू (⋮) में जाकर **"Add to Home screen"** / **"ऐप इंस्टॉल करें"** दबाएं।
@@ -144,5 +144,5 @@ AgriMitra AI 2.0 एक आधुनिक Progressive Web App (PWA) है:
 ## 🛠️ मेंटेनेंस और समस्या निवारण (Troubleshooting)
 
 - **Render Free Tier Sleep Mode**: मुफ़्त टियर पर 15 मिनट इनएक्टिव रहने के बाद सर्वर स्लीप में जाता है और पहली रिक्वेस्ट पर 30-40 सेकंड में जाग जाता है। इसे हमेशा एक्टिव रखने के लिए ESP32 का 15-सेकंड टेलीमेट्री लूप सर्वर को लगातार एक्टिव रखता है!
-- **डेटाबेस बैकअप**: SQLite डेटाबेस फ़ाइल कंटेनर के अंदर `/app/backend/data/agrimitra_v2.db` में सुरक्षित रहती है।
+- **डेटाबेस बैकअप**: SQLite डेटाबेस फ़ाइल कंटेनर के अंदर `/app/backend/data/agrimitra_v1.db` में सुरक्षित रहती है।
 - **हेल्थ चेक**: आप कभी भी `https://your-domain.com/api/health` पर जाकर सर्वर की स्थिति देख सकते हैं।

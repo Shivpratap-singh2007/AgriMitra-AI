@@ -12,8 +12,6 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from crop_knowledge.knowledge_base import get_all_crops, load_crop_knowledge
-from model_inference.predict import CustomModelInference
-
 from gemini_service.gemini_client import is_valid_gemini_key
 
 router = APIRouter(prefix="/api", tags=["Crop Knowledge & System Config"])
@@ -42,20 +40,12 @@ async def get_crop_details(crop_name: str):
 
 @router.get("/config")
 async def get_system_config():
-    """Returns runtime AI model status, Gemini key availability, and version info."""
-    inference = CustomModelInference.get_instance()
+    """Returns runtime AI status, Gemini key availability, and version info."""
     gemini_key = os.getenv("GEMINI_API_KEY", "").strip()
     has_valid_key = is_valid_gemini_key(gemini_key)
 
     return {
         "success": True,
-        "custom_model": {
-            "is_loaded": inference.is_loaded,
-            "architecture": "MobileNetV2 (Transfer Learning)",
-            "supported_classes": inference.classes,
-            "weights_path": str(inference.weights_path),
-            "status_message": "Ready for inference" if inference.is_loaded else (inference.load_error or "Weights not found")
-        },
         "gemini": {
             "has_key": has_valid_key,
             "model": os.getenv("GEMINI_MODEL", "gemini-2.5-flash"),

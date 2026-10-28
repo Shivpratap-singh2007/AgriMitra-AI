@@ -1,7 +1,6 @@
 """
-AgriMitra AI - Google Gemini Multimodal Vision & Agricultural Chatbot Service
+AgriMitra AI - Google Gemini Agricultural Chatbot Service
 Provides:
-- Secure server-side Gemini Vision analysis with structured JSON schema
 - Factual, grounded AI Farmer Chatbot with crop context and ICAR knowledge base
 - Automatic model fallback (gemini-flash-latest, gemini-2.5-flash-lite, gemini-3.8-flash)
 - Transparent error handling when API key is missing or unavailable
@@ -9,11 +8,8 @@ Provides:
 
 import os
 import json
-import base64
 import urllib.parse
 from typing import Dict, Any, Optional, List
-from PIL import Image
-import io
 import httpx
 from dotenv import load_dotenv
 
@@ -47,133 +43,6 @@ def is_valid_gemini_key(key: Optional[str]) -> bool:
     return clean.startswith("AIzaSy") and len(clean) >= 25
 
 class GeminiService:
-    @staticmethod
-    async def analyze_crop_image(
-        image: Image.Image,
-        selected_crop: str = "Tomato",
-        language: str = "en"
-    ) -> Dict[str, Any]:
-        """Analyzes crop leaf image using Gemini Vision API with structured JSON output."""
-        api_key = get_gemini_api_key()
-        if not is_valid_gemini_key(api_key):
-            return {
-                "success": False,
-                "api_key_missing": True,
-                "message": "Google Gemini API Key is missing or invalid. Please add a valid key starting with 'AIzaSy' in API Settings (top right gear ⚙️).",
-                "crop": selected_crop
-            }
-
-        # Convert PIL Image to JPEG bytes
-        buffered = io.BytesIO()
-        if image.mode != "RGB":
-            image = image.convert("RGB")
-        image.save(buffered, format="JPEG", quality=85)
-        image_bytes = buffered.getvalue()
-        b64_image = base64.b64encode(image_bytes).decode("utf-8")
-
-        prompt = f"""
-You are an expert plant pathologist and agricultural extension specialist assisting Indian farmers.
-The farmer has selected crop: "{selected_crop}" (either Tomato or Potato).
-Examine the attached leaf or plant photograph carefully.
-
-CRITICAL INSTRUCTIONS:
-1. First evaluate image clarity: is there a crop leaf/plant visible? If blurry, irrelevant, or not a crop leaf, set "is_clear": false and explain in "uncertainty_notes".
-2. Identify whether the image matches {selected_crop}. If it is a different crop, note it in "crop_identification".
-3. Identify visible symptoms (e.g. concentric target spots, water-soaked brown lesions, yellow halos, mold).
-4. Provide the most likely disease or confirm if the plant appears healthy.
-5. Provide actionable cultural/organic next steps (sanitation, pruning, irrigation adjustments).
-6. Provide long-term prevention tips (seed selection, crop rotation, spacing).
-7. AGRO-SAFETY RULE: Do NOT invent specific chemical pesticide dosages. Recommend consulting the local Krishi Vigyan Kendra (KVK) for chemical confirmation.
-8. Output MUST be valid JSON ONLY matching the schema below. No markdown backticks, no markdown codeblocks, just raw JSON.
-
-JSON Schema:
-{{
-  "is_clear": true,
-  "crop_identification": "{selected_crop}",
-  "possible_disease": "Disease Name in English",
-  "possible_disease_hindi": "हिंदी में रोग का नाम",
-  "confidence_score": 0.85,
-  "visible_symptoms": ["Symptom 1", "Symptom 2"],
-  "explanation": "Clear 2-3 sentence explanation of the observed issue.",
-  "explanation_hindi": "सरल हिंदी में 2-3 वाक्यों में विवरण।",
-  "recommended_next_steps": ["Action 1", "Action 2"],
-  "prevention_tips": ["Tip 1", "Tip 2"],
-  "uncertainty_notes": "Any caveats, lighting issues, or verification advice."
-}}
-"""
-
-        last_error = None
-        unique_models = list(dict.fromkeys(MODEL_CANDIDATES))
-        encoded_key = urllib.parse.quote_plus(api_key.strip())
-
-        async with httpx.AsyncClient(timeout=35.0) as client:
-            for model_name in unique_models:
-                endpoint = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={encoded_key}"
-                payload = {
-                    "contents": [
-                        {
-                            "parts": [
-                                {"text": prompt},
-                                {
-                                    "inline_data": {
-                                        "mime_type": "image/jpeg",
-                                        "data": b64_image
-                                    }
-                                }
-                            ]
-                        }
-                    ],
-                    "generationConfig": {
-                        "temperature": 0.2,
-                        "response_mime_type": "application/json"
-                    }
-                }
-
-                try:
-                    res = await client.post(endpoint, json=payload)
-                    if res.status_code == 200:
-                        result_data = res.json()
-                        raw_text = result_data["candidates"][0]["content"]["parts"][0]["text"]
-                        
-                        clean_text = raw_text.strip()
-                        if clean_text.startswith("```json"):
-                            clean_text = clean_text[7:]
-                        elif clean_text.startswith("```"):
-                            clean_text = clean_text[3:]
-                        if clean_text.endswith("```"):
-                            clean_text = clean_text[:-3]
-                        clean_text = clean_text.strip()
-
-                        parsed = json.loads(clean_text)
-
-                        return {
-                            "success": True,
-                            "model_name": f"Google Gemini ({model_name})",
-                            "is_clear": parsed.get("is_clear", True),
-                            "crop": parsed.get("crop_identification", selected_crop),
-                            "selected_crop": selected_crop,
-                            "disease": parsed.get("possible_disease", "Unknown"),
-                            "disease_hindi": parsed.get("possible_disease_hindi", ""),
-                            "confidence": parsed.get("confidence_score", 0.85),
-                            "confidence_percentage": round(parsed.get("confidence_score", 0.85) * 100, 1),
-                            "symptoms": parsed.get("visible_symptoms", []),
-                            "explanation": parsed.get("explanation", ""),
-                            "explanation_hindi": parsed.get("explanation_hindi", ""),
-                            "next_steps": parsed.get("recommended_next_steps", []),
-                            "prevention_tips": parsed.get("prevention_tips", []),
-                            "uncertainty_notes": parsed.get("uncertainty_notes", ""),
-                            "disclaimer": "Gemini AI analysis is an assistive screening tool based on visual symptoms. It does not replace on-field laboratory diagnosis. Consult your local KVK agricultural officer before applying chemical fungicides."
-                        }
-                    else:
-                        last_error = f"Model {model_name} HTTP {res.status_code}: {res.text[:150]}"
-                except Exception as e:
-                    last_error = f"Model {model_name} error: {str(e)}"
-
-        return {
-            "success": False,
-            "message": f"Gemini API request failed across models. Last error: {last_error}"
-        }
-
     @staticmethod
     async def chat_with_farmer(
         message: str,
@@ -275,4 +144,3 @@ RULES:
             "reply": notice,
             "crop": selected_crop
         }
-
