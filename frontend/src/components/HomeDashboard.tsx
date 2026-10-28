@@ -502,19 +502,19 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
 
         {/* Crop Doctor / Disease Diagnosis */}
         <div
-          onClick={() => navigateTo('doctor')}
+          onClick={() => navigateTo('guide')}
           className="bg-white rounded-xl border border-[#E4E9F0] p-4 hover:border-[#142B4A] transition-all cursor-pointer flex items-center justify-between touch-target"
         >
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center font-bold">
-              <Stethoscope className="w-5 h-5" />
+              <BookOpen className="w-5 h-5" />
             </div>
             <div>
               <h3 className="text-sm font-extrabold text-[#142B4A]">
-                {language === 'hi' ? 'क्रॉप डॉक्टर (रोग जांच)' : 'Crop Doctor Diagnosis'}
+                {language === 'hi' ? 'फसल मार्गदर्शिका (ICAR गाइड)' : 'Crop Cultivation Guide'}
               </h3>
               <p className="text-[11px] text-[#506680]">
-                {language === 'hi' ? 'टमाटर व आलू की पत्ती का फोटो स्कैन करें' : 'MobileNetV2 + Gemini Dual AI inspection'}
+                {language === 'hi' ? 'वैज्ञानिक बुवाई, खाद, सिंचाई और देखभाल गाइड' : 'ICAR-CPRI verified agronomic crop practices'}
               </p>
             </div>
           </div>
