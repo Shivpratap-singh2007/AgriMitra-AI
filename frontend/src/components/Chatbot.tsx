@@ -42,21 +42,13 @@ export const Chatbot: React.FC<ChatbotProps> = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
 
-  // Suggested questions based on active crop and polyhouse context
-  const suggestedQuestions =
-    selectedCrop === 'Tomato'
-      ? [
-          language === 'hi' ? 'क्या मुझे अभी सिंचाई करनी चाहिए?' : 'Should I irrigate my polyhouse tomatoes now?',
-          language === 'hi' ? 'टमाटर की पत्तियां पीली क्यों हो रही हैं?' : 'What causes yellow leaves on tomatoes?',
-          language === 'hi' ? 'टमाटर में खाद (NPK) कब और कितनी दें?' : 'Which fertilizer schedule is best for tomato?',
-          language === 'hi' ? 'अगेती झुलसा (Early Blight) से बचाव कैसे करें?' : 'How can I prevent tomato early blight?'
-        ]
-      : [
-          language === 'hi' ? 'आलू में पछेती झुलसा (Late Blight) से कैसे बचें?' : 'How can I prevent potato late blight?',
-          language === 'hi' ? 'कंद बड़ा करने के लिए सिंचाई कब करें?' : 'How often should I water during tuber bulking?',
-          language === 'hi' ? 'आलू की बुवाई का सही समय कब है?' : 'When should I plant potatoes in India?',
-          language === 'hi' ? 'आलू में मिट्टी चढ़ाने (Earthing Up) का क्या महत्व है?' : 'Why is earthing up important for potato?'
-        ];
+  // Suggested questions for smart polyhouse management
+  const suggestedQuestions = [
+    language === 'hi' ? 'क्या मुझे अभी पॉलीहाउस में सिंचाई करनी चाहिए?' : 'Should I irrigate the polyhouse crops now?',
+    language === 'hi' ? 'पॉलीहाउस में तापमान और आर्द्रता कैसे नियंत्रित करें?' : 'How to manage polyhouse temperature and humidity?',
+    language === 'hi' ? 'फसल में जैविक खाद (NPK) और सूक्ष्म पोषक कब दें?' : 'When should organic NPK and micronutrients be applied?',
+    language === 'hi' ? 'पॉलीहाउस में कीट और फफूंद से सुरक्षा के उपाय क्या हैं?' : 'How to prevent pests and fungal diseases in polyhouse?'
+  ];
 
   // Speech Recognition setup
   useEffect(() => {
@@ -101,10 +93,8 @@ export const Chatbot: React.FC<ChatbotProps> = ({
 
     const greetingText =
       language === 'hi'
-        ? `नमस्ते किसान भाई! 🙏 मैं आपका कृषिमित्र AI चौपाल सलाहकार हूँ। मैं पॉलीहाउस के ताजा तापमान, नमी और ICAR कृषि अनुसंधान से जुड़ा हूँ। ${
-            selectedCrop === 'Tomato' ? 'टमाटर' : 'आलू'
-          } की सिंचाई, पत्ती रोग या खाद के बारे में कोई भी सवाल पूछें!`
-        : `Hello Farmer! 🙏 I am your AgriMitra AI Assistant. I am connected to your live polyhouse sensors and ICAR research. Ask me anything about irrigation, disease management, or fertilizer for ${selectedCrop}!`;
+        ? 'नमस्ते किसान भाई! 🙏 मैं आपका कृषिमित्र AI पॉलीहाउस सलाहकार हूँ। मैं पॉलीहाउस के ताजा तापमान, नमी और ICAR कृषि अनुसंधान से जुड़ा हूँ। सिंचाई, वेंटिलेशन, फसल स्वास्थ्य या खाद प्रबंधन के बारे में कोई भी सवाल पूछें!'
+        : 'Hello Farmer! 🙏 I am your AgriMitra AI Assistant. I am connected to your live polyhouse sensors and ICAR research. Ask me anything about irrigation, ventilation, crop health, or fertilizer management!';
 
     setMessages([
       {
@@ -122,8 +112,8 @@ export const Chatbot: React.FC<ChatbotProps> = ({
     if (prefillQuestion) {
       const q =
         language === 'hi'
-          ? `${selectedCrop} में ${prefillQuestion} रोग का उपचार और रोकथाम क्या है?`
-          : `What is the treatment and prevention for ${prefillQuestion} in ${selectedCrop}?`;
+          ? `पॉलीहाउस में ${prefillQuestion} का उपचार और रोकथाम क्या है?`
+          : `What is the treatment and prevention for ${prefillQuestion} in polyhouse?`;
       setInput(q);
     }
   }, [prefillQuestion, selectedCrop, language]);
@@ -204,8 +194,8 @@ export const Chatbot: React.FC<ChatbotProps> = ({
     localStorage.removeItem(`agrimitra_chat_${selectedCrop}`);
     const greetingText =
       language === 'hi'
-        ? `चैट इतिहास मिटा दिया गया है। ${selectedCrop === 'Tomato' ? 'टमाटर' : 'आलू'} के बारे में नया सवाल पूछें!`
-        : `Chat history cleared. Ask a new question about ${selectedCrop}!`;
+        ? 'चैट इतिहास मिटा दिया गया है। पॉलीहाउस फसल प्रबंधन के बारे में नया सवाल पूछें!'
+        : 'Chat history cleared. Ask a new question about your polyhouse crops!';
 
     setMessages([
       {
@@ -233,8 +223,8 @@ export const Chatbot: React.FC<ChatbotProps> = ({
             </h1>
             <p className="text-[11px] text-[#506680] mt-1">
               {language === 'hi'
-                ? `सक्रिय संदर्भ: ${selectedCrop === 'Tomato' ? 'टमाटर' : 'आलू'} • लाइव सेंसर लिंक्ड`
-                : `Context: ${selectedCrop} • Live sensor linked`}
+                ? '🌱 स्मार्ट पॉलीहाउस • लाइव सेंसर लिंक्ड'
+                : '🌱 Smart Polyhouse • Live Sensors Linked'}
             </p>
           </div>
         </div>

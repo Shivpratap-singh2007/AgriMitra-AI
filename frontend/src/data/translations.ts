@@ -76,8 +76,8 @@ export const translations = {
       title: "Smart Polyhouse & AI Farming Assistant",
       subtitle: "Autonomous IoT micro-climate regulation and explainable agronomic guidance for Indian farmers.",
       selectCropPrompt: "Select Polyhouse Crop",
-      tomatoDesc: "Solanum lycopersicum • Polyhouse cultivation with calibrated moisture & blight defense",
-      potatoDesc: "Solanum tuberosum • Seed tuber & field crop management with fungal sporulation alert",
+      tomatoDesc: "Polyhouse Vegetables • Precision moisture, climate regulation & fungal defense",
+      potatoDesc: "Exotic Greens & Vines • Controlled micro-climate, fertigation & crop vigor",
       scanBtn: "Diagnose Leaf",
       askBtn: "Ask AI Chaupal"
     },
@@ -151,7 +151,7 @@ export const translations = {
     },
     guide: {
       title: "Farming Guide & Crop Calendar",
-      subtitle: "Verified research-backed package of practices from ICAR & CPRI.",
+      subtitle: "Verified research-backed package of practices from ICAR & IIHR.",
       growingCond: "Optimal Growing Conditions",
       sowingCal: "Regional Sowing Calendar",
       waterMgmt: "Irrigation & Water Schedule",
@@ -268,8 +268,8 @@ export const translations = {
       title: "स्मार्ट पॉलीहाउस एवं AI कृषि सहायक",
       subtitle: "भारतीय किसानों के लिए स्वायत्त IoT जलवायु नियंत्रण एवं प्रमाणित कृषि सलाह।",
       selectCropPrompt: "पॉलीहाउस फसल चुनें",
-      tomatoDesc: "टमाटर • सटीक नमी नियंत्रण एवं फफूंद रोग सुरक्षा",
-      potatoDesc: "आलू • कंद स्वास्थ्य, पछेती झुलसा चेतावनी एवं जल प्रबंधन",
+      tomatoDesc: "पॉलीहाउस सब्जियां • सटीक नमी नियंत्रण एवं फफूंद रोग सुरक्षा",
+      potatoDesc: "ग्रीन्स एवं बेलदार फसलें • स्वचालित सूक्ष्म-जलवायु, फर्टिगेशन एवं पोषण",
       scanBtn: "रोग जांचें",
       askBtn: "AI चौपाल से पूछें"
     },
@@ -343,7 +343,7 @@ export const translations = {
     },
     guide: {
       title: "वैज्ञानिक फसल मार्गदर्शिका",
-      subtitle: "ICAR एवं केंद्रीय आलू अनुसंधान संस्थान (CPRI) द्वारा सत्यापित तकनीकें।",
+      subtitle: "ICAR एवं भारतीय बागवानी अनुसंधान संस्थान (IIHR) द्वारा सत्यापित तकनीकें।",
       growingCond: "उपयुक्त जलवायु व मिट्टी",
       sowingCal: "क्षेत्रवार बुवाई कैलेंडर",
       waterMgmt: "सिंचाई प्रबंधन",

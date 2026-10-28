@@ -42,7 +42,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   const [showAndroidSteps, setShowAndroidSteps] = useState(false);
 
   // Polyhouse setup preferences stored in localStorage
-  const [polyCrop, setPolyCrop] = useState<string>(() => localStorage.getItem('agrimitra_poly_crop') || 'Tomato');
+  const [polyCrop, setPolyCrop] = useState<string>(() => localStorage.getItem('agrimitra_poly_crop') || 'Vegetables');
   const [polySubstrate, setPolySubstrate] = useState<string>(() => localStorage.getItem('agrimitra_poly_substrate') || 'Cocopeat');
 
   useEffect(() => {
@@ -164,10 +164,10 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
               onChange={(e) => handleSavePolyConfig(e.target.value, polySubstrate)}
               className="w-full px-3 py-2 rounded-lg border border-[#CBD5E1] bg-[#F8FAFC] text-[#142B4A] font-bold"
             >
-              <option value="Tomato">🍅 Tomato (टमाटर - Solanum lycopersicum)</option>
-              <option value="Potato">🥔 Potato (आलू - Solanum tuberosum)</option>
+              <option value="Vegetables">🌱 Polyhouse Vegetables (पॉलीहाउस मौसमी सब्जियां)</option>
               <option value="BellPepper">🫑 Bell Pepper (शिमला मिर्च - Capsicum)</option>
               <option value="Cucumber">🥒 Cucumber (खीरा - Cucumis sativus)</option>
+              <option value="ExoticGreens">🥬 Exotic Greens (पत्तेदार हाइड्रोपोनिक फसलें)</option>
             </select>
           </div>
 

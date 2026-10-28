@@ -15,8 +15,8 @@ import { translations } from '../data/translations';
 interface NavbarProps {
   activePage: ActivePage;
   setActivePage: (page: ActivePage) => void;
-  selectedCrop: Crop;
-  setSelectedCrop: (crop: Crop) => void;
+  selectedCrop?: Crop;
+  setSelectedCrop?: (crop: Crop) => void;
   language: Language;
   setLanguage: (lang: Language) => void;
   openSettings: () => void;
@@ -27,8 +27,6 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({
   activePage,
   setActivePage,
-  selectedCrop,
-  setSelectedCrop,
   language,
   setLanguage,
   openSettings,
@@ -72,43 +70,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                   AgriMitra <span className="text-[#2E7D32]">AI</span>
                 </span>
                 <span className="hidden sm:inline-block text-[10px] font-bold uppercase tracking-wider bg-[#F1F4F8] text-[#142B4A] px-1.5 py-0.5 rounded border border-[#E4E9F0]">
-                  Polyhouse
+                  Smart Polyhouse
                 </span>
               </div>
               <p className="text-[11px] text-[#506680] leading-none mt-1 hidden xs:block">
                 {language === 'hi' ? 'स्मार्ट पॉलीहाउस एवं फार्म इंटेलिजेंस' : 'Smart Polyhouse & Response AI'}
               </p>
             </div>
-          </div>
-
-          {/* Quick Crop Selector Pill */}
-          <div className="flex items-center bg-[#F1F4F8] p-0.5 sm:p-1 rounded-lg border border-[#E4E9F0]">
-            <button
-              type="button"
-              onClick={() => setSelectedCrop('Tomato')}
-              className={`min-h-[36px] px-2.5 sm:px-3 py-1 rounded text-xs font-bold transition-all cursor-pointer flex items-center gap-1 sm:gap-1.5 ${
-                selectedCrop === 'Tomato'
-                  ? 'bg-white text-[#142B4A] border border-[#CBD5E1] shadow-xs'
-                  : 'text-[#506680] hover:text-[#142B4A]'
-              }`}
-              title={language === 'hi' ? 'टमाटर चुनें' : 'Select Tomato'}
-            >
-              <span className="text-sm">🍅</span>
-              <span className="hidden sm:inline text-xs font-bold">{language === 'hi' ? 'टमाटर' : 'Tomato'}</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setSelectedCrop('Potato')}
-              className={`min-h-[36px] px-2.5 sm:px-3 py-1 rounded text-xs font-bold transition-all cursor-pointer flex items-center gap-1 sm:gap-1.5 ${
-                selectedCrop === 'Potato'
-                  ? 'bg-white text-[#142B4A] border border-[#CBD5E1] shadow-xs'
-                  : 'text-[#506680] hover:text-[#142B4A]'
-              }`}
-              title={language === 'hi' ? 'आलू चुनें' : 'Select Potato'}
-            >
-              <span className="text-sm">🥔</span>
-              <span className="hidden sm:inline text-xs font-bold">{language === 'hi' ? 'आलू' : 'Potato'}</span>
-            </button>
           </div>
 
           {/* Desktop Navigation Links */}

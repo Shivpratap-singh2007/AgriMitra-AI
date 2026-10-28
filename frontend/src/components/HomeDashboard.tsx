@@ -135,7 +135,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
 
               {/* Crop indicator */}
               <span className="text-xs font-bold text-[#142B4A] bg-[#F1F4F8] px-2.5 py-1 rounded-md border border-[#E4E9F0]">
-                {selectedCrop === 'Tomato' ? '🍅 Tomato (टमाटर)' : '🥔 Potato (आलू)'}
+                {language === 'hi' ? '🌱 पॉलीहाउस यूनिट 01' : '🌱 Polyhouse Unit 01'}
               </span>
             </div>
 
