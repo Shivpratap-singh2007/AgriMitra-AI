@@ -16,6 +16,7 @@ logger = logging.getLogger("agrimitra.db")
 DB_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
 os.makedirs(DB_DIR, exist_ok=True)
 DB_PATH = os.getenv("DATABASE_PATH", os.path.join(DB_DIR, "agrimitra_v1.db"))
+os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
 
 
 def get_db_connection() -> sqlite3.Connection:

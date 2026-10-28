@@ -17,7 +17,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, HTMLResponse
 
 # Load environment variables
 load_dotenv()
@@ -150,6 +150,35 @@ if FRONTEND_DIST.exists():
             )
 
         return JSONResponse({"detail": "Not Found"}, status_code=404)
+else:
+    @app.get("/")
+    async def fallback_home():
+        return HTMLResponse(
+            """<!DOCTYPE html>
+            <html lang="hi">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>AgriMitra AI - Active</title>
+                <style>
+                    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; text-align: center; padding: 40px 20px; background: #F3F5F7; color: #0F2238; }
+                    .card { max-width: 500px; margin: 40px auto; background: white; padding: 32px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid #E2E8F0; }
+                    .badge { display: inline-block; background: #DCFCE7; color: #15803D; padding: 6px 14px; border-radius: 999px; font-weight: bold; font-size: 13px; margin-bottom: 16px; }
+                    h1 { margin: 0 0 12px; font-size: 22px; color: #142B4A; font-weight: 800; }
+                    p { color: #506680; line-height: 1.6; font-size: 14px; margin-bottom: 12px; }
+                    a { color: #15803D; font-weight: bold; text-decoration: none; }
+                </style>
+            </head>
+            <body>
+                <div class="card">
+                    <span class="badge">🌱 AgriMitra AI Server Active</span>
+                    <h1>AgriMitra AI Backend चालू है!</h1>
+                    <p>बैकएंड API और IoT टेलीमेट्री पूरी तरह सक्रिय हैं।</p>
+                    <p><a href="/api/health">/api/health</a> &bull; <a href="/docs">Swagger API Docs</a></p>
+                </div>
+            </body>
+            </html>"""
+        )
 
 
 if __name__ == "__main__":

@@ -5,13 +5,13 @@
 # ==============================================================================
 
 # ------------------------------------------------------------------------------
-# Stage 1: Build the React 19 Frontend
+# Stage 1: Build the React 19 Frontend (Debian-slim with glibc for lightningcss)
 # ------------------------------------------------------------------------------
-FROM node:20-alpine AS frontend-builder
+FROM node:20-slim AS frontend-builder
 WORKDIR /app/frontend
 
 COPY frontend/package*.json ./
-RUN npm ci
+RUN npm install
 
 COPY frontend/ ./
 RUN npm run build
@@ -26,6 +26,8 @@ WORKDIR /app
 # Prevent Python from writing .pyc files and buffer stdout
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
+    PORT=10000 \
+    HOST=0.0.0.0 \
     DATABASE_PATH="/app/backend/data/agrimitra.db"
 
 # Install system dependencies (curl for healthcheck)
@@ -38,8 +40,9 @@ COPY backend/requirements.txt /app/backend/requirements.txt
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r /app/backend/requirements.txt
 
-# Copy backend application source
+# Copy backend application source and start script
 COPY backend/ /app/backend/
+COPY start.py /app/start.py
 
 # Copy compiled frontend from Stage 1 into backend-served static directory
 COPY --from=frontend-builder /app/frontend/dist /app/frontend/dist
@@ -47,12 +50,12 @@ COPY --from=frontend-builder /app/frontend/dist /app/frontend/dist
 # Ensure SQLite data directory exists
 RUN mkdir -p /app/backend/data
 
-# Render injects PORT dynamically (usually 10000); do NOT hardcode a port
-EXPOSE ${PORT:-10000}
+# Render dynamically passes PORT (typically 10000)
+EXPOSE 10000
 
 # Healthcheck to monitor container health
 HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
     CMD curl -f http://127.0.0.1:${PORT:-10000}/api/health || exit 1
 
-# Start Uvicorn bound to dynamic cloud $PORT (Render default: 10000)
-CMD ["sh", "-c", "uvicorn main:app --app-dir backend --host 0.0.0.0 --port ${PORT:-10000}"]
+# Start server using start.py with proxy headers support
+CMD ["python", "start.py"]
