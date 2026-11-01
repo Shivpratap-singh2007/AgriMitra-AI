@@ -7,7 +7,7 @@ fault alerts, safe relay actuation commands, and manual overrides.
 from fastapi import APIRouter, Header, HTTPException, Body, Query
 from pydantic import BaseModel, Field
 from typing import Optional, Dict, Any, List
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 import logging
 
@@ -19,6 +19,10 @@ from intelligence.advisory_service import generate_polyhouse_advisory
 
 logger = logging.getLogger("agrimitra.iot")
 router = APIRouter(prefix="/api/iot", tags=["IoT & Smart Polyhouse"])
+
+# Active manual actuator overrides:
+# { device_id: { "pump": bool|None, "pump_until": datetime|None, "fan": bool|None, "fan_until": datetime|None, "emergency_stop": bool } }
+ACTIVE_MANUAL_OVERRIDES: Dict[str, Dict[str, Any]] = {}
 
 
 class TelemetryInput(BaseModel):
@@ -175,18 +179,53 @@ async def ingest_telemetry(
 
     conn.close()
 
-    # Return Actuator Commands for ESP32
+    # Check active manual overrides for this device (or global/demo fallback)
+    now = datetime.utcnow()
+    dev_override = ACTIVE_MANUAL_OVERRIDES.get(payload.device_id) or ACTIVE_MANUAL_OVERRIDES.get("esp32-polyhouse-demo") or {}
+
+    should_pump = bool(automation_decision["should_pump_run"])
+    should_fan = bool(automation_decision["should_fan_run"])
+
+    is_em_stop = bool(settings.get("emergency_stop_active", False)) or bool(dev_override.get("emergency_stop", False))
+    if is_em_stop:
+        should_pump = False
+        should_fan = False
+    else:
+        # Check manual pump override
+        if dev_override.get("pump") is not None:
+            until = dev_override.get("pump_until")
+            if until and now <= until:
+                should_pump = bool(dev_override["pump"])
+            elif until and now > until:
+                dev_override["pump"] = None
+                dev_override["pump_until"] = None
+            elif not until:
+                should_pump = bool(dev_override["pump"])
+
+        # Check manual fan override
+        if dev_override.get("fan") is not None:
+            until = dev_override.get("fan_until")
+            if until and now <= until:
+                should_fan = bool(dev_override["fan"])
+            elif until and now > until:
+                dev_override["fan"] = None
+                dev_override["fan_until"] = None
+            elif not until:
+                should_fan = bool(dev_override["fan"])
+
+    actuator_commands = {
+        "pump": should_pump,
+        "pump_runtime_seconds": automation_decision["pump_runtime_seconds"] or 20,
+        "fan": should_fan,
+        "emergency_stop": is_em_stop
+    }
     return {
         "success": True,
         "device_id": payload.device_id,
         "is_valid": is_valid,
         "fault_flags": fault_flags,
-        "commands": {
-            "pump": automation_decision["should_pump_run"],
-            "pump_runtime_seconds": automation_decision["pump_runtime_seconds"],
-            "fan": automation_decision["should_fan_run"],
-            "emergency_stop": bool(settings.get("emergency_stop_active", False))
-        },
+        "commands": actuator_commands,
+        "data": actuator_commands,
         "sync_time": datetime.utcnow().isoformat() + "Z"
     }
 
@@ -257,6 +296,22 @@ async def get_live_overview(device_id: str = "esp32-polyhouse-demo"):
         "fault_flags": "[]",
         "created_at": None
     }
+
+    # Synchronize with active manual overrides so UI buttons stay accurate
+    dev_override = ACTIVE_MANUAL_OVERRIDES.get(device["device_id"]) or ACTIVE_MANUAL_OVERRIDES.get("esp32-polyhouse-demo") or {}
+    now = datetime.utcnow()
+    if dev_override.get("emergency_stop"):
+        telemetry["pump_state"] = 0
+        telemetry["fan_state"] = 0
+    else:
+        if dev_override.get("pump") is not None:
+            until = dev_override.get("pump_until")
+            if not until or now <= until:
+                telemetry["pump_state"] = 1 if dev_override["pump"] else 0
+        if dev_override.get("fan") is not None:
+            until = dev_override.get("fan_until")
+            if not until or now <= until:
+                telemetry["fan_state"] = 1 if dev_override["fan"] else 0
 
     # Fetch Settings
     cursor.execute("SELECT * FROM polyhouse_settings WHERE device_id = ?", (device["device_id"],))
@@ -358,8 +413,14 @@ async def manual_actuator_control(device_id: str, payload: ActuatorControlInput)
     cursor.execute("SELECT * FROM devices WHERE device_id = ?", (device_id,))
     device = cursor.fetchone()
     if not device:
-        conn.close()
-        raise HTTPException(status_code=404, detail="Device not found.")
+        cursor.execute("""
+        INSERT OR IGNORE INTO devices (device_id, name, device_key, crop_id, is_demo, status)
+        VALUES (?, ?, 'auto-key', 'Tomato', 0, 'online')
+        """, (device_id, f"Smart Controller ({device_id})"))
+        cursor.execute("INSERT OR IGNORE INTO polyhouse_settings (device_id) VALUES (?)", (device_id,))
+        conn.commit()
+        cursor.execute("SELECT * FROM devices WHERE device_id = ?", (device_id,))
+        device = cursor.fetchone()
 
     cursor.execute("SELECT * FROM polyhouse_settings WHERE device_id = ?", (device_id,))
     settings_row = cursor.fetchone()
@@ -384,18 +445,18 @@ async def manual_actuator_control(device_id: str, payload: ActuatorControlInput)
 
     runtime_input = payload.duration_seconds if payload.duration_seconds is not None else payload.runtime_seconds
 
+    # Collect all relevant target device IDs (the explicit one + any active physical devices)
+    target_devices = {device_id, "esp32-polyhouse-demo"}
+    cursor.execute("SELECT device_id FROM devices")
+    for r in cursor.fetchall():
+        target_devices.add(r["device_id"])
+
     if action == "emergency_stop":
-        cursor.execute("UPDATE polyhouse_settings SET emergency_stop_active = 1 WHERE device_id = ?", (device_id,))
-        # Immediately set pump and fan state to 0 in telemetry
-        cursor.execute("""
-        INSERT INTO sensor_telemetry (device_id, temperature, humidity, soil_moisture, pump_state, fan_state, is_valid, fault_flags)
-        VALUES (?, ?, ?, ?, 0, 0, 1, '["EMERGENCY_STOP_TRIGGERED"]')
-        """, (
-            device_id,
-            pre_readings.get("temperature", 25.0),
-            pre_readings.get("humidity", 60.0),
-            pre_readings.get("soil_moisture", 50.0)
-        ))
+        for d_id in target_devices:
+            cursor.execute("UPDATE polyhouse_settings SET emergency_stop_active = 1 WHERE device_id = ?", (d_id,))
+            ACTIVE_MANUAL_OVERRIDES.setdefault(d_id, {})["emergency_stop"] = True
+            ACTIVE_MANUAL_OVERRIDES[d_id]["pump"] = False
+            ACTIVE_MANUAL_OVERRIDES[d_id]["fan"] = False
         conn.commit()
         action_id = log_farming_action(
             device_id=device_id,
@@ -408,27 +469,32 @@ async def manual_actuator_control(device_id: str, payload: ActuatorControlInput)
         msg = "Emergency Stop Activated. All actuators locked OFF."
 
     elif action == "clear_emergency_stop":
-        cursor.execute("UPDATE polyhouse_settings SET emergency_stop_active = 0 WHERE device_id = ?", (device_id,))
+        for d_id in target_devices:
+            cursor.execute("UPDATE polyhouse_settings SET emergency_stop_active = 0 WHERE device_id = ?", (d_id,))
+            ACTIVE_MANUAL_OVERRIDES.setdefault(d_id, {})["emergency_stop"] = False
         conn.commit()
         msg = "Emergency Stop Cleared. System restored to normal automation."
 
     elif action == "pump_on":
-        if settings.get("emergency_stop_active"):
+        if settings.get("emergency_stop_active") or ACTIVE_MANUAL_OVERRIDES.get(device_id, {}).get("emergency_stop"):
             conn.close()
             raise HTTPException(status_code=400, detail="Cannot run pump while Emergency Stop is active.")
 
-        runtime = min(int(runtime_input or 20), int(settings.get("max_pump_runtime_seconds", 30)))
-        # Update telemetry to show pump active
-        cursor.execute("""
-        INSERT INTO sensor_telemetry (device_id, temperature, humidity, soil_moisture, pump_state, fan_state, is_valid)
-        VALUES (?, ?, ?, ?, 1, ?, 1)
-        """, (
-            device_id,
-            pre_readings.get("temperature", 25.0),
-            pre_readings.get("humidity", 60.0),
-            pre_readings.get("soil_moisture", 50.0),
-            pre_readings.get("fan_state", 0)
-        ))
+        runtime = min(int(runtime_input or 20), int(settings.get("max_pump_runtime_seconds", 60)))
+        expire_at = datetime.utcnow() + timedelta(seconds=runtime)
+        for d_id in target_devices:
+            ACTIVE_MANUAL_OVERRIDES.setdefault(d_id, {})["pump"] = True
+            ACTIVE_MANUAL_OVERRIDES[d_id]["pump_until"] = expire_at
+            cursor.execute("""
+            INSERT INTO sensor_telemetry (device_id, temperature, humidity, soil_moisture, pump_state, fan_state, is_valid)
+            VALUES (?, ?, ?, ?, 1, ?, 1)
+            """, (
+                d_id,
+                pre_readings.get("temperature", 25.0),
+                pre_readings.get("humidity", 60.0),
+                pre_readings.get("soil_moisture", 50.0),
+                pre_readings.get("fan_state", 0)
+            ))
         conn.commit()
         action_id = log_farming_action(
             device_id=device_id,
@@ -441,31 +507,40 @@ async def manual_actuator_control(device_id: str, payload: ActuatorControlInput)
         msg = f"Pump activated for {runtime} seconds. Verification scheduled."
 
     elif action == "pump_off":
-        cursor.execute("""
-        INSERT INTO sensor_telemetry (device_id, temperature, humidity, soil_moisture, pump_state, fan_state, is_valid)
-        VALUES (?, ?, ?, ?, 0, ?, 1)
-        """, (
-            device_id,
-            pre_readings.get("temperature", 25.0),
-            pre_readings.get("humidity", 60.0),
-            pre_readings.get("soil_moisture", 50.0),
-            pre_readings.get("fan_state", 0)
-        ))
+        for d_id in target_devices:
+            ACTIVE_MANUAL_OVERRIDES.setdefault(d_id, {})["pump"] = False
+            ACTIVE_MANUAL_OVERRIDES[d_id]["pump_until"] = None
+            cursor.execute("""
+            INSERT INTO sensor_telemetry (device_id, temperature, humidity, soil_moisture, pump_state, fan_state, is_valid)
+            VALUES (?, ?, ?, ?, 0, ?, 1)
+            """, (
+                d_id,
+                pre_readings.get("temperature", 25.0),
+                pre_readings.get("humidity", 60.0),
+                pre_readings.get("soil_moisture", 50.0),
+                pre_readings.get("fan_state", 0)
+            ))
+        conn.commit()
         msg = "Pump turned OFF."
 
     elif action in ("fan_on", "fan_off"):
         new_state = 1 if action == "fan_on" else 0
-        cursor.execute("""
-        INSERT INTO sensor_telemetry (device_id, temperature, humidity, soil_moisture, pump_state, fan_state, is_valid)
-        VALUES (?, ?, ?, ?, ?, ?, 1)
-        """, (
-            device_id,
-            pre_readings.get("temperature", 25.0),
-            pre_readings.get("humidity", 60.0),
-            pre_readings.get("soil_moisture", 50.0),
-            pre_readings.get("pump_state", 0),
-            new_state
-        ))
+        expire_at = datetime.utcnow() + timedelta(seconds=int(runtime_input or 120)) if new_state else None
+        for d_id in target_devices:
+            ACTIVE_MANUAL_OVERRIDES.setdefault(d_id, {})["fan"] = bool(new_state)
+            ACTIVE_MANUAL_OVERRIDES[d_id]["fan_until"] = expire_at
+            cursor.execute("""
+            INSERT INTO sensor_telemetry (device_id, temperature, humidity, soil_moisture, pump_state, fan_state, is_valid)
+            VALUES (?, ?, ?, ?, ?, ?, 1)
+            """, (
+                d_id,
+                pre_readings.get("temperature", 25.0),
+                pre_readings.get("humidity", 60.0),
+                pre_readings.get("soil_moisture", 50.0),
+                pre_readings.get("pump_state", 0),
+                new_state
+            ))
+        conn.commit()
         msg = f"Fan turned {'ON' if new_state else 'OFF'}."
 
     conn.commit()

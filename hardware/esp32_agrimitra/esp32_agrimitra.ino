@@ -36,7 +36,7 @@ const char *WIFI_SSID = "Redmi";
 const char *WIFI_PASSWORD = "12345678";
 
 // 2. Active AgriMitra AI Server IP on your local Wi-Fi network
-const char *SERVER_URL = "http://10.30.25.131:5001/api/iot/telemetry";
+const char *SERVER_URL = "http://10.152.66.131:5001/api/iot/telemetry";
 
 // 3. Hardware Pin Definitions (Frozen & Aligned)
 #define DHTPIN 4          // GPIO 4 (D4) for DHT11 Data
@@ -167,6 +167,8 @@ void sendTelemetryAndSyncControls() {
   reqDoc["temperature"] = temperature;
   reqDoc["humidity"] = humidity;
   reqDoc["soil_moisture"] = soilMoisture;
+  reqDoc["pump_state"] = (digitalRead(PUMP_RELAY_PIN) == RELAY_ON);
+  reqDoc["fan_state"] = (digitalRead(FAN_RELAY_PIN) == RELAY_ON);
 
   String jsonPayload;
   serializeJson(reqDoc, jsonPayload);
@@ -188,8 +190,9 @@ void sendTelemetryAndSyncControls() {
     DeserializationError error = deserializeJson(resDoc, response);
 
     if (!error && resDoc["success"] == true) {
-      bool pumpState = resDoc["data"]["pump"].as<bool>();
-      bool fanState = resDoc["data"]["fan"].as<bool>();
+      JsonObject cmds = resDoc.containsKey("commands") ? resDoc["commands"].as<JsonObject>() : resDoc["data"].as<JsonObject>();
+      bool pumpState = cmds["pump"].as<bool>();
+      bool fanState = cmds["fan"].as<bool>();
 
       // Apply controls to Relay Pins (Fan on 26, Pump on 27)
       digitalWrite(FAN_RELAY_PIN, fanState ? RELAY_ON : RELAY_OFF);
