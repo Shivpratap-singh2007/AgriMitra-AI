@@ -15,8 +15,7 @@
  * 3. 2-Channel 5V Relay Module:
  *    - Relay 1 (Polyhouse Fan) -> GPIO 26
  *    - Relay 2 (Water Pump)     -> GPIO 27
- *    - VCC -> ESP32 3.3V (Optocoupler logic)
- *    - JD-VCC -> External 5V (Coils)
+ *    - VCC -> 5V (VIN of ESP32 or external 5V)
  *    - GND -> Common Ground
  *
  * Libraries Required in Arduino IDE:
@@ -46,9 +45,18 @@ const char *SERVER_URL = "http://10.152.66.131:5001/api/iot/telemetry";
 #define PUMP_RELAY_PIN 27 // GPIO 27 for Relay 2 (Water Pump)
 #define STATUS_LED 2      // GPIO 2 Built-in Blue LED
 
-// Most Arduino Relay modules are ACTIVE-LOW (LOW = ON, HIGH = OFF)
-#define RELAY_ON LOW
-#define RELAY_OFF HIGH
+// 4. Relay Trigger Logic:
+// Set to true for Active-LOW relays (relay clicks ON on LOW/0V) - standard blue modules
+// Set to false for Active-HIGH relays (relay clicks ON on HIGH/3.3V)
+#define ACTIVE_LOW_RELAY true
+
+#if ACTIVE_LOW_RELAY
+  #define RELAY_ON  LOW
+  #define RELAY_OFF HIGH
+#else
+  #define RELAY_ON  HIGH
+  #define RELAY_OFF LOW
+#endif
 
 // Telemetry interval in milliseconds (e.g. 5000 = 5 seconds)
 const unsigned long TELEMETRY_INTERVAL = 5000;
@@ -70,10 +78,26 @@ void setup() {
   pinMode(PUMP_RELAY_PIN, OUTPUT);
   pinMode(STATUS_LED, OUTPUT);
 
-  // Ensure relays are OFF initially
+  // Ensure relays start OFF
   digitalWrite(FAN_RELAY_PIN, RELAY_OFF);
   digitalWrite(PUMP_RELAY_PIN, RELAY_OFF);
   digitalWrite(STATUS_LED, LOW);
+
+  // -------------------------------------------------------------
+  // Hardware Self-Test: Clicks each relay for 1 second on boot
+  // If relays don't click here, check 5V power supply to relay VCC
+  // -------------------------------------------------------------
+  Serial.println("\n[Self-Test] Testing Relay 1 (Fan - GPIO 26)...");
+  digitalWrite(FAN_RELAY_PIN, RELAY_ON);
+  delay(1000);
+  digitalWrite(FAN_RELAY_PIN, RELAY_OFF);
+  delay(500);
+
+  Serial.println("[Self-Test] Testing Relay 2 (Pump - GPIO 27)...");
+  digitalWrite(PUMP_RELAY_PIN, RELAY_ON);
+  delay(1000);
+  digitalWrite(PUMP_RELAY_PIN, RELAY_OFF);
+  Serial.println("[Self-Test] Relay self-test completed successfully!\n");
 
   // Initialize DHT Sensor
   dht.begin();
@@ -126,8 +150,6 @@ void connectToWiFi() {
 
 float readSoilMoisturePercentage() {
   // ESP32 ADC: 12-bit (0 to 4095)
-  // Air / Dry soil gives highest value (~3200-4095)
-  // Submerged in wet soil / water gives lowest value (~1200-1800)
   int rawValue = analogRead(SOIL_PIN);
 
   // Calibration thresholds for standard capacitive/resistive probe
@@ -141,8 +163,10 @@ float readSoilMoisturePercentage() {
 }
 
 void sendTelemetryAndSyncControls() {
-  if (WiFi.status() != WL_CONNECTED)
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("[WiFi] Not connected, skipping telemetry send.");
     return;
+  }
 
   // 1. Read Sensors
   float temperature = dht.readTemperature();
@@ -151,8 +175,7 @@ void sendTelemetryAndSyncControls() {
 
   // Validate DHT reading
   if (isnan(temperature) || isnan(humidity)) {
-    Serial.println("[Sensor Warning] DHT11 read returned NaN! Using safe "
-                   "fallback readings.");
+    Serial.println("[Sensor Warning] DHT11 read returned NaN! Using safe fallback.");
     temperature = 28.0;
     humidity = 60.0;
   }
@@ -205,9 +228,9 @@ void sendTelemetryAndSyncControls() {
       Serial.println("[JSON] Could not parse server response.");
     }
   } else {
-    Serial.printf("[HTTP] POST failed, error: %s\n",
-                  http.errorToString(httpCode).c_str());
-    Serial.printf("-> Tip: Check that backend is running on %s\n", SERVER_URL);
+    Serial.printf("[HTTP ERROR] POST failed: %s (code %d)\n",
+                  http.errorToString(httpCode).c_str(), httpCode);
+    Serial.printf("-> Check that laptop is on Wi-Fi and server is at %s\n", SERVER_URL);
   }
 
   http.end();
