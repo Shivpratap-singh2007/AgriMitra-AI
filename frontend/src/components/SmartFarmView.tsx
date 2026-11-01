@@ -89,7 +89,7 @@ export const SmartFarmView: React.FC<SmartFarmViewProps> = ({ language }) => {
     setActionMessage(null);
     setActionError(null);
     try {
-      const activeDevId = data?.device?.device_id || 'esp32-polyhouse-demo';
+      const activeDevId = liveData?.device?.device_id || 'esp32-polyhouse-demo';
       const res = await controlActuator(actuator, state, durationSeconds, activeDevId);
       if (res.success) {
         setActionMessage(res.message);
